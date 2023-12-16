@@ -503,9 +503,17 @@ class StudentController extends Controller
     private function handleFiltering(CrudBag $crudBag, Request $request): CrudBag
     {
         $crudBag->addFilter([
-            'label' => 'Ten hoc sinh',
-            'name' => 'name:contains',
-            'value' => $request->get('name:contains')
+            'label' => 'Trang thai the hoc',
+            'name' => 'card_status:eq',
+            'value' => $request->get('card_status:eq'),
+            'type' => 'select',
+            'attributes' => [
+                'options' => [
+                    0 => 'Dang hoc',
+                    1 => 'Bao luu',
+                    2 => 'Da ket thuc'
+                ]
+            ]
         ]);
         $crudBag->addFilter([
             'name' => 'gender:eq',

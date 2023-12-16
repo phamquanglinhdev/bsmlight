@@ -13,8 +13,14 @@
         <h4 class="">
             <span class="text-muted fw-light">{{$crudBag->getLabel()}} /</span> Danh sách
         </h4>
-        <a href="{{url($crudBag->getEntity()."/create")}}" class="btn btn-primary waves-effect waves-light mb-2">
-            Thêm mới {{$crudBag->getLabel()}}</a>
+        @include("components.statistics")
+        <div class="d-flex justify-content-between">
+            <a href="{{url($crudBag->getEntity()."/create")}}" class="btn btn-primary waves-effect waves-light mb-2">
+                Thêm mới {{$crudBag->getLabel()}}</a>
+           <div class="col-md-3">
+               <input type="search" class="form-control" placeholder="Tìm kiem">
+           </div>
+        </div>
         @include("components.filter",['filters' => $crudBag->getFilters()])
         <div class="table-responsive text-nowrap shadow-lg" style="height: 70vh">
             <table class="table shadow" id="myTable">
