@@ -184,8 +184,6 @@
 
 
     </div>
-
-    <div class="content-backdrop fade"></div>
 @endsection
 @push("after_scripts")
     <script src="{{asset("demo/assets/js/tables-datatables-advanced.js")}}"></script>

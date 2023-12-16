@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,15 +11,15 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    const STUDENT_ROLE = 2;
+
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
+    protected $guarded = [
+        'id'
     ];
 
     /**
@@ -41,4 +40,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public static function newUuid(string $branch, string $code): string
+    {
+        $newestId = User::query()->latest('id')?->first()?->id ?? 0;
+        $uuid = $newestId < 1000
+            ? sprintf('%04d', $newestId + 1)
+            : sprintf('%07d', $newestId + 1);
+
+        return "BSM-" . $branch . "-" . $code . "." . $uuid;
+    }
 }

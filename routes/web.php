@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,4 +20,10 @@ Route::get('/', function () {
 
 Route::get('/demo-page', function () {
     return view('accordion');
+});
+
+Route::prefix('student')->group(function (){
+    Route::get('/create',[StudentController::class,"create"])->name('student.create');
+    Route::post('/store',[StudentController::class,"store"])->name('student.store');
+    Route::get('/list',[StudentController::class,"list"])->name('student.list');
 });
