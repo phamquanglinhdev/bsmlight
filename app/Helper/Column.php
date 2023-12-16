@@ -14,14 +14,23 @@ class Column
     private string $label;
     private array $attributes = [];
 
-    public function getLabel(): string
-    {
-        return $this->label;
-    }
+    private string $fixed = '';
+
+
+
 
     public function __construct(array $data = [])
     {
         $this->populate($data);
+    }
+
+    public function getFixed(): string
+    {
+        return $this->fixed;
+    }
+    public function getLabel(): string
+    {
+        return $this->label;
     }
 
     public function getName(): string

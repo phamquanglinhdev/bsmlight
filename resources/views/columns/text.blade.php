@@ -5,6 +5,7 @@
     * @var Column $column
     */
 @endphp
-<td class="border">
+
+<td class="border {{$column->getFixed() == 'first' ? 'fixed-left':''}}">
     {{$item[$column->getName()]}}
 </td>

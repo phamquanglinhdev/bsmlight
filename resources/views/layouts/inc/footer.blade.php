@@ -14,7 +14,7 @@
 <!-- END: Page Vendor JS-->
 <!-- BEGIN: Theme JS-->
 <script src="{{asset("demo/assets/js/main2a22.js")}}?id=e46da52cc43e079943fb6810bf346c25"></script>
-
+<script src="{{asset('demo/assets/vendor/libs/toastr/toastr.js')}}"></script>
 <!-- END: Theme JS-->
 <!-- Pricing Modal JS-->
 <!-- END: Pricing Modal JS-->

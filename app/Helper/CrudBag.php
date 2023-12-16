@@ -14,6 +14,21 @@ class CrudBag
     private string $label;
     private string $entity;
     private array $columns;
+    private array $filters;
+
+    /**
+     * @return Filter[]
+     */
+    public function getFilters(): array
+    {
+        return $this->filters;
+    }
+
+    public function addFilter(array $data = []): void
+    {
+        $this->filters[] = new Filter($data);
+    }
+    private ?int $id = null;
 
     public function getLabel(): string
     {
@@ -75,5 +90,15 @@ class CrudBag
     public function getColumns(): array
     {
         return $this->columns;
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 }

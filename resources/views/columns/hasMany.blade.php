@@ -12,7 +12,7 @@
 @endphp
 <td class="border">
     @foreach($options as $option)
-        <div class="small">
+        <div class="small p-1">
             <a href="{{url($relationEntity."/show/".$option[$relationId])}}">{{$option[$relationLabel]}}</a>
         </div>
     @endforeach

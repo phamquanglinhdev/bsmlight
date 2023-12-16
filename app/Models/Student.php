@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -34,8 +35,46 @@ class Student extends User
         'user_ref',
         'extra_information',
         'cards',
-        'private_chat'
+        'private_chat',
+        'zalo_private_chat',
+        'birthday',
+        'age',
+        'grade',
+        'level',
+        'sibling'
     ];
+    public function getSiblingAttribute(): array
+    {
+        return [
+            [
+                'id' => 1,
+                'uuid' => 'BSM-CN.0001-NguyenThiA'
+            ],
+            [
+                'id' => 2,
+                'uuid' => 'BSM-CN.0002-NguyenThiB'
+            ],
+        ];
+    }
+    public function getAgeAttribute(): int
+    {
+        return 1;
+    }
+
+    public function getGradeAttribute()
+    {
+        return 1;
+    }
+
+    public function getLevelAttribute()
+    {
+        return 1;
+    }
+
+    public function getZaloPrivateChatAttribute()
+    {
+        return 1;
+    }
 
     public function getStatusAttribute($value)
     {
@@ -75,6 +114,14 @@ class Student extends User
     public function getExtraInformationAttribute($value)
     {
         return $this->profile?->extra_information;
+    }
+
+    public function getBirthdayAttribute()
+    {
+        if (!$this->profile?->birthday) {
+            return '';
+        }
+        return Carbon::parse($this->profile?->birthday)->isoFormat('DD-MM-YYYY');
     }
 
     public function getCardsAttribute(): array

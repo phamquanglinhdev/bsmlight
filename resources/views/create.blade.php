@@ -9,9 +9,10 @@
     <div class="container-xxl flex-grow-1 container-p-y">
 
         <h4 class="py-3 mb-4">
-            <span class="text-muted fw-light">{{$crudBag->getLabel()}} /</span> Thêm mới
+            <span class="text-muted fw-light">{{$crudBag->getLabel()}} /</span>
+            <span>{{$crudBag->getId()?"Chỉnh sửa":"Thêm mới"}}</span>
         </h4>
-        <form action="{{route($crudBag->getAction())}}" method="POST">
+        <form action="{{route($crudBag->getAction(),$crudBag->getId())}}" method="POST">
             @csrf
             <div class="row">
                 @foreach($crudBag->getFields() as $field)
@@ -21,7 +22,7 @@
                 @endforeach
             </div>
 
-            <button type="submit" name="submitButton" class="btn btn-primary waves-effect waves-light">Thêm mới</button>
+            <button type="submit" name="submitButton" class="btn btn-primary waves-effect waves-light">{{$crudBag->getId()?"Chỉnh sửa":"Thêm mới"}}</button>
         </form>
     </div>
 @endsection
