@@ -14,7 +14,7 @@
             <span class="text-muted fw-light">{{$crudBag->getLabel()}} /</span> Danh sách
         </h4>
         @include("components.statistics")
-        <div class="d-flex justify-content-between">
+        <div class="d-flex justify-content-between mt-4">
             <a href="{{url($crudBag->getEntity()."/create")}}" class="btn btn-primary waves-effect waves-light mb-2">
                 Thêm mới {{$crudBag->getLabel()}}</a>
            <div class="col-md-3">
