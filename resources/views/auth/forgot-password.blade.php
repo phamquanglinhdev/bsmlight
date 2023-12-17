@@ -14,7 +14,7 @@
                     <div class="card-body mt-2">
                         <h4 class="mb-2">Quên mật khẩu 🔒</h4>
                         <p class="mb-4">Nhập tên đăng nhập và email của bạn để lấy lại mật khẩu</p>
-                        <form id="" class="mb-3" action="{{url('/forgot-password')}}" method="POST">
+                        <form id="" class="mb-3" action="{{url('/forgot_password')}}" method="POST">
                             @csrf
                             <div class="form-floating form-floating-outline mb-3">
                                 <input type="text" required class="form-control" id="uuid" name="uuid"

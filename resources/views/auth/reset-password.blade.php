@@ -20,7 +20,7 @@
                     <!-- Reset Password -->
                     <div class="card-body">
                         <h4 class="mb-3">Đặt lại mật khẩu 🔒</h4>
-                        <form id="formAuthentication" class="mb-3" action="{{url("/reset-password")}}" method="post">
+                        <form id="formAuthentication" class="mb-3" action="{{url("/reset_password")}}" method="post">
                             @csrf
                             <input hidden="" name="token" value="{{$crudBag->getParam('token')}}">
                             <div class="mb-3 form-password-toggle">

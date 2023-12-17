@@ -22,7 +22,7 @@ class ResetPasswordController extends Controller
 {
     public function forgotPasswordView(): View
     {
-        return view("auth.forgot-password");
+        return view("auth.forgot_password");
     }
 
     /**
@@ -55,7 +55,7 @@ class ResetPasswordController extends Controller
             'created_at' => Carbon::now()
         ]);
 
-        $resetLink = env('APP_URL') . "/reset-password?token=$token";
+        $resetLink = env('APP_URL') . "/reset_password?token=$token";
 
         Mail::to($user->email)->send(new ForgetPasswordEmail($user, $resetLink));
 
@@ -80,7 +80,7 @@ class ResetPasswordController extends Controller
 
         $crudBag->setParam("token", $token);
 
-        return \view("auth.reset-password", ['crudBag' => $crudBag]);
+        return \view("auth.reset_password", ['crudBag' => $crudBag]);
     }
 
     /**

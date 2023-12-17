@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/forgot-password', [ResetPasswordController::class, "forgotPasswordView"])->name('password.request');
-Route::post('/forgot-password', [ResetPasswordController::class, "sendPasswordConfirmation"])->name('password.send');
-Route::get('/reset-password', [ResetPasswordController::class, "resetPasswordView"])->name('password');
-Route::post('/reset-password', [ResetPasswordController::class, "updatePasswordWithToken"])->name('password.update');
+Route::get('/forgot_password', [ResetPasswordController::class, "forgotPasswordView"])->name('password.request');
+Route::post('/forgot_password', [ResetPasswordController::class, "sendPasswordConfirmation"])->name('password.send');
+Route::get('/reset_password', [ResetPasswordController::class, "resetPasswordView"])->name('password');
+Route::post('/reset_password', [ResetPasswordController::class, "updatePasswordWithToken"])->name('password.update');
 
 
 Route::get('/login', [AuthenticateController::class, "loginView"])->name('login');
