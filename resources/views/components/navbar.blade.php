@@ -1,4 +1,9 @@
-<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme" id="layout-navbar">
+@php use Illuminate\Support\Facades\Auth; @endphp
+@php
+    $user = Auth::user()
+@endphp
+<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+     id="layout-navbar">
 
     <!--  Brand demo (display only for navbar-full and hide on below xl) -->
 
@@ -14,9 +19,11 @@
         <!-- Search -->
         <div class="navbar-nav align-items-center">
             <div class="nav-item navbar-search-wrapper mb-0">
-                <a class="nav-item nav-link search-togglers fw-normal px-0 d-flex align-items-center" href="javascript:void(0);">
+                <a class="nav-item nav-link search-togglers fw-normal px-0 d-flex align-items-center"
+                   href="javascript:void(0);">
                     <i class="mdi mdi-magnify mdi-24px scaleX-n1-rtl me-2"></i>
-                    <input class="border-none d-none form-control d-md-inline-block text-muted" placeholder="Tìm kiếm trên BSM (Ctrl+/)">
+                    <input class="border-none d-none form-control d-md-inline-block text-muted"
+                           placeholder="Tìm kiếm trên BSM (Ctrl+/)">
                 </a>
             </div>
         </div>
@@ -26,7 +33,8 @@
 
             <!-- Language -->
             <li class="nav-item dropdown-language dropdown me-1 me-xl-0">
-                <a class="nav-link btn btn-text-secondary rounded-pill btn-icon dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                <a class="nav-link btn btn-text-secondary rounded-pill btn-icon dropdown-toggle hide-arrow"
+                   href="javascript:void(0);" data-bs-toggle="dropdown">
                     <i class='mdi mdi-translate mdi-24px'></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end py-2">
@@ -56,7 +64,8 @@
 
             <!-- Style Switcher -->
             <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-0">
-                <a class="nav-link btn btn-text-secondary rounded-pill btn-icon dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+                <a class="nav-link btn btn-text-secondary rounded-pill btn-icon dropdown-toggle hide-arrow"
+                   href="javascript:void(0);" data-bs-toggle="dropdown">
                     <i class='mdi mdi-24px'></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end dropdown-styles">
@@ -81,14 +90,18 @@
 
             <!-- Quick links  -->
             <li class="nav-item dropdown-shortcuts navbar-dropdown dropdown me-1 me-xl-0">
-                <a class="nav-link btn btn-text-secondary rounded-pill btn-icon dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                <a class="nav-link btn btn-text-secondary rounded-pill btn-icon dropdown-toggle hide-arrow"
+                   href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                   aria-expanded="false">
                     <i class='mdi mdi-view-grid-outline mdi-24px'></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end py-0">
                     <div class="dropdown-menu-header border-bottom">
                         <div class="dropdown-header d-flex align-items-center py-3">
                             <h6 class="mb-0 me-auto">Shortcuts</h6>
-                            <a href="javascript:void(0)" class="dropdown-shortcuts-add text-heading" data-bs-toggle="tooltip" data-bs-placement="top" title="Add shortcuts"><i class="mdi mdi-plus mdi-24px"></i></a>
+                            <a href="javascript:void(0)" class="dropdown-shortcuts-add text-heading"
+                               data-bs-toggle="tooltip" data-bs-placement="top" title="Add shortcuts"><i
+                                    class="mdi mdi-plus mdi-24px"></i></a>
                         </div>
                     </div>
                     <div class="dropdown-shortcuts-list scrollable-container">
@@ -129,7 +142,8 @@
                     <span class="dropdown-shortcuts-icon bg-label-secondary text-heading rounded-circle mb-3">
                       <i class="mdi mdi-monitor mdi-24px"></i>
                     </span>
-                                <a href="https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo-1" class="stretched-link">Dashboard</a>
+                                <a href="https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo-1"
+                                   class="stretched-link">Dashboard</a>
                                 <small>Analytics</small>
                             </div>
                             <div class="dropdown-shortcuts-item col">
@@ -163,9 +177,12 @@
 
             <!-- Notification -->
             <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-2 me-xl-1">
-                <a class="nav-link btn btn-text-secondary rounded-pill btn-icon dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
+                <a class="nav-link btn btn-text-secondary rounded-pill btn-icon dropdown-toggle hide-arrow"
+                   href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside"
+                   aria-expanded="false">
                     <i class="mdi mdi-bell-outline mdi-24px"></i>
-                    <span class="position-absolute top-0 start-50 translate-middle-y badge badge-dot bg-danger mt-2 border"></span>
+                    <span
+                        class="position-absolute top-0 start-50 translate-middle-y badge badge-dot bg-danger mt-2 border"></span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end py-0">
                     <li class="dropdown-menu-header border-bottom">
@@ -180,12 +197,14 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <img src="demo/assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle">
+                                            <img src="demo/assets/img/avatars/1.png" alt
+                                                 class="w-px-40 h-auto rounded-circle">
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column flex-grow-1 overflow-hidden w-px-250">
                                         <h6 class="mb-1 text-truncate">Congratulation Lettie 🎉</h6>
-                                        <small class="text-truncate text-body">Won the monthly best seller gold badge</small>
+                                        <small class="text-truncate text-body">Won the monthly best seller gold
+                                            badge</small>
                                     </div>
                                     <div class="flex-shrink-0 dropdown-notifications-actions">
                                         <small class="text-muted">1h ago</small>
@@ -212,7 +231,8 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <img src="demo/assets/img/avatars/2.png" alt class="w-px-40 h-auto rounded-circle">
+                                            <img src="demo/assets/img/avatars/2.png" alt
+                                                 class="w-px-40 h-auto rounded-circle">
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column flex-grow-1 overflow-hidden w-px-250">
@@ -228,7 +248,8 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <span class="avatar-initial rounded-circle bg-label-success"><i class="mdi mdi-cart-outline"></i></span>
+                                            <span class="avatar-initial rounded-circle bg-label-success"><i
+                                                    class="mdi mdi-cart-outline"></i></span>
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column flex-grow-1 overflow-hidden w-px-250">
@@ -244,12 +265,14 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <img src="demo/assets/img/avatars/9.png" alt class="w-px-40 h-auto rounded-circle">
+                                            <img src="demo/assets/img/avatars/9.png" alt
+                                                 class="w-px-40 h-auto rounded-circle">
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column flex-grow-1 overflow-hidden w-px-250">
                                         <h6 class="mb-1 text-truncate">Application has been approved 🚀 </h6>
-                                        <small class="text-truncate text-body">Your ABC project application has been approved.</small>
+                                        <small class="text-truncate text-body">Your ABC project application has been
+                                            approved.</small>
                                     </div>
                                     <div class="flex-shrink-0 dropdown-notifications-actions">
                                         <small class="text-muted">2 days ago</small>
@@ -260,12 +283,14 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <span class="avatar-initial rounded-circle bg-label-success"><i class="mdi mdi-chart-pie-outline"></i></span>
+                                            <span class="avatar-initial rounded-circle bg-label-success"><i
+                                                    class="mdi mdi-chart-pie-outline"></i></span>
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column flex-grow-1 overflow-hidden w-px-250">
                                         <h6 class="mb-1 text-truncate">Monthly report is generated</h6>
-                                        <small class="text-truncate text-body">July monthly financial report is generated </small>
+                                        <small class="text-truncate text-body">July monthly financial report is
+                                            generated </small>
                                     </div>
                                     <div class="flex-shrink-0 dropdown-notifications-actions">
                                         <small class="text-muted">3 days ago</small>
@@ -276,7 +301,8 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <img src="demo/assets/img/avatars/5.png" alt class="w-px-40 h-auto rounded-circle">
+                                            <img src="demo/assets/img/avatars/5.png" alt
+                                                 class="w-px-40 h-auto rounded-circle">
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column flex-grow-1 overflow-hidden w-px-250">
@@ -292,7 +318,8 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <img src="demo/assets/img/avatars/6.png" alt class="w-px-40 h-auto rounded-circle">
+                                            <img src="demo/assets/img/avatars/6.png" alt
+                                                 class="w-px-40 h-auto rounded-circle">
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column flex-grow-1 overflow-hidden w-px-250">
@@ -308,12 +335,14 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <span class="avatar-initial rounded-circle bg-label-warning"><i class="mdi mdi-alert-circle-outline"></i></span>
+                                            <span class="avatar-initial rounded-circle bg-label-warning"><i
+                                                    class="mdi mdi-alert-circle-outline"></i></span>
                                         </div>
                                     </div>
                                     <div class="d-flex flex-column flex-grow-1 overflow-hidden w-px-250">
                                         <h6 class="mb-1">CPU is running high</h6>
-                                        <small class="text-truncate text-body">CPU Utilization Percent is currently at 88.63%,</small>
+                                        <small class="text-truncate text-body">CPU Utilization Percent is currently at
+                                            88.63%,</small>
                                     </div>
                                     <div class="flex-shrink-0 dropdown-notifications-actions">
                                         <small class="text-muted">5 days ago</small>
@@ -323,7 +352,8 @@
                         </ul>
                     </li>
                     <li class="dropdown-menu-footer border-top p-3">
-                        <a href="javascript:void(0);" class="btn btn-primary d-flex justify-content-center">Read all notifications</a>
+                        <a href="javascript:void(0);" class="btn btn-primary d-flex justify-content-center">Read all
+                            notifications</a>
                     </li>
                 </ul>
             </li>
@@ -333,7 +363,7 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                        <img src="demo/assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle">
+                        <img src="{{$user->avatar}}" alt class="w-px-40 h-auto rounded-circle">
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end mt-3 py-2">
@@ -342,14 +372,15 @@
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-2 pe-1">
                                     <div class="avatar avatar-online">
-                                        <img src="demo/assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle">
+                                        <img src="{{$user->avatar}}" alt
+                                             class="w-px-40 h-auto rounded-circle">
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
                                     <h6 class="mb-0">
-                                        John Doe
+                                        {{$user->name}}
                                     </h6>
-                                    <small class="text-muted">Admin</small>
+                                    <small class="text-muted">{{$user->branch}}</small>
                                 </div>
                             </div>
                         </a>
@@ -358,27 +389,18 @@
                         <div class="dropdown-divider my-0"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="pages/profile-user.html">
+                        <a class="dropdown-item" href="{{url("/profile")}}">
                             <i class="mdi mdi-account-outline me-1 mdi-20px"></i>
-                            <span class="align-middle">My Profile</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="pages/account-settings-billing.html">
-                  <span class="d-flex align-items-center align-middle">
-                    <i class="flex-shrink-0 mdi mdi-credit-card-outline me-1 mdi-20px"></i>
-                    <span class="flex-grow-1 align-middle ms-1">Billing</span>
-                    <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger w-px-20 h-px-20">4</span>
-                  </span>
+                            <span class="align-middle">Thông tin cá nhân</span>
                         </a>
                     </li>
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="auth/login-basic.html">
+                        <a class="dropdown-item" href="{{url('logout')}}">
                             <i class="mdi mdi-logout me-1 mdi-20px"></i>
-                            <span class="align-middle">Login</span>
+                            <span class="align-middle">Đăng xuất</span>
                         </a>
                     </li>
                 </ul>
@@ -389,7 +411,8 @@
 
     <!-- Search Small Screens -->
     <div class="navbar-search-wrapper search-input-wrapper  d-none">
-        <input type="text" class="form-control search-input container-xxl border-0" placeholder="Search..." aria-label="Search...">
+        <input type="text" class="form-control search-input container-xxl border-0" placeholder="Search..."
+               aria-label="Search...">
         <i class="mdi mdi-close search-toggler cursor-pointer"></i>
     </div>
     <!--/ Search Small Screens -->

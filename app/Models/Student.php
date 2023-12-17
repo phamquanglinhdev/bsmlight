@@ -22,6 +22,15 @@ class Student extends User
 
     }
 
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::addGlobalScope('role', function ($builder) {
+            $builder->where('role', User::STUDENT_ROLE);
+        });
+    }
+
     public function profile(): HasOne
     {
         return $this->hasOne(StudentProfile::class, "user_id", "id");

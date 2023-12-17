@@ -10,11 +10,5 @@ use Illuminate\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-    public CrudBag $crudBag;
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-
-    public function __construct(CrudBag $crudBag)
-    {
-        $this->crudBag = $crudBag;
-    }
 }

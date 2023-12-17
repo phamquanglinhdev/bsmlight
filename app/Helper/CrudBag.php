@@ -127,4 +127,16 @@ class CrudBag
     {
         $this->id = $id;
     }
+
+    private array $params = [];
+
+    public function setParam(string $key,mixed $value): void
+    {
+        $this->params[$key] = $value;
+    }
+
+    public function getParam(string $key)
+    {
+        return $this->params[$key];
+    }
 }

@@ -2,16 +2,26 @@
 
 namespace App\Models;
 
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property string $name
+ * @property string $email
+ * @property int $verified_code
+ * @property int $verified
+ * @property string $password
+ * @property mixed $uuid
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
-    const STUDENT_ROLE = 2;
+    public const  STUDENT_ROLE = 2;
+    public const  HOST_ROLE = 1;
 
     /**
      * The attributes that are mass assignable.
@@ -49,5 +59,10 @@ class User extends Authenticatable
             : sprintf('%07d', $newestId + 1);
 
         return "BSM-" . $branch . "-" . $code . "." . $uuid;
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new ResetPassword($token));
     }
 }

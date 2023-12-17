@@ -15,6 +15,14 @@ class CreateHostsProfiles extends Migration
     {
         Schema::create('hosts_profiles', function (Blueprint $table) {
             $table->id();
+            $table->integer('user_id');
+            $table->longText("extras_information")->nullable();
+            $table->string('current_branch')->nullable();
+            $table->string('birthday')->nullable();
+            $table->string('address')->nullable();
+            $table->string('workspace')->nullable();
+            $table->integer('pricing_id')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

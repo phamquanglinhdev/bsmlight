@@ -32,5 +32,16 @@
 
 @include("layouts.inc.footer")
 @stack("after_scripts")
+@if(session('success'))
+    <script>
+        toastr.options = {
+            closeButton: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            timeOut: 2000 // Thời gian hiển thị thông báo (5 giây)
+        };
+        toastr.success('{{session('success')}}', 'Thành công');
+    </script>
+@endif
 </body>
 </html>

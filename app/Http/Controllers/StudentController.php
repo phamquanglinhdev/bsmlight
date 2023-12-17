@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\DataTransferObject\StudentObject;
 use App\Helper\CrudBag;
 use App\Helper\ListViewModel;
 use App\Models\Student;
@@ -20,6 +19,13 @@ use Illuminate\View\View;
 
 class StudentController extends Controller
 {
+    private CrudBag $crudBag;
+
+    public function __construct(CrudBag $crudBag)
+    {
+        $this->crudBag = $crudBag;
+    }
+
     public function create(): View
     {
         $this->crudBag->setEntity('student');
