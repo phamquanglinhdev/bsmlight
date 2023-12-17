@@ -6,6 +6,6 @@
     */
 @endphp
 
-<td class="border {{$column->getFixed() == 'first' ? 'fixed-left':''}}">
+<td class="border text-center {{$column->getFixed() == 'first' ? 'fixed-left':''}}">
     {{$item[$column->getName()]}}
 </td>

@@ -24,7 +24,7 @@ class CreateStudentProfilesTable extends Migration
             $table->string('address')->nullable();
             $table->integer('user_ref')->nullable();
             $table->integer('created_by')->nullable();
-            $table->integer('birthday')->nullable();
+            $table->dateTime('birthday')->nullable();
             $table->longText('extra_information')->nullable();
             $table->timestamps();
         });

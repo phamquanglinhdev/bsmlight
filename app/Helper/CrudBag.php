@@ -10,11 +10,31 @@ class CrudBag
     /**
      * @var array
      */
-    public array $fields;
-    private string $label;
-    private string $entity;
-    private array $columns;
-    private array $filters;
+    public array $fields = [];
+    private string $label = '';
+    private string $entity = '';
+    private array $columns = [];
+    private array $filters = [];
+    private array $statistics = [];
+    private ?string $searchValue = null;
+
+    public function getSearchValue(): ?string
+    {
+        return $this->searchValue;
+    }
+
+    public function setSearchValue(string $searchValue = null): void
+    {
+        $this->searchValue = $searchValue;
+    }
+
+    /**
+     * @return Statistic[]
+     */
+    public function getStatistics(): array
+    {
+        return $this->statistics;
+    }
 
     /**
      * @return Filter[]
@@ -28,6 +48,12 @@ class CrudBag
     {
         $this->filters[] = new Filter($data);
     }
+
+    public function addStatistic(array $data = []): void
+    {
+        $this->statistics[] = new Statistic($data);
+    }
+
     private ?int $id = null;
 
     public function getLabel(): string

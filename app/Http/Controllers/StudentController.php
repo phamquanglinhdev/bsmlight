@@ -190,126 +190,12 @@ class StudentController extends Controller
     {
         $perPage = $request->get('perPage') ?? 10;
         $crudBag = new CrudBag();
-
-        $crudBag = $this->handleFiltering($crudBag, $request);
-
         $crudBag->setEntity('student');
         $crudBag->setLabel('Học sinh');
-        $crudBag->addColumn([
-            'name' => 'uuid',
-            'type' => 'text',
-            'label' => 'Mã học sinh',
-            'fixed' => 'first'
-        ]);
-        $crudBag->addColumn([
-            'name' => 'name',
-            'type' => 'profile',
-            'label' => 'Họ tên',
-            'attributes' => [
-                'avatar' => 'avatar',
-                'address' => 'address',
-                'identity' => 'id'
-            ]
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'english_name',
-            'type' => 'text',
-            'label' => 'Tên tiếng anh'
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'cards',
-            'type' => 'hasMany',
-            'label' => 'Danh sách thẻ học',
-            'attributes' => [
-                'relation.id' => 'id',
-                'relation.label' => 'uuid',
-                'relation.entity' => 'card'
-            ]
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'zalo_private_chat',
-            'type' => 'link',
-            'label' => 'Link Zalo Chăm sóc 1-1'
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'private_chat',
-            'type' => 'link',
-            'label' => 'Chat tren he thong'
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'gender',
-            'type' => 'select',
-            'label' => 'Giới tính',
-            'attributes' => [
-                'options' => [
-                    Student::MALE => 'Nam',
-                    Student::FEMALE => 'Nữ'
-                ]
-            ]
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'birthday',
-            'type' => 'text',
-            'label' => 'Ngày sinh'
-        ]);
-        $crudBag->addColumn([
-            'name' => 'age',
-            'type' => 'text',
-            'label' => 'Tuoi'
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'grade',
-            'type' => 'text',
-            'label' => 'Lop'
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'level',
-            'type' => 'text',
-            'label' => 'Cap hoc'
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'phone',
-            'type' => 'text',
-            'label' => 'Số điện thoại'
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'facebook',
-            'type' => 'link',
-            'label' => 'Facebook'
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'email',
-            'type' => 'text',
-            'label' => 'Email'
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'user_ref',
-            'type' => 'text',
-            'label' => 'Nguoi gioi thieu'
-        ]);
-
-        $crudBag->addColumn([
-            'name' => 'sibling',
-            'type' => 'hasMany',
-            'label' => 'Anh chi em',
-            'attributes' => [
-                'relation.id' => 'id',
-                'relation.label' => 'uuid',
-                'relation.entity' => 'student'
-            ]
-        ]);
+        $crudBag->setSearchValue($request->get('search'));
+        $crudBag = $this->handleFiltering($crudBag, $request);
+        $crudBag = $this->handleStatistic($crudBag, $request);
+        $crudBag = $this->handleColumn($crudBag, $request);
 
         /**
          * @var LengthAwarePaginator $students
@@ -500,24 +386,37 @@ class StudentController extends Controller
         return redirect()->to('student/list')->with('success', 'Chỉnh sửa thành công');
     }
 
+    public function delete(int $id): RedirectResponse
+    {
+        $student = Student::query()->where('id', $id)->firstOrFail();
+
+        DB::transaction(function () use ($student) {
+            StudentProfile::query()->where('user_id', $student->id)->delete();
+            $student->delete();
+        });
+
+        return redirect()->back()->with('success', 'Xóa thành công');
+    }
+
     private function handleFiltering(CrudBag $crudBag, Request $request): CrudBag
     {
         $crudBag->addFilter([
-            'label' => 'Trang thai the hoc',
+            'label' => 'Trạng thái thẻ học',
             'name' => 'card_status:eq',
-            'value' => $request->get('card_status:eq'),
+            'value' => $request->get('card_status:eq') ?? -1,
             'type' => 'select',
             'attributes' => [
                 'options' => [
-                    0 => 'Dang hoc',
-                    1 => 'Bao luu',
-                    2 => 'Da ket thuc'
+                    0 => 'Đang học',
+                    1 => 'Bảo lưu',
+                    2 => 'Đã kết thúc'
                 ]
             ]
         ]);
         $crudBag->addFilter([
             'name' => 'gender:eq',
-            'label' => 'Gioi tinh',
+            'value' => $request->get('gender:eq') ?? -1,
+            'label' => 'Giới tính',
             'type' => 'select',
             'attributes' => [
                 'options' => [
@@ -525,12 +424,11 @@ class StudentController extends Controller
                     Student::FEMALE => 'Nữ'
                 ]
             ],
-            'value' => $request->get('gender:eq')
         ]);
 
         $crudBag->addFilter([
             'name' => 'birthday_month:handle',
-            'label' => 'Thang sinh nhat',
+            'label' => 'Tháng sinh nhật',
             'type' => 'select',
             'attributes' => [
                 'options' => [
@@ -552,7 +450,7 @@ class StudentController extends Controller
         ]);
 
         $crudBag->addFilter([
-            'label' => 'Lop hoc',
+            'label' => 'Lớp học trên BSM',
             'name' => 'classroom:handle',
             'type' => 'select',
             'attributes' => [
@@ -563,6 +461,54 @@ class StudentController extends Controller
             ],
             'value' => $request->get('classroom:handle')
         ]);
+
+        $crudBag->addFilter([
+            'label' => 'Lớp',
+            'name' => 'grade:handle',
+            'type' => 'select',
+            'attributes' => [
+                'options' => [
+                    1 => 'Lớp 1',
+                    2 => 'Lớp 2',
+                    3 => 'Lớp 3',
+                    4 => 'Lớp 4',
+                    5 => 'Lớp 5',
+                    6 => 'Lớp 6',
+                    7 => 'Lớp 7',
+                    8 => 'Lớp 8',
+                    9 => 'Lớp 9',
+                    10 => 'Lớp 10',
+                    11 => 'Lớp 11',
+                    12 => 'Lớp 12',
+                    13 => 'Cấp cao hơn'
+                ],
+            ],
+            'value' => $request->get('grade:handle')
+        ]);
+
+
+        $crudBag->addFilter([
+            'label' => 'Cấp học',
+            'name' => 'level:handle',
+            'type' => 'select',
+            'attributes' => [
+                'options' => [
+                    1 => 'Cấp 1',
+                    2 => 'Cấp 2',
+                    3 => 'Cấp 3',
+                    4 => 'ĐH-CĐ',
+                    5 => 'Cấp cao hơn'
+                ],
+            ],
+            'value' => $request->get('level:handle')
+        ]);
+        $crudBag->addFilter([
+            'label' => 'Tuổi',
+            'name' => 'age:eq',
+            'type' => 'text',
+            'value' => $request->get('age:eqe')
+        ]);
+
         $crudBag->addFilter([
             'label' => 'Nhan vien phu trach',
             'name' => 'staff:handle',
@@ -581,6 +527,13 @@ class StudentController extends Controller
 
     private function handleBuilder(Builder $builder, CrudBag $crudBag): void
     {
+        if ($crudBag->getSearchValue() !== '') {
+            $builder->where(function (Builder $subBuilder) use ($crudBag) {
+                $subBuilder->where('name', 'like', "%" . $crudBag->getSearchValue() . "%")
+                    ->orWhere('uuid', 'like', '%' . $crudBag->getSearchValue() . '%');
+            });
+        }
+
         foreach ($crudBag->getFilters() as $filter) {
             if ($filter->getValue() !== null && $filter->getValue() != '-1') {
                 switch ($filter->getName()) {
@@ -602,5 +555,163 @@ class StudentController extends Controller
                 }
             }
         }
+    }
+
+    private function handleStatistic(CrudBag $crudBag, Request $request): CrudBag
+    {
+        $crudBag->addStatistic([
+            'label' => 'Học sinh',
+            'value' => Student::query()->count(),
+            'badge' => 'Thời điểm hiện tại',
+            'image' => asset('demo/assets/img/illustrations/illustration-1.png')
+        ]);
+
+        $crudBag->addStatistic([
+            'label' => 'Đang học',
+            'value' => Student::query()->whereHas('profile', function (Builder $profile) {
+                $profile->where('status', 0);
+            })->count(),
+            'badge' => 'Thời điểm hiện tại',
+            'image' => asset('demo/assets/img/illustrations/illustration-1.png')
+        ]);
+        $crudBag->addStatistic([
+            'label' => 'Đã ngừng học',
+            'value' => Student::query()->whereHas('profile', function (Builder $profile) {
+                $profile->where('status', 1);
+            })->count(),
+            'badge' => 'Thời điểm hiện tại',
+            'image' => asset('demo/assets/img/illustrations/illustration-1.png')
+        ]);
+        $crudBag->addStatistic([
+            'label' => 'Đang bảo lưu',
+            'value' => Student::query()->whereHas('profile', function (Builder $profile) {
+                $profile->where('status', 2);
+            })->count(),
+            'badge' => 'Thời điểm hiện tại',
+            'image' => asset('demo/assets/img/illustrations/illustration-1.png')
+        ]);
+
+        return $crudBag;
+    }
+
+    private function handleColumn(CrudBag $crudBag, Request $request): CrudBag
+    {
+        $crudBag->addColumn([
+            'name' => 'uuid',
+            'type' => 'text',
+            'label' => 'Mã học sinh',
+            'fixed' => 'first'
+        ]);
+        $crudBag->addColumn([
+            'name' => 'name',
+            'type' => 'profile',
+            'label' => 'Họ tên',
+            'attributes' => [
+                'avatar' => 'avatar',
+                'address' => 'address',
+                'identity' => 'id'
+            ]
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'english_name',
+            'type' => 'text',
+            'label' => 'Tên tiếng anh'
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'cards',
+            'type' => 'hasMany',
+            'label' => 'Danh sách thẻ học',
+            'attributes' => [
+                'relation.id' => 'id',
+                'relation.label' => 'uuid',
+                'relation.entity' => 'card'
+            ]
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'zalo_private_chat',
+            'type' => 'link',
+            'label' => 'Link Zalo Chăm sóc 1-1'
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'private_chat',
+            'type' => 'link',
+            'label' => 'Chat trên hệ thống'
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'gender',
+            'type' => 'select',
+            'label' => 'Giới tính',
+            'attributes' => [
+                'options' => [
+                    Student::MALE => 'Nam',
+                    Student::FEMALE => 'Nữ'
+                ]
+            ]
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'birthday',
+            'type' => 'text',
+            'label' => 'Ngày sinh'
+        ]);
+        $crudBag->addColumn([
+            'name' => 'age',
+            'type' => 'text',
+            'label' => 'Tuổi'
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'grade',
+            'type' => 'text',
+            'label' => 'Lớp'
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'level',
+            'type' => 'text',
+            'label' => 'Cấp hoc'
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'phone',
+            'type' => 'text',
+            'label' => 'Số điện thoại'
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'facebook',
+            'type' => 'link',
+            'label' => 'Facebook'
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'email',
+            'type' => 'text',
+            'label' => 'Email'
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'user_ref',
+            'type' => 'text',
+            'label' => 'Người giới thiệu',
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'sibling',
+            'type' => 'hasMany',
+            'label' => 'Anh chị em',
+            'attributes' => [
+                'relation.id' => 'id',
+                'relation.label' => 'uuid',
+                'relation.entity' => 'student'
+            ]
+        ]);
+
+        return $crudBag;
     }
 }

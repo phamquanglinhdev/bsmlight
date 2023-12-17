@@ -28,4 +28,5 @@ Route::prefix('student')->group(function () {
     Route::get('/list', [StudentController::class, "list"])->name('student.list');
     Route::get('/edit/{id}', [StudentController::class, "edit", "id"])->name('student.edit');
     Route::post('/update/{id}', [StudentController::class, "update", "id"])->name('student.update');
+    Route::get('/delete/{id}', [StudentController::class, "delete", "id"])->name('student.delete');
 });

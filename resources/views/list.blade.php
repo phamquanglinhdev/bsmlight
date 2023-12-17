@@ -13,16 +13,18 @@
         <h4 class="">
             <span class="text-muted fw-light">{{$crudBag->getLabel()}} /</span> Danh sách
         </h4>
-        @include("components.statistics")
+        @include("components.statistics",['statistics'=>$crudBag->getStatistics()])
         <div class="d-flex justify-content-between mt-4">
             <a href="{{url($crudBag->getEntity()."/create")}}" class="btn btn-primary waves-effect waves-light mb-2">
                 Thêm mới {{$crudBag->getLabel()}}</a>
-           <div class="col-md-3">
-               <input type="search" class="form-control" placeholder="Tìm kiem">
-           </div>
+            <div class="col-md-3">
+               <form class="form replace_form" id="search_form">
+                   <input name="search" value="{{old('search') ?? $crudBag->getSearchValue()}}" type="search" class="form-control" placeholder="Tìm kiếm">
+               </form>
+            </div>
         </div>
         @include("components.filter",['filters' => $crudBag->getFilters()])
-        <div class="table-responsive text-nowrap shadow-lg" style="height: 70vh">
+        <div class="table-responsive text-nowrap shadow-lg" style="height: 70vh;scroll-behavior: smooth;">
             <table class="table shadow" id="myTable">
                 <thead>
                 <tr class="text-nowrap" style="position: sticky;top: 0; z-index: 50">
@@ -44,10 +46,7 @@
                             @include("columns.".$column->getType(),['item' => $item,'column' => $column])
                         @endforeach
                         <th class="border text-center">
-{{--                            <a href="{{url($crudBag->getEntity()."/edit/".$item['id'])}}">--}}
-{{--                                <span class="mdi mdi-square-edit-outline"></span>--}}
-{{--                            </a>--}}
-                            <a href="{{url($crudBag->getEntity()."/delete/".$item['id'])}}">
+                            <a class="delete-action" href="{{url($crudBag->getEntity()."/delete/".$item['id'])}}">
                                 <span class="mdi mdi-delete"></span>
                             </a>
                         </th>
@@ -69,6 +68,16 @@
             left: 0;
         }
     </style>
+    <script>
+        $(".delete-action").click((e) => {
+            e.preventDefault();
+            const result = confirm("Bạn có chắc chắn muốn xóa {{$crudBag->getLabel()}}");
+
+            if (result) {
+                window.location.href = e.currentTarget.href;
+            }
+        })
+    </script>
     @if(session('success'))
         <script>
             toastr.options = {
