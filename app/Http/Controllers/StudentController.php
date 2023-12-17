@@ -668,13 +668,58 @@ class StudentController extends Controller
             'name' => 'age',
             'type' => 'text',
             'label' => 'Tuổi',
+            'attributes' => [
+                'bg' => [
+                    '1' => 'bg-success',
+                    '2' => 'bg-success',
+                    '3' => 'bg-success',
+                    '4' => 'bg-success',
+                    '5' => 'bg-success',
+                    '6' => 'bg-warning',
+                    '7' => 'bg-warning',
+                    '8' => 'bg-warning',
+                    '9' => 'bg-warning',
+                    '10' => 'bg-warning',
+                    '11' => 'bg-orange',
+                    '12' => 'bg-orange',
+                    '13' => 'bg-orange',
+                    '14' => 'bg-orange',
+                    '15' => 'bg-danger',
+                    '16' => 'bg-danger',
+                    '17' => 'bg-danger',
+                    '18' => 'bg-purple',
+                    '19' => 'bg-purple',
+                    '20' => 'bg-purple',
+                    '21' => 'bg-purple',
+                ]
+            ]
         ]);
 
         $crudBag->addColumn([
             'name' => 'grade',
             'type' => 'text',
             'label' => 'Lớp',
+            'attributes' => [
+                'bg' => [
+                    'Lớp 3 tuổi' => 'bg-success',
+                    'Lớp 4 tuổi' => 'bg-success',
+                    'Lớp 5 tuổi' => 'bg-success',
+                    'Lớp 1' => 'bg-warning',
+                    'Lớp 2' => 'bg-warning',
+                    'Lớp 3' => 'bg-warning',
+                    'Lớp 4' => 'bg-warning',
+                    'Lớp 5' => 'bg-warning',
 
+                    'Lớp 6' => 'bg-orange',
+                    'Lớp 7' => 'bg-orange',
+                    'Lớp 8' => 'bg-orange',
+                    'Lớp 9' => 'bg-orange',
+                    'Lớp 10' => 'bg-danger',
+                    'Lớp 11' => 'bg-danger',
+                    'Lớp 12' => 'bg-danger',
+                    'Khác' => 'bg-purple',
+                ]
+            ]
         ]);
 
         $crudBag->addColumn([
@@ -684,11 +729,11 @@ class StudentController extends Controller
             'attributes' => [
                 'bg' => [
                     'Mầm non' => 'bg-success',
-                    'Tiểu học' => 'bg-primary',
-                    'THCS' => 'bg-secondary',
-                    'THPT' => 'bg-warning',
-                    'Cao Đẳng - Đại Học' => 'bg-danger',
-                    'Khác' => 'bg-info',
+                    'Tiểu học' => 'bg-warning',
+                    'THCS' => 'bg-orange',
+                    'THPT' => 'bg-danger',
+                    'Cao Đẳng - Đại Học' => 'bg-purple',
+                    'Người đi làm' => 'bg-green',
                 ]
             ]
         ]);

@@ -110,7 +110,7 @@ class Student extends User
             return "Cao Đẳng - Đại Học";
         }
 
-        return 'Khac';
+        return 'Người đi làm';
     }
 
     public function getZaloPrivateChatAttribute(): int

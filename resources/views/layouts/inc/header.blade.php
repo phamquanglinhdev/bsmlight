@@ -56,7 +56,7 @@
     <link rel="stylesheet"
           href="{{asset("demo/assets/vendor/libs/datatables-responsive-bs5/responsive.bootstrap5.css")}}">
     <link rel="stylesheet" href="{{asset("demo/assets/vendor/libs/flatpickr/flatpickr.css")}}"/>
-    <link rel="stylesheet" href="{{asset('demo/assets/vendor/libs/toastr/toastr.css')}}" />
+    <link rel="stylesheet" href="{{asset('demo/assets/vendor/libs/toastr/toastr.css')}}"/>
     <!-- Page Styles -->
 
     <!-- Include Scripts for customizer, helper, analytics, config -->
@@ -101,4 +101,5 @@
             'controls': ["rtl", "style", "headerType", "contentLayout", "layoutCollapsed", "layoutNavbarOptions", "themes"],
         });
     </script>
+    <link href="{{asset("demo/assets/css/app.css")}}" rel="stylesheet">
 </head>

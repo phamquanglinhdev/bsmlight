@@ -28764,6 +28764,7 @@ a.bg-vimeo:focus, a.bg-vimeo:hover {
 .footer.bg-lighter hr {
     border-color: rgba(207, 203, 229, .06)
 }
-.fixed-left{
-    background: #28243d!important;
+
+.fixed-left {
+    background: #28243d !important;
 }
