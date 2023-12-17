@@ -493,11 +493,12 @@ class StudentController extends Controller
             'type' => 'select',
             'attributes' => [
                 'options' => [
-                    1 => 'Cấp 1',
-                    2 => 'Cấp 2',
-                    3 => 'Cấp 3',
-                    4 => 'ĐH-CĐ',
-                    5 => 'Cấp cao hơn'
+                    0 => 'Mầm non',
+                    1 => 'Tiểu học',
+                    2 => 'THCS',
+                    3 => 'THPT',
+                    4 => 'Cao Đẳng - Đại Học',
+                    5 => 'Khác'
                 ],
             ],
             'value' => $request->get('level:handle')
@@ -650,6 +651,10 @@ class StudentController extends Controller
                 'options' => [
                     Student::MALE => 'Nam',
                     Student::FEMALE => 'Nữ'
+                ],
+                'bg' => [
+                    'Nam' => 'bg-danger',
+                    'Nữ' => 'bg-success'
                 ]
             ]
         ]);
@@ -662,19 +667,30 @@ class StudentController extends Controller
         $crudBag->addColumn([
             'name' => 'age',
             'type' => 'text',
-            'label' => 'Tuổi'
+            'label' => 'Tuổi',
         ]);
 
         $crudBag->addColumn([
             'name' => 'grade',
             'type' => 'text',
-            'label' => 'Lớp'
+            'label' => 'Lớp',
+
         ]);
 
         $crudBag->addColumn([
             'name' => 'level',
             'type' => 'text',
-            'label' => 'Cấp hoc'
+            'label' => 'Cấp hoc',
+            'attributes' => [
+                'bg' => [
+                    'Mầm non' => 'bg-success',
+                    'Tiểu học' => 'bg-primary',
+                    'THCS' => 'bg-secondary',
+                    'THPT' => 'bg-warning',
+                    'Cao Đẳng - Đại Học' => 'bg-danger',
+                    'Khác' => 'bg-info',
+                ]
+            ]
         ]);
 
         $crudBag->addColumn([

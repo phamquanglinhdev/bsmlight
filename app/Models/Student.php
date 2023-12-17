@@ -45,6 +45,7 @@ class Student extends User
         'level',
         'sibling'
     ];
+
     public function getSiblingAttribute(): array
     {
         return [
@@ -58,22 +59,61 @@ class Student extends User
             ],
         ];
     }
+
     public function getAgeAttribute(): int
     {
-        return 1;
+        $birthday = Carbon::parse($this->profile?->birthday);
+
+        if ($birthday) {
+            return $birthday->diffInYears(Carbon::now());
+        }
+
+        return 0;
     }
 
-    public function getGradeAttribute()
+    public function getGradeAttribute(): string
     {
-        return 1;
+        $age = $this->getAgeAttribute();
+        if ($age <= 3) {
+            return "--";
+        }
+        if ($age <= 5) {
+            return "Lớp $age tuổi";
+        }
+        if ($age <= 17) {
+            return "Lớp " . $age - 5;
+        }
+        return "Khác";
     }
 
-    public function getLevelAttribute()
+    public function getLevelAttribute(): string
     {
-        return 1;
+        $age = $this->getAgeAttribute();
+        if ($age <= 3) {
+            return '--';
+        }
+
+        if ($age <= 5) {
+            return 'Mầm non';
+        }
+        if ($age <= 10) {
+            return 'Tiểu học';
+        }
+        if ($age <= 14) {
+            return "THCS";
+        }
+        if ($age <= 17) {
+            return "THPT";
+        }
+
+        if ($age <= 21) {
+            return "Cao Đẳng - Đại Học";
+        }
+
+        return 'Khac';
     }
 
-    public function getZaloPrivateChatAttribute()
+    public function getZaloPrivateChatAttribute(): int
     {
         return 1;
     }
