@@ -1,19 +1,4 @@
 <IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
-
-    RewriteEngine On
-
-    # Trỏ mọi yêu cầu vào thư mục "public"
-    RewriteRule ^ public/index.php [L]
-
-    # Loại bỏ "public" khỏi URL
-    RewriteCond %{REQUEST_URI} !^/public/
-    RewriteRule ^(.*)$ public/$1 [L]
-
-    # Xử lý khi có file hoặc thư mục không tồn tại
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+   RewriteEngine On
+   RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
