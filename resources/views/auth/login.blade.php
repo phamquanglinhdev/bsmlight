@@ -39,7 +39,7 @@
                                         Ghi nhớ đăng nhập
                                     </label>
                                 </div>
-                                <a href="{{url("/forgot_password")}}" class="float-end mb-1">
+                                <a href="{{url("/forgot-password")}}" class="float-end mb-1">
                                     <span>Quên mật khẩu?</span>
                                 </a>
                             </div>
