@@ -167,8 +167,14 @@ class AuthenticateController extends Controller
         return redirect()->to('/login')->with('success', 'Đăng ký thành công');
     }
 
-    public function logout()
+    public function logout(): RedirectResponse
     {
+        if ($host = Host::query()->find(Auth::user()->{'id'})) {
+            $host->update([
+                'branch' => 'UNSELECT'
+            ]);
+        }
+
         Auth::logout();
         return redirect()->to('/');
     }
