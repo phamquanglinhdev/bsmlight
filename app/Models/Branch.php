@@ -55,7 +55,7 @@ class Branch extends Model
 
     public function getTotalStudentAttribute(): int
     {
-        return Student::query()->where('branch', $this->uuid)->count();
+        return Student::query()->withoutGlobalScope('branch')->where('branch', $this->uuid)->count();
     }
 
     public function getTotalClassroomAttribute(): int
