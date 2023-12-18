@@ -18,6 +18,28 @@ class CrudBag
     private array $statistics = [];
     private ?string $searchValue = null;
 
+    private bool $hasFile = false;
+
+    public function isHasFile(): bool
+    {
+        return $this->hasFile;
+    }
+
+    public function setHasFile(bool $hasFile): void
+    {
+        $this->hasFile = $hasFile;
+    }
+
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+    public function setParams(array $params): void
+    {
+        $this->params = $params;
+    }
+
     public function getSearchValue(): ?string
     {
         return $this->searchValue;
@@ -130,7 +152,7 @@ class CrudBag
 
     private array $params = [];
 
-    public function setParam(string $key,mixed $value): void
+    public function setParam(string $key, mixed $value): void
     {
         $this->params[$key] = $value;
     }

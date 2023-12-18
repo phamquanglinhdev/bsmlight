@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -15,6 +16,9 @@ use Laravel\Sanctum\HasApiTokens;
  * @property int $verified
  * @property string $password
  * @property mixed $uuid
+ * @property int $role
+ * @property mixed $branch
+ * @property int $id
  */
 class User extends Authenticatable
 {
@@ -22,6 +26,11 @@ class User extends Authenticatable
 
     public const  STUDENT_ROLE = 2;
     public const  HOST_ROLE = 1;
+    public const TEACHER_ROLE = 3;
+
+    public const SUPPORTER_ROLE = 4;
+
+    public const STAFF_ROLE = 5;
 
     /**
      * The attributes that are mass assignable.
@@ -64,5 +73,10 @@ class User extends Authenticatable
     public function sendPasswordResetNotification($token): void
     {
         $this->notify(new ResetPassword($token));
+    }
+
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, "user_permission", "user_id", "permission_id");
     }
 }

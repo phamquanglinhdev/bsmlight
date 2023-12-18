@@ -20,4 +20,13 @@ class Host extends User
     {
         return $this->hasOne(HostProfile::class, "user_id", "id");
     }
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::addGlobalScope('role', function ($builder) {
+            $builder->where('role', User::HOST_ROLE);
+        });
+    }
 }

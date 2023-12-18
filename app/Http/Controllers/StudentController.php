@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -28,6 +29,10 @@ class StudentController extends Controller
 
     public function create(): View
     {
+        if (!check_permission('create student')) {
+            abort(403);
+        }
+
         $this->crudBag->setEntity('student');
         $this->crudBag->setLabel('Học sinh');
         $this->crudBag->setAction('student.store');
@@ -145,6 +150,10 @@ class StudentController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        if (!check_permission('create student')) {
+            abort(403);
+        }
+
         $this->validate($request, [
             'name' => 'required|string',
             'english_name' => 'string|nullable',
@@ -178,9 +187,9 @@ class StudentController extends Controller
             'birthday'
         ]);
 
-        $dataToCreateStudent['uuid'] = User::newUuid("B.0001", "HS");
+        $dataToCreateStudent['uuid'] = User::newUuid(Auth::user()->{"branch"}, "HS");
         $dataToCreateStudent['password'] = Hash::make('bsm123456@');
-        $dataToCreateStudent['branch'] = $request->user()->branch ?? "B.0001";
+        $dataToCreateStudent['branch'] = $request->user()->branch;
         $dataToCreateStudent['role'] = User::STUDENT_ROLE;
 
         DB::transaction(function () use ($dataToCreateStudent, $dataToCreateProfile) {
@@ -194,6 +203,9 @@ class StudentController extends Controller
 
     public function list(Request $request): View
     {
+        if (!check_permission('list student')) {
+            abort(403);
+        }
         $perPage = $request->get('perPage') ?? 10;
         $crudBag = new CrudBag();
         $crudBag->setEntity('student');
@@ -222,6 +234,9 @@ class StudentController extends Controller
 
     public function edit(int $id): View
     {
+        if (!check_permission('edit student')) {
+            abort(403);
+        }
         $this->crudBag->setEntity('student');
         $this->crudBag->setLabel('Học sinh');
         $this->crudBag->setAction('student.update');
@@ -350,6 +365,10 @@ class StudentController extends Controller
 
     public function update(int $id, Request $request): RedirectResponse
     {
+        if (!check_permission('edit student')) {
+            abort(403);
+        }
+
         $this->validate($request, [
             'name' => 'required|string',
             'english_name' => 'string|nullable',
@@ -394,6 +413,9 @@ class StudentController extends Controller
 
     public function delete(int $id): RedirectResponse
     {
+        if (!check_permission('delete student')) {
+            abort(403);
+        }
         $student = Student::query()->where('id', $id)->firstOrFail();
 
         DB::transaction(function () use ($student) {
