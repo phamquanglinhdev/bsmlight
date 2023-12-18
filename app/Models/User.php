@@ -67,7 +67,7 @@ class User extends Authenticatable
             ? sprintf('%04d', $newestId + 1)
             : sprintf('%07d', $newestId + 1);
 
-        return "BSM-" . $branch . "-" . $code . "." . $uuid;
+        return $branch . "-" . $code . "." . $uuid;
     }
 
     public function sendPasswordResetNotification($token): void
