@@ -9,7 +9,7 @@
 @endphp
 @extends("layouts.app")
 @section("content")
-    <div class="container-xxl flex-grow-1 container-p-y">
+    <div class="container-fluid px-5 py-5 flex-grow-1 container-p-y">
         <h4 class="">
             <span class="text-muted fw-light">{{$crudBag->getLabel()}} /</span> Danh sách
         </h4>
