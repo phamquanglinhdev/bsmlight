@@ -20,12 +20,47 @@
                 <div>Bảng điều khiển</div>
             </a>
         </li>
-        <li class="menu-item">
-            <a href="{{url("/student/list")}}" class="menu-link" >
-                <i class="menu-icon tf-icons mdi mdi-account-group"></i>
-                <div>Học sinh</div>
-            </a>
-        </li>
+        @if(check_permission('list student'))
+            <li class="menu-item">
+                <a href="{{url("/student/list")}}" class="menu-link" >
+                    <i class="menu-icon tf-icons mdi mdi-account-group"></i>
+                    <div>Học sinh</div>
+                </a>
+            </li>
+        @endif
+        @if(check_permission('list teacher'))
+            <li class="menu-item">
+                <a href="{{url("/teacher/list")}}" class="menu-link" >
+                    <i class="menu-icon tf-icons mdi mdi-human-male-board"></i>
+                    <div>Giáo viên</div>
+                </a>
+            </li>
+        @endif
+        @if(check_permission('list supporter'))
+            <li class="menu-item">
+                <a href="{{url("/supporter/list")}}" class="menu-link" >
+                    <i class="menu-icon tf-icons mdi mdi-account-multiple"></i>
+                    <div>Trợ giảng</div>
+                </a>
+            </li>
+        @endif
+        @if(force_permission('list staff'))
+            <li class="menu-item">
+                <a href="{{url("/staff/list")}}" class="menu-link" >
+                    <i class="menu-icon tf-icons mdi mdi-shield-account"></i>
+                    <div>Nhân viên</div>
+                </a>
+            </li>
+        @endif
+        @if(force_permission('list branch'))
+            <li class="menu-item">
+                <a href="{{url("/branch/list")}}" class="menu-link" >
+                    <i class="menu-icon tf-icons mdi mdi-office-building-plus"></i>
+                    <div>Chi nhánh</div>
+                </a>
+            </li>
+        @endif
+
 
 {{--        <li class="menu-item ">--}}
 {{--            <a data-dir="https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo-1/aewsome" href="javascript:void(0);" class="menu-link menu-toggle" >--}}
@@ -128,5 +163,4 @@
 {{--            </ul>--}}
 {{--        </li>--}}
     </ul>
-
 </aside>

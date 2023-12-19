@@ -15,6 +15,7 @@
 
 
 @include("layouts.inc.footer")
+@include('layouts.inc.fb-chat')
 @stack("after_scripts")
 @if(session('success'))
     <script>
@@ -85,6 +86,7 @@
         </script>
     @endforeach
 @endif
+
 @if(session('success'))
     <script>
         toastr.options = {

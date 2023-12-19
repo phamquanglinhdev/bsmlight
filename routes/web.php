@@ -3,7 +3,10 @@
 use App\Http\Controllers\AuthenticateController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SupporterController;
+use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -52,6 +55,36 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/delete/{id}', [StudentController::class, "delete", "id"])->name('student.delete');
         });
 
+        Route::prefix('teacher')->group(function () {
+
+            Route::get('/create', [TeacherController::class, "create"])->name('teacher.create');
+            Route::post('/store', [TeacherController::class, "store"])->name('teacher.store');
+            Route::get('/list', [TeacherController::class, "list"])->name('teacher.list');
+            Route::get('/edit/{id}', [TeacherController::class, "edit", "id"])->name('teacher.edit');
+            Route::post('/update/{id}', [TeacherController::class, "update", "id"])->name('teacher.update');
+            Route::get('/delete/{id}', [TeacherController::class, "delete", "id"])->name('teacher.delete');
+        });
+
+        Route::prefix('supporter')->group(function () {
+
+            Route::get('/create', [SupporterController::class, "create"])->name('supporter.create');
+            Route::post('/store', [SupporterController::class, "store"])->name('supporter.store');
+            Route::get('/list', [SupporterController::class, "list"])->name('supporter.list');
+            Route::get('/edit/{id}', [SupporterController::class, "edit", "id"])->name('supporter.edit');
+            Route::post('/update/{id}', [SupporterController::class, "update", "id"])->name('supporter.update');
+            Route::get('/delete/{id}', [SupporterController::class, "delete", "id"])->name('supporter.delete');
+        });
+
+        Route::prefix('staff')->group(function () {
+
+            Route::get('/create', [StaffController::class, "create"])->name('staff.create');
+            Route::post('/store', [StaffController::class, "store"])->name('staff.store');
+            Route::get('/list', [StaffController::class, "list"])->name('staff.list');
+            Route::get('/edit/{id}', [StaffController::class, "edit", "id"])->name('staff.edit');
+            Route::post('/update/{id}', [StaffController::class, "update", "id"])->name('staff.update');
+            Route::get('/delete/{id}', [StaffController::class, "delete", "id"])->name('staff.delete');
+        });
+
         Route::prefix('branch')->withoutMiddleware(['host'])->group(function () {
 
             Route::get('/create', [BranchController::class, "create"])->name('branch.create');
@@ -60,7 +93,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/list', [BranchController::class, "list"])->name('branch.list');
             Route::get('/edit/{id}', [BranchController::class, "edit", "id"])->name('branch.edit');
             Route::post('/update/{id}', [BranchController::class, "update", "id"])->name('branch.update');
-            Route::get('/delete/{id}', [BranchController::class, "delete", "id"])->name('branch.delete');
+            Route::get('/delete/{id}', [BranchController::class, "destroy", "id"])->name('branch.delete');
         });
     });
 });

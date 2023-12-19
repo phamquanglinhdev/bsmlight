@@ -584,6 +584,8 @@ class StudentController extends Controller
                 }
             }
         }
+
+        $builder->orderBy('created_at', 'desc');
     }
 
     private function handleStatistic(CrudBag $crudBag, Request $request): CrudBag

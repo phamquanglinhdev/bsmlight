@@ -28,7 +28,6 @@
             </div>
         </div>
         <!-- /Search -->
-
         <ul class="navbar-nav flex-row align-items-center ms-auto">
 
             <!-- Language -->
@@ -380,7 +379,7 @@
                                     <h6 class="mb-0">
                                         {{$user->name}}
                                     </h6>
-                                    <small class="text-muted">{{$user->branch}}</small>
+                                    <small class="text-muted">{{$user->uuid}}</small>
                                 </div>
                             </div>
                         </a>

@@ -74,7 +74,6 @@ class BranchController extends Controller
      */
     public function access(int $branchId): RedirectResponse
     {
-
         $host = Host::query()->where('id', Auth::user()->{'id'})->first();
 
         if (!$host) {
@@ -110,14 +109,16 @@ class BranchController extends Controller
         $this->validate($request, [
             'name' => 'required|string',
             'description' => 'string|nullable',
-            'logo' => 'file',
+            'logo' => 'file|nullable',
         ]);
         /**
          * @var UploadedFile $logoFile
          */
         $logoFile = $request->file('logo');
 
-        $logo = uploads($logoFile);
+        if($logoFile){
+            $logo = uploads($logoFile);
+        }
 
         $dataForCreateBranch = [
             'name' => $request->get('name'),
@@ -125,7 +126,7 @@ class BranchController extends Controller
             'uuid' => Branch::createNewUuid(),
             'host_id' => Auth::user()->{'id'},
             'last_active' => Carbon::now(),
-            'logo' => $logo
+            'logo' => $logo ?? 'https://brocanvas.com/wp-content/uploads/2022/06/Hinh-nen-Bearbrick-danh-cho-dien-thoai-iphone-dep.jpg'
         ];
 
         DB::transaction(fn() => Branch::query()->create($dataForCreateBranch));
@@ -148,11 +149,44 @@ class BranchController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param int $id
-     * @return Response
+     * @return View
      */
-    public function edit($id)
+    public function edit(int $id): View
     {
-        //
+        $branch = Branch::query()->where('id', $id)->where('host_id', Auth::user()->{'id'})->first();
+
+        if (!$branch) {
+            abort(404);
+        }
+
+        $crudBag = new CrudBag();
+
+        $crudBag->setAction('branch.update');
+        $crudBag->setHasFile(true);
+        $crudBag->setLabel('Chi nhánh');
+        $crudBag->setId($id);
+
+        $crudBag->addFields([
+            'name' => 'name',
+            'label' => 'Tên chi nhánh',
+            'value' => $branch['name']
+        ]);
+        $crudBag->addFields([
+            'name' => 'description',
+            'label' => 'Mô tả chi nhánh',
+            'value' => $branch['description'],
+            'type' => 'textarea'
+        ]);
+        $crudBag->addFields([
+            'name' => 'logo',
+            'label' => 'Logo doanh nghiệp',
+            'type' => 'upload'
+        ]);
+
+
+        return view('branch.edit', [
+            'crudBag' => $crudBag
+        ]);
     }
 
     /**
@@ -162,19 +196,58 @@ class BranchController extends Controller
      * @param int $id
      * @return Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id): RedirectResponse
     {
-        //
+        $this->validate($request, [
+            'name' => 'required|string',
+            'description' => 'required|string',
+            'logo' => 'file|nullable'
+        ]);
+
+        $branch = Branch::query()->where('id', $id)->where('host_id', Auth::user()->{'id'})->first();
+
+        if (!$branch) {
+            abort(404);
+        }
+
+        $dataForUpdate = [
+            'name' => $request->get('name'),
+            'description' => $request->get('description'),
+        ];
+
+        if ($request->file('logo')) {
+            $dataForUpdate['logo'] = uploads($request->file('logo'));
+        }
+
+        $branch->update($dataForUpdate);
+
+        return redirect()->to('branch/list');
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param int $id
-     * @return Response
+     * @return RedirectResponse
      */
-    public function destroy($id)
+    public function destroy(int $id): RedirectResponse
     {
-        //
+        $branch = Branch::query()->where('id', $id)->where('host_id', Auth::user()->{'id'})->first();
+
+        $branch->delete();
+
+        if (Branch::query()->where('host_id', Auth::user()->{'id'})->count() < 1) {
+            Auth::logout();
+            return redirect('/branch/list');
+
+        }
+
+        if($branch->uuid == Auth::user()->branch){
+            Auth::logout();
+            return redirect('/branch/list');
+        }
+
+        return redirect('/branch/list')->with('success','Xoá thành công');
+
     }
 }

@@ -22,7 +22,7 @@
                 @endforeach
             </div>
 
-            <button type="submit" name="submitButton" class="btn btn-primary waves-effect waves-light">{{$crudBag->getId()?"Chỉnh sửa":"Thêm mới"}}</button>
+            <button type="submit" name="submitButton" class="btn btn-primary waves-effect waves-light mt-4">{{$crudBag->getId()?"Chỉnh sửa":"Thêm mới"}}</button>
         </form>
     </div>
 @endsection

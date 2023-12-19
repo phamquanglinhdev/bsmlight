@@ -29,7 +29,7 @@
 <!-- / Layout wrapper -->
 <!--/ Layout Content -->
 
-
+@include('layouts.inc.fb-chat')
 @include("layouts.inc.footer")
 @stack("after_scripts")
 @if(session('success'))

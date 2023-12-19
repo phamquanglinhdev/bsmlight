@@ -15,12 +15,16 @@
         </h4>
         @include("components.statistics",['statistics'=>$crudBag->getStatistics()])
         <div class="d-flex justify-content-between mt-4">
-            <a href="{{url($crudBag->getEntity()."/create")}}" class="btn btn-primary waves-effect waves-light mb-2">
-                Thêm mới {{$crudBag->getLabel()}}</a>
+            @if(force_permission("list ".$crudBag->getEntity()))
+                <a href="{{url($crudBag->getEntity()."/create")}}"
+                   class="btn btn-primary waves-effect waves-light mb-2">
+                    Thêm mới {{$crudBag->getLabel()}}</a>
+            @endif
             <div class="col-md-3">
-               <form class="form replace_form" id="search_form">
-                   <input name="search" value="{{old('search') ?? $crudBag->getSearchValue()}}" type="search" class="form-control" placeholder="Tìm kiếm">
-               </form>
+                <form class="form replace_form" id="search_form">
+                    <input name="search" value="{{old('search') ?? $crudBag->getSearchValue()}}" type="search"
+                           class="form-control" placeholder="Tìm kiếm">
+                </form>
             </div>
         </div>
         @include("components.filter",['filters' => $crudBag->getFilters()])
@@ -46,9 +50,11 @@
                             @include("columns.".$column->getType(),['item' => $item,'column' => $column])
                         @endforeach
                         <th class="border text-center">
-                            <a class="delete-action" href="{{url($crudBag->getEntity()."/delete/".$item['id'])}}">
-                                <span class="mdi mdi-delete"></span>
-                            </a>
+                            @if(check_permission("delete ".$crudBag->getEntity()))
+                                <a class="delete-action" href="{{url($crudBag->getEntity()."/delete/".$item['id'])}}">
+                                    <span class="mdi mdi-delete"></span>
+                                </a>
+                            @endif
                         </th>
                     </tr>
                 @endforeach

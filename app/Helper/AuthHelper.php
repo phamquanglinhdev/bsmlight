@@ -70,7 +70,7 @@ function definePermission(): array
 }
 
 if (!function_exists('check_permission')) {
-    function check_permission($key): bool
+    function check_permission(string $key): bool
     {
         /**
          * @var User $user
@@ -79,10 +79,22 @@ if (!function_exists('check_permission')) {
 
         $role = $user->role;
 
+        $myScope = defineScope()[$role];
+
+        $module = explode(' ', $key)[1];
+
+        if (in_array($module, $myScope)) {
+            return true;
+        }
+
+        if (in_array($key, definePermission()[$role])) {
+            return true;
+        }
+
         $permission = Permission::query()->where('key', $key)->first();
 
         if (!$permission) {
-            abort(404);
+            return false;
         }
 
         if (in_array($permission['module'], defineScope()[$role])) {
@@ -108,11 +120,13 @@ if (!function_exists('force_permission')) {
          * @var User $user
          */
         $user = User::query()->where('id', Auth::user()->{'id'})->first();
-
+        if ($user->role === User::HOST_ROLE) {
+            return true;
+        }
         $permission = Permission::query()->where('key', $permissionName)->first();
 
         if (!$permission) {
-            abort(404);
+            return false;
         }
 
         if ($user->permissions()->where('key', $permissionName)->first()) {

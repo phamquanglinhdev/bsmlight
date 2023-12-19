@@ -9,7 +9,20 @@
 @extends('layouts.auth')
 @section('content')
     <div class="container-xxl p-5">
-        <div>Xin chào {{$user->name}}, vui lòng chọn chi nhánh bạn đang quản lý</div>
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="h3">
+                @if($user->{'branch'}!='UNSELECT')
+                    <a class="cursor-pointer" onclick="window.history.back()">
+                        <span class="mdi mdi-arrow-left-circle mdi-48px"></span>
+                    </a>
+                @endif
+                Xin chào {{$user->name}}, vui lòng chọn chi nhánh bạn đang quản lý
+            </div>
+            <a href="{{url('/logout')}}" class="text-uppercase p-2 text-white rounded bg-danger">
+                <span class="mdi mdi-logout-variant"></span>
+            </a>
+        </div>
+
         <div class="my-5">
             <div class="row g-4 h-100">
                 @foreach($listViewModel->getCollectionItem() as $branch)
@@ -42,13 +55,16 @@
                                                         data-bs-toggle="dropdown" aria-expanded="false"><i
                                                         class="mdi mdi-dots-vertical mdi-24px text-muted"></i></button>
                                                 <ul class="dropdown-menu dropdown-menu-end" style="">
-                                                    <li><a class="dropdown-item waves-effect" href="">Sửa chi nhánh</a>
+                                                    <li><a class="dropdown-item waves-effect"
+                                                           href="{{url('/branch/edit/'.$branch['id'])}}">Sửa chi
+                                                            nhánh</a>
                                                     </li>
                                                     <li>
                                                         <hr class="dropdown-divider">
                                                     </li>
-                                                    <li><a class="dropdown-item text-danger waves-effect"
-                                                           href="">Xoá chi nhánh</a></li>
+                                                    <li><a class="delete-branch dropdown-item text-danger waves-effect"
+                                                           href="{{url('/branch/delete/'.$branch['id'])}}">Xoá chi
+                                                            nhánh</a></li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -119,6 +135,7 @@
                 </div>
             </div>
         </div>
+
     </div>
     @include("modal.create_branch",['crudBag' => $crudBag])
     <div class="content-backdrop fade"></div>
@@ -128,6 +145,16 @@
         $("").click((e) => {
             alert('a')
             window.location.href = e.currentTarget.attributes['data-href'].value
+        })
+    </script>
+    <script>
+        $(".delete-branch").click((e) => {
+            e.preventDefault()
+            const result = confirm('Bạn có chắc chắn muốn xoá chi nhánh? Bạn có thể bị đăng xuất nếu đang ở chi nhánh này.')
+
+            if (result) {
+                window.location.href = e.currentTarget.href;
+            }
         })
     </script>
 @endpush
