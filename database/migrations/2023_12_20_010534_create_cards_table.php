@@ -36,6 +36,7 @@ class CreateCardsTable extends Migration
             $table->id();
             $table->string('uuid');
             $table->integer('van')->default(0);
+            $table->integer('card_status')->default(0);
             $table->date('van_date')->nullable();
             $table->integer('student_id')->nullable();
             $table->integer('classroom_id')->nullable();
@@ -50,6 +51,7 @@ class CreateCardsTable extends Migration
             $table->text('fee_reason')->nullable();
             $table->text('payment_plan')->nullable();
             $table->integer('paid_fee')->default(0);
+            $table->string('branch');
             $table->softDeletes();
             $table->timestamps();
         });

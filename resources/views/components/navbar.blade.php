@@ -2,7 +2,7 @@
 @php
     $user = Auth::user()
 @endphp
-<nav class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+<nav class="layout-navbar container-fluid pe-5 navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
      id="layout-navbar">
 
     <!--  Brand demo (display only for navbar-full and hide on below xl) -->
@@ -196,7 +196,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <img src="demo/assets/img/avatars/1.png" alt
+                                            <img src="{{asset("demo/assets/img/avatars/2.png")}}" alt
                                                  class="w-px-40 h-auto rounded-circle">
                                         </div>
                                     </div>
@@ -230,7 +230,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <img src="demo/assets/img/avatars/2.png" alt
+                                            <img src="{{asset("demo/assets/img/avatars/2.png")}}" alt
                                                  class="w-px-40 h-auto rounded-circle">
                                         </div>
                                     </div>
@@ -264,7 +264,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <img src="demo/assets/img/avatars/9.png" alt
+                                            <img src="{{asset("demo/assets/img/avatars/2.png")}}" alt
                                                  class="w-px-40 h-auto rounded-circle">
                                         </div>
                                     </div>
@@ -300,7 +300,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <img src="demo/assets/img/avatars/5.png" alt
+                                            <img src="{{asset("demo/assets/img/avatars/2.png")}}" alt
                                                  class="w-px-40 h-auto rounded-circle">
                                         </div>
                                     </div>
@@ -317,7 +317,7 @@
                                 <div class="d-flex align-items-center gap-2">
                                     <div class="flex-shrink-0">
                                         <div class="avatar me-1">
-                                            <img src="demo/assets/img/avatars/6.png" alt
+                                            <img src="{{asset("demo/assets/img/avatars/2.png")}}" alt
                                                  class="w-px-40 h-auto rounded-circle">
                                         </div>
                                     </div>
@@ -367,7 +367,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end mt-3 py-2">
                     <li>
-                        <a class="dropdown-item pb-2 mb-1" href="pages/profile-user.html">
+                        <a class="dropdown-item pb-2 mb-1" href="#">
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0 me-2 pe-1">
                                     <div class="avatar avatar-online">

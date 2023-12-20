@@ -5,9 +5,10 @@
     * @var Column $column
     */
     $options = $column->getAttributes()['options'];
+    $options = array_flip($options);
 @endphp
 <td class="border text-center dark-style {{$column->getFixed() == 'first' ? 'fixed-left':''}}">
-   <span class="{{$item[$column->getName()] == 1 ?"bg-success":"bg-danger"}} text-white p-1 rounded-pill">
-        {{$options[$item[$column->getName()]]}}
+   <span class="{{$column->getAttributes()['bg'][$item[$column->getName()]]}} text-white p-1 px-3 rounded-pill">
+       {{$options[$item[$column->getName()]] ?? $item[$column->getName()]}}
    </span>
 </td>

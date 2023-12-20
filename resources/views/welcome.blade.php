@@ -638,7 +638,7 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="avatar avatar-sm me-3">
-                                            <img src="demo/assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                                            <img src="{{asset("demo/assets/img/avatars/2.png")}}" alt="Avatar" class="rounded-circle">
                                         </div>
                                         <div>
                                             <h6 class="mb-0 text-truncate">Jordan Stevenson</h6>
@@ -670,7 +670,7 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="avatar avatar-sm me-3">
-                                            <img src="demo/assets/img/avatars/2.png" alt="Avatar" class="rounded-circle">
+                                            <img src="{{asset("demo/assets/img/avatars/2.png")}}" alt="Avatar" class="rounded-circle">
                                         </div>
                                         <div>
                                             <h6 class="mb-0 text-truncate">Bentlee Emblin</h6>
@@ -686,7 +686,7 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="avatar avatar-sm me-3">
-                                            <img src="demo/assets/img/avatars/5.png" alt="Avatar" class="rounded-circle">
+                                            <img src="{{asset("demo/assets/img/avatars/2.png")}}" alt="Avatar" class="rounded-circle">
                                         </div>
                                         <div>
                                             <h6 class="mb-0 text-truncate">Bertha Biner</h6>
@@ -734,7 +734,7 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="avatar avatar-sm me-3">
-                                            <img src="demo/assets/img/avatars/6.png" alt="Avatar" class="rounded-circle">
+                                            <img src="{{asset("demo/assets/img/avatars/2.png")}}" alt="Avatar" class="rounded-circle">
                                         </div>
                                         <div>
                                             <h6 class="mb-0 text-truncate">Bree Kilday</h6>
@@ -750,7 +750,7 @@
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="avatar avatar-sm me-3">
-                                            <img src="demo/assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                                            <img src="{{asset("demo/assets/img/avatars/2.png")}}" alt="Avatar" class="rounded-circle">
                                         </div>
                                         <div>
                                             <h6 class="mb-0 text-truncate">Breena Gallemore</h6>

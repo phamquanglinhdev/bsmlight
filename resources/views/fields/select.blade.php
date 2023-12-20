@@ -12,7 +12,7 @@
         @foreach($field->getOptions() as $key => $value)
             <option data-tokens="ketchup mustard"
                     value="{{$key}}"
-                    @if($key == $field->getValue()) selected @endif>{{$value}}</option>
+                    @if(old($field->getName()) == $field->getValue() || $key == $field->getValue()) selected @endif>{{$value}}</option>
         @endforeach
     </select>
     <label for="{{$field->getName()}}">{{$field->getLabel()}}</label>

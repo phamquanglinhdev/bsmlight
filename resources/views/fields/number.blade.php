@@ -6,7 +6,8 @@
 @endphp
 <div class="form-floating form-floating-outline mb-4">
     <input type="text"
-           class="form-control"
+           id="{{$field->getName()}}"
+           class="form-control numeral-mask"
            name="{{$field->getName()}}"
            value="{{old($field->getName()) ?? $field->getValue()}}"
            placeholder="John Doe" {{$field->isRequired()?"required":""}}/>
@@ -15,3 +16,14 @@
         <p style="color: red;">{{ $message }}</p>
     @enderror
 </div>
+
+@push("after_scripts")
+    <script src="{{asset('demo/assets/vendor/libs/cleavejs/cleave.js')}}"></script>
+    <script>
+        new Cleave("#{{$field->getName()}}", {
+            numeral: true,
+            numeralThousandsGroupStyle: "thousand"
+        });
+
+    </script>
+@endpush
