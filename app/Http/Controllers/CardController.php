@@ -105,8 +105,9 @@ class CardController extends Controller
             'name' => 'bonus_reason',
             'label' => 'Lý do tặng',
             'type' => 'textarea',
-            'class' => 'col-12 mb-4'
+            'class' => 'col-10 mb-4'
         ]);
+
 
         return view('create', [
             'crudBag' => $crudBag
