@@ -12,12 +12,25 @@ class Fields
     private ?array $options = [];
     private ?array $attributes = [];
 
+    private string $prefix = "";
+    private string $suffix = "";
+
     private bool $nullable = false;
     private ?string $class = null;
 
     public function getClass(): ?string
     {
         return $this->class;
+    }
+
+    public function getPrefix(): string
+    {
+        return $this->prefix;
+    }
+
+    public function getSuffix(): string
+    {
+        return $this->suffix;
     }
 
     public function __construct(array $data = [])

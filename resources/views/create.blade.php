@@ -26,3 +26,13 @@
         </form>
     </div>
 @endsection
+@push("after_scripts")
+    <link rel="stylesheet" href="{{asset('/demo/assets/vendor/libs/select2/select2.css')}}" />
+    <script src="{{asset('/demo/assets/vendor/libs/select2/select2.js')}}"></script>
+    <link rel="stylesheet" href="{{asset('/demo/assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
+    <script src="{{asset('/demo/assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
+    <script>
+        $(".select2").select2();
+        $(".selectpicker").selectpicker();
+    </script>
+@endpush

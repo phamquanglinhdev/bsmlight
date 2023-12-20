@@ -52,6 +52,14 @@
                 </a>
             </li>
         @endif
+        @if(force_permission('list card'))
+            <li class="menu-item">
+                <a href="{{url("/card/list")}}" class="menu-link" >
+                    <i class="menu-icon tf-icons mdi mdi-shield-account"></i>
+                    <div>Thẻ học</div>
+                </a>
+            </li>
+        @endif
         @if(force_permission('list branch'))
             <li class="menu-item">
                 <a href="{{url("/branch/list")}}" class="menu-link" >

@@ -5,17 +5,15 @@
      */
 @endphp
 <div class="form-floating form-floating-outline mb-4">
-    <select name="{{$field->getName()}}" class="form-select" {{$field->isRequired()?"required":""}}>
+    <select name="{{$field->getName()}}" id="{{$field->getName()}}" class="selectpicker w-100" data-style="btn-default" data-live-search="true">
         @if($field->isNullable())
-            <option value="">Chọn</option>
+            <option value="">Chọn</option>
         @endif
-
-        @foreach($field->getOptions() as $optionValue => $optionLabel)
-            <option value="{{$optionValue}}" {{$optionValue == (old($field->getName())??$field->getValue()) ? 'selected':''}}>{{$optionLabel}}</option>
+        @foreach($field->getOptions() as $key => $value)
+            <option data-tokens="ketchup mustard"
+                    value="{{$key}}"
+                    @if($key == $field->getValue()) selected @endif>{{$value}}</option>
         @endforeach
     </select>
-    <label for="basic-default-country">{{$field->getLabel()}}</label>
-    @error($field->getName())
-    <p style="color: red;">{{ $message }}</p>
-    @enderror
+    <label for="{{$field->getName()}}">{{$field->getLabel()}}</label>
 </div>

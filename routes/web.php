@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthenticateController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\CardController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
@@ -83,6 +84,16 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [StaffController::class, "edit", "id"])->name('staff.edit');
             Route::post('/update/{id}', [StaffController::class, "update", "id"])->name('staff.update');
             Route::get('/delete/{id}', [StaffController::class, "delete", "id"])->name('staff.delete');
+        });
+
+        Route::prefix('card')->group(function () {
+
+            Route::get('/create', [CardController::class, "create"])->name('card.create');
+            Route::post('/store', [CardController::class, "store"])->name('card.store');
+            Route::get('/list', [CardController::class, "list"])->name('card.list');
+            Route::get('/edit/{id}', [CardController::class, "edit", "id"])->name('card.edit');
+            Route::post('/update/{id}', [CardController::class, "update", "id"])->name('card.update');
+            Route::get('/delete/{id}', [CardController::class, "delete", "id"])->name('card.delete');
         });
 
         Route::prefix('branch')->withoutMiddleware(['host'])->group(function () {
