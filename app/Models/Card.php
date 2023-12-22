@@ -60,7 +60,7 @@ class Card extends Model
         return $this->belongsTo(Student::class, 'student_id', 'id');
     }
 
-    public static function genarateUUID($branch): string
+    public static function generateUUID($branch): string
     {
         $cardId = Card::query()->orderBy('id', 'desc')->first()?->id ?? 0;
 

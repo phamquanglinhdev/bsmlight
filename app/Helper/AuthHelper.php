@@ -3,6 +3,7 @@
 use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 #SCOPE
@@ -146,4 +147,12 @@ if (!function_exists('uploads')) {
     }
 }
 
+if (!function_exists('is_module')) {
+    function is_module(string $module): string
+    {
+        $currentUrl = Route::current()->uri();
+
+        return str_contains($currentUrl, $module);
+    }
+}
 

@@ -97,6 +97,18 @@ class TeacherController extends Controller
             'type' => 'phone',
             'label' => 'Số điện thoại giáo viên'
         ]);
+
+        $crudBag->addFields([
+            'name' => 'teacher_source',
+            'type' => 'select',
+            'label' => 'Phân loại giáo viên',
+            'options' => [
+                Teacher::INTERNAL_SOURCE => 'Giáo viên Việt Nam',
+                Teacher::EXTERNAL_SOURCE => 'Giáo viên nước ngoài',
+            ],
+            'value' => Teacher::INTERNAL_SOURCE
+        ]);
+
         return \view('create', [
             'crudBag' => $crudBag
         ]);
@@ -115,24 +127,30 @@ class TeacherController extends Controller
             'name' => 'required|string',
             'phone' => 'string|nullable',
             'email' => 'email|nullable',
+            'teacher_source' => 'required|integer|in:' . Teacher::INTERNAL_SOURCE . ',' . Teacher::EXTERNAL_SOURCE
         ]);
 
         $dataToCreateTeacher = [
             'name' => $request->get('name'),
             'phone' => $request->get('phone'),
             'email' => $request->get('email'),
-            'uuid' => User::newUuid(Auth::user()->{'branch'}, 'GV'),
+            'uuid' => User::newUuid(Auth::user()->{'branch'}, $request->get('teacher_source') === Teacher::INTERNAL_SOURCE ? "GVVN" : "GVNN"),
             'branch' => Auth::user()->{'branch'},
             'password' => Hash::make('bsm123456@'),
             'role' => User::TEACHER_ROLE,
             'avatar' => $request->get('avatar') ?? 'https://png.pngtree.com/png-clipart/20190117/ourlarge/pngtree-teachers-day-teacher-portrait-teachers-day-png-image_428203.jpg',
         ];
 
-        DB::transaction(function () use ($dataToCreateTeacher) {
+        $dataToCreateTeacherProfile = [
+            'teacher_source' => $request->get('teacher_source'),
+        ];
+
+        DB::transaction(function () use ($dataToCreateTeacher, $dataToCreateTeacherProfile) {
             $teacher = Teacher::query()->create($dataToCreateTeacher);
 
             TeacherProfile::query()->create([
                 'user_id' => $teacher['id'],
+                'teacher_source' => $dataToCreateTeacherProfile['teacher_source']
             ]);
         });
 
@@ -284,6 +302,21 @@ class TeacherController extends Controller
             'name' => 'uuid',
             'label' => 'Mã giáo viên',
             'fixed' => 'first'
+        ]);
+        $crudBag->addColumn([
+            'name' => 'teacher_source',
+            'label' => 'Phân loại',
+            'type' => 'select',
+            'attributes' => [
+                'options' => [
+                    Teacher::INTERNAL_SOURCE => 'Giáo viên Việt Nam',
+                    Teacher::EXTERNAL_SOURCE => 'Giáo viên nước ngoài',
+                ],
+                'bg' => [
+                    Teacher::INTERNAL_SOURCE => 'bg-success',
+                    Teacher::EXTERNAL_SOURCE => 'bg-danger',
+                ]
+            ],
         ]);
         $crudBag->addColumn([
             'name' => 'name',

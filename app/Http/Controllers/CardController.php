@@ -61,7 +61,7 @@ class CardController extends Controller
             'commitment' => 'string|nullable',
         ]);
         $dataToCreate = [
-            'uuid' => Card::genarateUUID(Auth::user()->{'branch'}),
+            'uuid' => Card::generateUUID(Auth::user()->{'branch'}),
             'branch' => Auth::user()->{'branch'},
             'van' => $request->{'van'} ?? 0,
             'van_date' => $request->{'van_date'},

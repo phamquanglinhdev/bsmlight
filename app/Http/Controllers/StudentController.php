@@ -683,8 +683,8 @@ class StudentController extends Controller
                     Student::FEMALE => 'Nữ'
                 ],
                 'bg' => [
-                    'Nam' => 'bg-danger',
-                    'Nữ' => 'bg-success'
+                    Student::MALE => 'bg-danger',
+                    Student::FEMALE => 'bg-success'
                 ]
             ]
         ]);

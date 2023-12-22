@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthenticateController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CardController;
+use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
@@ -44,7 +45,7 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('/', function () {
             return view('welcome');
-        });
+        })->name('index');
 
         Route::prefix('student')->group(function () {
 
@@ -94,6 +95,16 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [CardController::class, "edit", "id"])->name('card.edit');
             Route::post('/update/{id}', [CardController::class, "update", "id"])->name('card.update');
             Route::get('/delete/{id}', [CardController::class, "delete", "id"])->name('card.delete');
+        });
+
+        Route::prefix('classroom')->group(function () {
+
+            Route::get('/create', [ClassroomController::class, "create"])->name('classroom.create');
+            Route::post('/store', [ClassroomController::class, "store"])->name('classroom.store');
+            Route::get('/list', [ClassroomController::class, "list"])->name('classroom.list');
+            Route::get('/edit/{id}', [ClassroomController::class, "edit", "id"])->name('classroom.edit');
+            Route::post('/update/{id}', [ClassroomController::class, "update", "id"])->name('classroom.update');
+            Route::get('/delete/{id}', [ClassroomController::class, "delete", "id"])->name('classroom.delete');
         });
 
         Route::prefix('branch')->withoutMiddleware(['host'])->group(function () {
