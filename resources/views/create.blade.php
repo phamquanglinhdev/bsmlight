@@ -1,8 +1,9 @@
-@php use App\Helper\CrudBag; @endphp
+@php use App\Helper\CrudBag;use Illuminate\Support\Facades\Cache; @endphp
 @php
     /**
      * @var CrudBag $crudBag
      */
+
 @endphp
 @extends('layouts.app')
 @section("content")
@@ -22,17 +23,32 @@
                 @endforeach
             </div>
 
-            <button type="submit" name="submitButton" class="btn btn-primary waves-effect waves-light mt-4">{{$crudBag->getId()?"Chỉnh sửa":"Thêm mới"}}</button>
+            <button type="submit" name="submitButton"
+                    class="btn btn-primary waves-effect waves-light mt-4">{{$crudBag->getId()?"Chỉnh sửa":"Thêm mới"}}</button>
         </form>
     </div>
 @endsection
 @push("after_scripts")
-    <link rel="stylesheet" href="{{asset('/demo/assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{asset('/demo/assets/vendor/libs/select2/select2.css')}}"/>
     <script src="{{asset('/demo/assets/vendor/libs/select2/select2.js')}}"></script>
-    <link rel="stylesheet" href="{{asset('/demo/assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
+    <link rel="stylesheet" href="{{asset('/demo/assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}"/>
     <script src="{{asset('/demo/assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
     <script>
         $(".select2").select2();
         $(".selectpicker").selectpicker();
     </script>
+    {{--    @if ($errors->any())--}}
+    {{--        @foreach ($errors->all() as $error)--}}
+    {{--            <script>--}}
+    {{--                toastr.options = {--}}
+    {{--                    closeButton: true,--}}
+    {{--                    progressBar: true,--}}
+    {{--                    positionClass: 'toast-top-right',--}}
+    {{--                    timeOut: 2000--}}
+    {{--                };--}}
+    {{--                toastr.error('{{$error}}', 'Không thành công');--}}
+    {{--            </script>--}}
+    {{--        @endforeach--}}
+    {{--    @endif--}}
+
 @endpush

@@ -5,6 +5,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\ResetPasswordController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SupporterController;
@@ -107,6 +108,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/delete/{id}', [ClassroomController::class, "delete", "id"])->name('classroom.delete');
         });
 
+
+
         Route::prefix('branch')->withoutMiddleware(['host'])->group(function () {
 
             Route::get('/create', [BranchController::class, "create"])->name('branch.create');
@@ -118,4 +121,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/delete/{id}', [BranchController::class, "destroy", "id"])->name('branch.delete');
         });
     });
+});
+
+Route::prefix('static')->group(function () {
+    Route::post('schedule', [ScheduleController::class, "staticAddSchedule"])->name('schedule.static.add');
+    Route::post('shift', [ScheduleController::class, "staticAddShift"])->name('shift.static.add');
 });

@@ -58,7 +58,6 @@ use Illuminate\Support\Facades\Auth;
  * Phân tích lãi lỗ (popup ra bảng lịch sử theo từng tháng)
  * @property int $total_meetings # Số buổi lớp đã chạy trong tháng
  * @property int $days # Danh sách các ngày trong tháng
- * @property int $attended_days # Số buổi bị trừ khi điểm danh
  * @property int $student_attended # Tổng số buổi đi học của học sinh
  * @property int $student_left # Tổng số buổi vắng của học sinh
  * @property int $attendance # Sĩ số hs đi học trung bình/buổi
