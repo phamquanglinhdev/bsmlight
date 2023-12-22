@@ -7,6 +7,8 @@ use App\Helper\ListViewModel;
 use App\Models\Card;
 use App\Models\Classroom;
 use App\Models\Staff;
+use App\Models\Supporter;
+use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -117,7 +119,43 @@ class ClassroomController extends Controller
 
         $crudBag->addFields([
             'name' => 'card_schedules',
-            'type' => 'select-multiple',
+            'type' => 'custom_fields',
+            'label' => 'Lịch học',
+            'attributes' => [
+                'view' => 'classroom_schedule',
+                'value' => [
+                    'teacher_list' => Teacher::query()->get(['id', 'name', 'uuid'])->mapwithkeys(function (Teacher $teacher) {
+                        return [$teacher->id => $teacher->uuid . " - " . $teacher->name];
+                    })->all(),
+                    'supporter_list' => Supporter::query()->get(['id', 'name', 'uuid'])->mapwithkeys(function (Supporter $supporter) {
+                        return [$supporter->id => $supporter->uuid . " - " . $supporter->name];
+                    })->all(),
+                    'schedules' => [
+                        [
+                            'week_day' => 2,
+                            'start_time' => '09:00',
+                            'end_time' => '12:00',
+                            'shifts' => [
+                                [
+                                    'start_time' => '09:00',
+                                    'end_time' => '10:30',
+                                    'teacher_id' => 1,
+                                    'supporter_id' => 1,
+                                    'room' => "Newark"
+                                ],
+                                [
+                                    'start_time' => '09:00',
+                                    'end_time' => '10:30',
+                                    'teacher_id' => 1,
+                                    'supporter_id' => 1,
+                                    'room' => "Ala home"
+                                ],
+                            ]
+                        ]
+                    ]
+                ],
+            ],
+            'class' => 'col-10'
         ]);
 
         $crudBag->setAction('classroom.store');
