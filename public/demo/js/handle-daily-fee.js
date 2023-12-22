@@ -3,24 +3,21 @@ const dailyTotalDaysInput = $("#total_days")
 const dailyTotalFeeInput = $("#total_fee")
 
 const calculateDailyInput = () => {
-    console.log('calculate', dailyTotalFeeInput.val().replace(/,/g, ''), dailyTotalDaysInput.val().replace(/,/g, ''))
-    const dailyDay = (parseInt(dailyTotalFeeInput.val().replace(/,/g, '') || 0)) / (parseInt(dailyTotalDaysInput.val().replace(/,/g, '') || 1))
-    console.log('daily', dailyDay)
+    const dailyDay = (parseInt(dailyTotalFeeInput.val().replace(/\./g, '').replace(/,/g, ''))) / (parseInt(dailyTotalDaysInput.val().replace(/\./g, '').replace(/,/g, '')))
+
     dailyInput.val(dailyDay.toLocaleString())
 }
 
-originalDaysInput.keyup(() => {
+$("#original_fee").keyup(() => {
     calculateDailyInput()
 })
-originalFeeInput.keyup(() => {
+$("#promotion_fee").keyup(() => {
     calculateDailyInput()
 })
-
-promoteFeeInput.keyup(() => {
+$("#original_days").keyup(() => {
     calculateDailyInput()
 })
-
-bonusDaysInput.keyup(() => {
+$("#bonus_days").keyup(() => {
     calculateDailyInput()
 })
 //*******************************************************************************************************

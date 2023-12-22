@@ -35,156 +35,8 @@ class CardController extends Controller
 
     public function create()
     {
-        $crudBag = new CrudBag();
-        $crudBag->setAction('card.store');
-        $crudBag->setLabel('Thẻ học');
-        $crudBag->setHasFile(true);
-        $crudBag->addFields([
-            'name' => 'van',
-            'label' => 'Số buổi đã dùng trước khi sử dụng BSM',
-            'type' => 'text'
-        ]);
-        $crudBag->addFields([
-            'name' => 'van_date',
-            'label' => 'Ngày chốt điểm danh ở hệ thống cũ (VAN)',
-            'type' => 'date'
-        ]);
-
-        $studentSelects = Student::query()->get(['name', 'id', 'uuid'])->mapWithKeys(function ($student) {
-            return [$student->id => $student->uuid . "-" . $student->name];
-        })->all();
-
-        $crudBag->addFields([
-            'name' => 'student_id',
-            'label' => 'Học sinh gắn với thẻ học',
-            'type' => 'select',
-            'nullable' => true,
-            'options' => $studentSelects,
-            'placeholder' => 'Học sinh gắn với thẻ học'
-        ]);
-
-        $crudBag->addFields([
-            'name' => 'classroom_id',
-            'label' => 'Lớp học gắn với thẻ học',
-            'type' => 'select',
-            'nullable' => true,
-            'options' => [],
-            'placeholder' => 'Học sinh gắn với thẻ học'
-        ]);
-
-        $crudBag->addFields([
-            'name' => 'drive_link',
-            'label' => 'Lên PDF đơn đăng ký',
-            'type' => 'text',
-        ]);
-
-        $crudBag->addFields([
-            'name' => 'commitment',
-            'label' => 'Cam kết đầu ra nếu có',
-            'type' => 'text',
-        ]);
-
-        $crudBag->addFields([
-            'name' => 'original_days',
-            'label' => 'Số buổi đăng ký gốc',
-            'type' => 'number',
-            'suffix' => 'buổi',
-            'required' => true,
-            'class' => 'col-4 mb-2'
-        ]);
-
-        $crudBag->addFields([
-            'name' => 'bonus_days',
-            'label' => 'Số buổi được tặng thêm',
-            'type' => 'number',
-            'suffix' => 'buổi',
-            'class' => 'col-3 mb-2'
-        ]);
-
-        $crudBag->addFields([
-            'name' => false,
-            'label' => 'Số buổi thực tế đăng ký',
-            'type' => 'handle',
-            'suffix' => 'buổi',
-            'class' => 'col-3 mb-2',
-            'attributes' => [
-                'js' => asset('/demo/js/handle-total-day.js'),
-                'identity' => 'total_days'
-            ]
-        ]);
-
-        $crudBag->addFields([
-            'name' => 'bonus_reason',
-            'label' => 'Lý do tặng',
-            'type' => 'textarea',
-            'class' => 'col-10 mb-2'
-        ]);
-
-        $crudBag->addFields([
-            'name' => 'original_fee',
-            'label' => 'Học phí gốc',
-            'type' => 'number',
-            'required' => true,
-            'suffix' => 'đ',
-        ]);
-
-
-        $crudBag->addFields([
-            'name' => 'promotion_fee',
-            'label' => 'Học phí ưu đãi',
-            'type' => 'number',
-            'required' => true,
-            'suffix' => 'đ',
-            'class' => 'col-3 mb-2'
-        ]);
-
-        $crudBag->addFields([
-            'name' => false,
-            'label' => '% Ưu đãi',
-            'type' => 'handle',
-            'class' => 'col-2 mb-2',
-            'attributes' => [
-                'js' => asset('/demo/js/handle-promotion-percent.js'),
-                'identity' => 'promotion-percent'
-            ]
-        ]);
-
-        $crudBag->addFields([
-            'name' => 'fee_reason',
-            'label' => 'Lý do ưu đãi',
-            'type' => 'textarea',
-            'class' => 'col-10 mb-2'
-        ]);
-
-        $crudBag->addFields([
-            'name' => false,
-            'label' => 'Học phí thực tế cần đóng',
-            'type' => 'handle',
-            'attributes' => [
-                'js' => asset('/demo/js/handle-total-fee.js'),
-                'identity' => 'total_fee'
-            ],
-        ]);
-
-        $crudBag->addFields([
-            'name' => false,
-            'label' => 'Đơn giá buổi học',
-            'type' => 'handle',
-            'attributes' => [
-                'js' => asset('/demo/js/handle-daily-fee.js'),
-                'identity' => 'daily_fee'
-            ],
-        ]);
-
-        $crudBag->addFields([
-            'name' => 'payment_plant',
-            'label' => 'Kế hoạch thanh toán (nếu có)',
-            'type' => 'textarea',
-            'class' => 'col-10 mb-2'
-        ]);
-
         return view('create', [
-            'crudBag' => $crudBag
+            'crudBag' => $this->handleFields()
         ]);
     }
 
@@ -231,8 +83,51 @@ class CardController extends Controller
         return redirect('/card/list')->with('success', 'Thêm mới thành công');
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function update(Request $request, int $id)
     {
+        $card = Card::query()->where('id', $id)->firstOrFail();
+
+        $this->validate($request, [
+            'van' => 'integer|nullable',
+            'van_date' => 'date|nullable',
+            'student_id' => 'integer|nullable|not_in:0',
+            'classroom_id' => 'integer|nullable|not_in:0',
+            'original_days' => 'string|required|min:1',
+            'bonus_days' => 'string|nullable',
+            'bonus_reason' => 'string|nullable',
+            'original_fee' => 'string|required|min:1',
+            'promotion_fee' => 'string|nullable|min:1',
+            'fee_reason' => 'string|nullable',
+            'payment_plant' => 'string|nullable',
+            'drive_link' => 'string|nullable',
+            'commitment' => 'string|nullable',
+        ]);
+
+        $dataToUpdate = [
+            'branch' => Auth::user()->{'branch'},
+            'van' => $request->{'van'} ?? 0,
+            'van_date' => $request->{'van_date'},
+            'student_id' => $request->{'student_id'},
+            'classroom_id' => $request->{'classroom_id'},
+            'original_days' => str_replace('.', '', $request->{'original_days'}),
+            'bonus_days' => str_replace(',', '', $request->{'bonus_days'} ?? 0),
+            'bonus_reason' => $request->{'bonus_reason'},
+            'original_fee' => str_replace(',', '', $request->{'original_fee'}),
+            'promotion_fee' => str_replace(',', '', $request->{'promotion_fee'} ?? 0),
+            'fee_reason' => $request->{'fee_reason'},
+            'payment_plant' => $request->{'payment_plant'},
+            'drive_link' => $request->{'drive_link'},
+            'commitment' => $request->{'commitment'},
+        ];
+
+        $card->update(array_filter($dataToUpdate, function ($value) {
+            return $value !== null;
+        }));
+
+        return redirect()->to('/card/list')->with('success', 'Cập nhật thành công');
     }
 
     public function delete(int $id)
@@ -245,13 +140,16 @@ class CardController extends Controller
 
     public function edit(int $id)
     {
+        return view('create', [
+            'crudBag' => $this->handleFields($id)
+        ]);
     }
 
     private function handleQuery(Request $request, Builder $query)
     {
     }
 
-    private function handleColumn(Request $request, CrudBag $crudBag)
+    private function handleColumn(Request $request, CrudBag $crudBag, Card $card = null): CrudBag
     {
         /**
          * Mã thẻ học + Trạng thái thẻ học $uuid + $card_status
@@ -276,7 +174,11 @@ class CardController extends Controller
             'name' => 'uuid',
             'label' => 'Mã thẻ học',
             'type' => 'text',
-            'fixed' => 'first'
+            'fixed' => 'first',
+            'attributes' => [
+                'edit' => true,
+                'entity' => 'card'
+            ],
         ]);
 
         $crudBag->addColumn([
@@ -422,6 +324,184 @@ class CardController extends Controller
             'name' => 'sale_updated_at',
             'label' => 'Ngày tháng năm cập nhật sale',
             'type' => 'text'
+        ]);
+
+        return $crudBag;
+    }
+
+    private function handleFields(int $id = null)
+    {
+        $crudBag = new CrudBag();
+        if ($id) {
+            /**
+             * @var Card $card
+             */
+            $card = Card::query()->where('id', $id)->where('branch', Auth::user()->{'branch'})->firstOrFail();
+            $crudBag->setId($id);
+        }
+
+        $crudBag->setAction($card ? "card.update" : 'card.store');
+        $crudBag->setLabel('Thẻ học');
+        $crudBag->setHasFile(true);
+        $crudBag->addFields([
+            'name' => 'van',
+            'label' => 'Số buổi đã dùng trước khi sử dụng BSM',
+            'type' => 'text',
+            'value' => $card['van'] ?? null
+        ]);
+        $crudBag->addFields([
+            'name' => 'van_date',
+            'label' => 'Ngày chốt điểm danh ở hệ thống cũ (VAN)',
+            'type' => 'date',
+            'value' => $card['date'] ?? null
+        ]);
+
+        $studentSelects = Student::query()->get(['name', 'id', 'uuid'])->mapWithKeys(function ($student) {
+            return [$student->id => $student->uuid . "-" . $student->name];
+        })->all();
+
+        $crudBag->addFields([
+            'name' => 'student_id',
+            'label' => 'Học sinh gắn với thẻ học',
+            'type' => 'select',
+            'nullable' => true,
+            'options' => $studentSelects,
+            'placeholder' => 'Học sinh gắn với thẻ học',
+            'value' => $card->student_id ?? null
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'classroom_id',
+            'label' => 'Lớp học gắn với thẻ học',
+            'type' => 'select',
+            'nullable' => true,
+            'options' => [],
+            'placeholder' => 'Học sinh gắn với thẻ học',
+            'value' => $card->classroom_id ?? null
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'drive_link',
+            'label' => 'Lên PDF đơn đăng ký',
+            'type' => 'text',
+            'value' => $card->drive_link ?? null
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'commitment',
+            'label' => 'Cam kết đầu ra nếu có',
+            'type' => 'text',
+            'value' => $card->commitment ?? null
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'original_days',
+            'label' => 'Số buổi đăng ký gốc',
+            'type' => 'number',
+            'suffix' => 'buổi',
+            'required' => true,
+            'class' => 'col-4 mb-2',
+            'value' => $card->original_days ?? null
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'bonus_days',
+            'label' => 'Số buổi được tặng thêm',
+            'type' => 'number',
+            'suffix' => 'buổi',
+            'class' => 'col-3 mb-2',
+            'value' => $card->bonus_days ?? null
+        ]);
+
+        $crudBag->addFields([
+            'name' => false,
+            'label' => 'Số buổi thực tế đăng ký',
+            'type' => 'handle',
+            'suffix' => 'buổi',
+            'class' => 'col-3 mb-2',
+            'attributes' => [
+                'js' => asset('/demo/js/handle-total-day.js'),
+                'identity' => 'total_days'
+            ],
+            'value' => $card->total_days ?? null
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'bonus_reason',
+            'label' => 'Lý do tặng',
+            'type' => 'textarea',
+            'class' => 'col-10 mb-2',
+            'value' => $card->bonus_reason
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'original_fee',
+            'label' => 'Học phí gốc',
+            'type' => 'number',
+            'required' => true,
+            'suffix' => 'đ',
+            'value' => $card->original_fee
+        ]);
+
+
+        $crudBag->addFields([
+            'name' => 'promotion_fee',
+            'label' => 'Học phí ưu đãi',
+            'type' => 'number',
+            'required' => true,
+            'suffix' => 'đ',
+            'class' => 'col-3 mb-2',
+            'value' => $card->promotion_fee
+        ]);
+
+        $crudBag->addFields([
+            'name' => false,
+            'label' => '% Ưu đãi',
+            'type' => 'handle',
+            'class' => 'col-2 mb-2',
+            'attributes' => [
+                'js' => asset('/demo/js/handle-promotion-percent.js'),
+                'identity' => 'promotion-percent'
+            ],
+            'value' => $card->promotion_fee / $card->original_fee * 100
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'fee_reason',
+            'label' => 'Lý do ưu đãi',
+            'type' => 'textarea',
+            'class' => 'col-10 mb-2',
+            'value' => $card->fee_reason
+        ]);
+
+        $crudBag->addFields([
+            'name' => false,
+            'label' => 'Học phí thực tế cần đóng',
+            'type' => 'handle',
+            'attributes' => [
+                'js' => asset('/demo/js/handle-total-fee.js'),
+                'identity' => 'total_fee'
+            ],
+            'value' => number_format($card->total_fee)
+        ]);
+
+        $crudBag->addFields([
+            'name' => false,
+            'label' => 'Đơn giá buổi học',
+            'type' => 'handle',
+            'attributes' => [
+                'js' => asset('/demo/js/handle-daily-fee.js'),
+                'identity' => 'daily_fee'
+            ],
+            'value' => number_format($card->daily_fee)
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'payment_plant',
+            'label' => 'Kế hoạch thanh toán (nếu có)',
+            'type' => 'textarea',
+            'class' => 'col-10 mb-2',
+            'value' => $card->payment_plan
         ]);
 
         return $crudBag;
