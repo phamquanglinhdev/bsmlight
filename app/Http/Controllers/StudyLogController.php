@@ -8,6 +8,8 @@ use App\Models\Classroom;
 use App\Models\ClassroomSchedule;
 use App\Models\ClassroomShift;
 use App\Models\StudyLog;
+use App\Models\Supporter;
+use App\Models\Teacher;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -34,6 +36,14 @@ class StudyLogController extends Controller
     public function create(Request $request): View
     {
         $crudBag = new CrudBag();
+        $listTeacher = Teacher::query()->get(['id', 'name', 'uuid'])->mapWithKeys(function ($teacher) {
+            return [$teacher->id => $teacher->uuid . ' - ' . $teacher->name];
+        });
+        $crudBag->setParam('listTeacher', $listTeacher);
+        $listSupporter = Supporter::query()->get(['id', 'name', 'uuid'])->mapWithKeys(function ($supporter) {
+            return [$supporter->id => $supporter->uuid . ' - ' . $supporter->name];
+        });
+        $crudBag->setParam('listSupporter', $listSupporter);
         $crudBag->setEntity('studylog');
 
         $listClassroom = Classroom::query()->get(['id', 'name', 'uuid'])->mapWithKeys(function ($classroom) {

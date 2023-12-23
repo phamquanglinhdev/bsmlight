@@ -253,7 +253,8 @@ class ClassroomController extends Controller
             'name' => $request->get('name'),
             'avatar' => $request->get('avatar'),
             'uuid' => Classroom::generateUUID(),
-            'book' => 'template'
+            'book' => 'template',
+            'staff_id' => $request->get('staff_id') ?? Auth::user()->{'id'}
         ];
 
         $schedules = $request->get('schedules');
@@ -439,7 +440,7 @@ class ClassroomController extends Controller
                     return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chưa gắn học sinh'];
                 })->all(),
             'class' => 'col-10 mb-3',
-            'value' => json_encode($classroom?->Cards()?->get()?->pluck('id')->toArray() ?? [])
+            'value' => isset($classroom) ? json_encode($classroom?->Cards()?->get()?->pluck('id')->toArray()) : []
         ]);
 
         $crudBag->addFields([
@@ -455,7 +456,7 @@ class ClassroomController extends Controller
                     'supporter_list' => Supporter::query()->get(['id', 'name', 'uuid'])->mapwithkeys(function (Supporter $supporter) {
                         return [$supporter->id => $supporter->uuid . " - " . $supporter->name];
                     })->all(),
-                    'schedules' => $classroom->SchedulesFormat() ?? [ClassroomSchedule::TEMPLATE]
+                    'schedules' => isset($classroom) ? $classroom->SchedulesFormat() : [ClassroomSchedule::TEMPLATE]
                 ],
             ],
             'class' => 'col-10'

@@ -5,7 +5,7 @@ namespace App\Helper;
 class Fields
 {
     private string $name;
-    private ?string $value = "";
+    private mixed $value = "";
     private ?string $label;
     private string $type = "text";
     private bool $required = false;
@@ -48,7 +48,7 @@ class Fields
         return $this->name;
     }
 
-    public function getValue(): ?string
+    public function getValue(): mixed
     {
         return $this->value;
     }

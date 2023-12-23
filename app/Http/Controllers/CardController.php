@@ -340,7 +340,7 @@ class CardController extends Controller
             $crudBag->setId($id);
         }
 
-        $crudBag->setAction($card ? "card.update" : 'card.store');
+        $crudBag->setAction(isset($card) ? "card.update" : 'card.store');
         $crudBag->setLabel('Thẻ học');
         $crudBag->setHasFile(true);
         $crudBag->addFields([
@@ -431,7 +431,7 @@ class CardController extends Controller
             'label' => 'Lý do tặng',
             'type' => 'textarea',
             'class' => 'col-10 mb-2',
-            'value' => $card->bonus_reason
+            'value' => $card->bonus_reason ?? null
         ]);
 
         $crudBag->addFields([
@@ -440,7 +440,7 @@ class CardController extends Controller
             'type' => 'number',
             'required' => true,
             'suffix' => 'đ',
-            'value' => $card->original_fee
+            'value' => $card->original_fee ?? null
         ]);
 
 
@@ -451,7 +451,7 @@ class CardController extends Controller
             'required' => true,
             'suffix' => 'đ',
             'class' => 'col-3 mb-2',
-            'value' => $card->promotion_fee
+            'value' => $card->promotion_fee ?? null
         ]);
 
         $crudBag->addFields([
@@ -463,7 +463,7 @@ class CardController extends Controller
                 'js' => asset('/demo/js/handle-promotion-percent.js'),
                 'identity' => 'promotion-percent'
             ],
-            'value' => $card->promotion_fee / $card->original_fee * 100
+            'value' => isset($card) ? $card->promotion_fee  / $card->original_fee * 100 : null
         ]);
 
         $crudBag->addFields([
@@ -471,7 +471,7 @@ class CardController extends Controller
             'label' => 'Lý do ưu đãi',
             'type' => 'textarea',
             'class' => 'col-10 mb-2',
-            'value' => $card->fee_reason
+            'value' => $card->fee_reason ?? null
         ]);
 
         $crudBag->addFields([
@@ -482,7 +482,7 @@ class CardController extends Controller
                 'js' => asset('/demo/js/handle-total-fee.js'),
                 'identity' => 'total_fee'
             ],
-            'value' => number_format($card->total_fee)
+            'value' => number_format($card->total_fee ?? 0)
         ]);
 
         $crudBag->addFields([
@@ -493,7 +493,7 @@ class CardController extends Controller
                 'js' => asset('/demo/js/handle-daily-fee.js'),
                 'identity' => 'daily_fee'
             ],
-            'value' => number_format($card->daily_fee)
+            'value' => number_format($card->daily_fee ?? 0)
         ]);
 
         $crudBag->addFields([
@@ -501,7 +501,7 @@ class CardController extends Controller
             'label' => 'Kế hoạch thanh toán (nếu có)',
             'type' => 'textarea',
             'class' => 'col-10 mb-2',
-            'value' => $card->payment_plan
+            'value' => $card->payment_plan ?? null
         ]);
 
         return $crudBag;
