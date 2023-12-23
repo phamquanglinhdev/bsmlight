@@ -173,9 +173,39 @@
                                 <input class="form-control" name="title" id="content" value="{{old('title')??''}}"/>
                                 <label for="content">Tiêu đề</label>
                             </div>
-
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-floating form-floating-outline mb-3">
+                                        <input class="form-control" name="video" id="content"
+                                               value="{{old('video')??''}}"/>
+                                        <label for="content">Link video</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating form-floating-outline mb-3">
+                                        <input class="form-control" name="link" id="content"
+                                               value="{{old('link')??''}}"/>
+                                        <label for="content">Link tài liệu</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating form-floating-outline mb-3">
+                                        <input class="form-control" name="audio" id="content"
+                                               value="{{old('audio')??''}}"/>
+                                        <label for="content">Link audio</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-floating form-floating-outline mb-3">
+                                        <input class="form-control" name="image" type="file" id="content"
+                                               value="{{old('image')??''}}"/>
+                                        <label for="content">Link ảnh chụp lớp học</label>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="form-floating form-floating-outline">
-                                <textarea class="form-control h-px-200" name="content" id="content">{{old('content')??''}}</textarea>
+                                <textarea class="form-control h-px-200" name="content"
+                                          id="content">{{old('content')??''}}</textarea>
                                 <label for="content">Nội dung</label>
                             </div>
                         </div>
