@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -118,7 +121,9 @@ class Classroom extends Model
 
     public function getClassroomScheduleAttribute(): array
     {
-        return [];
+        return ClassroomSchedule::where('classroom_id', $this->id)->get()->mapWithKeys(function (ClassroomSchedule $item) {
+            return [$item->id => $item->getWeekStringAttribute() . ": " . $item->start_time . " - " . $item->end_time];
+        })->all();
     }
 
     public function getScheduleLastUpdateAttribute(): string
@@ -154,17 +159,17 @@ class Classroom extends Model
 
     public function getTotalEarnedAttribute(): int
     {
-        return 1000000;
+        return 1000000000;
     }
 
     public function getExternalSalaryAttribute(): int
     {
-        return 40000;
+        return 4000000;
     }
 
     public function getInternalSalaryAttribute(): int
     {
-        return 50000;
+        return 5000000;
     }
 
     public function getSupporterSalaryAttribute(): int
@@ -195,27 +200,27 @@ class Classroom extends Model
      */
     public function getGrossStatusAttribute(): string
     {
-        if ($this->gross_percent < 0){
+        if ($this->gross_percent < 0) {
             return 'SOS';
         }
 
-        if ($this->gross_percent > 0 && $this->gross_percent <= 15){
+        if ($this->gross_percent > 0 && $this->gross_percent <= 15) {
             return 'A';
         }
 
-        if ($this->gross_percent > 15 && $this->gross_percent <= 30){
+        if ($this->gross_percent > 15 && $this->gross_percent <= 30) {
             return 'B';
         }
 
-        if ($this->gross_percent > 30 && $this->gross_percent <= 45){
+        if ($this->gross_percent > 30 && $this->gross_percent <= 45) {
             return 'C';
         }
 
-        if ($this->gross_percent > 45 && $this->gross_percent <= 60){
+        if ($this->gross_percent > 45 && $this->gross_percent <= 60) {
             return 'D';
         }
 
-        if ($this->gross_percent > 60){
+        if ($this->gross_percent > 60) {
             return 'E';
         }
 
@@ -244,5 +249,57 @@ class Classroom extends Model
         $classroomNewId = $classroomId < 1000 ? sprintf('%04d', $classroomId + 1) : sprintf('%07d', $classroomId + 1);
 
         return Auth::user()->{'branch'} . "-" . "Lop" . "." . $classroomNewId;
+    }
+
+    public function Cards(): HasMany
+    {
+        return $this->hasMany(Card::class, 'classroom_id', 'id');
+    }
+
+    public function Schedules(): HasMany
+    {
+        return $this->hasMany(ClassroomSchedule::class, 'classroom_id', 'id');
+    }
+
+    public function SchedulesFormat()
+    {
+        return $this->Schedules()->get()->map(function (ClassroomSchedule $schedule) {
+            return [
+                'week_day' => $schedule->week_day,
+                'start_time' => $schedule->start_time,
+                'end_time' => $schedule->end_time,
+                'shifts' => $schedule->Shifts()->get()->map(function ($shift) {
+                    return [
+                        'start_time' => $shift->start_time,
+                        'end_time' => $shift->end_time,
+                        'teacher_id' => $shift->teacher_id,
+                        'supporter_id' => $shift->supporter_id,
+                        'room' => $shift->room
+                    ];
+                })->toArray()
+            ];
+        });
+
+    }
+
+    public function Shifts(): HasMany
+    {
+        return $this->hasMany(ClassroomShift::class, 'classroom_id', 'id');
+    }
+
+    public function Staff(): BelongsTo
+    {
+        return $this->belongsTo(Staff::class, 'staff_id', 'id');
+    }
+
+    public static function boot(): void
+    {
+        parent::boot();
+
+        static::addGlobalScope('branch', function (Builder $builder) {
+            $builder->whereHas('staff', function (Builder $builder) {
+                $builder->where('branch', Auth::user()->{'branch'});
+            });
+        });
     }
 }

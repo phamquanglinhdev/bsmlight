@@ -89,30 +89,28 @@ class ClassroomController extends Controller
             'type' => 'link',
         ]);
         $crudBag->addColumn([
-           'name' => 'broadcast_student_chat',
-           'label' => 'Nhóm chat thông báo cho HS',
-           'type' => 'link',
+            'name' => 'broadcast_student_chat',
+            'label' => 'Nhóm chat thông báo cho HS',
+            'type' => 'link',
         ]);
-//        $crudBag->addColumn([
-//            'name' => 'classroom_schedule',
-//            'label' => 'Lịch học',
-//            'type' => 'render',
-//        ]);
         $crudBag->addColumn([
-           'name' => 'schedule_last_update',
-           'label' => 'Ngày cập nhật gần nhất',
-           'type' => 'text',
+            'name' => 'classroom_schedule',
+            'label' => 'Lịch học',
+            'type' => 'array',
+            'attributes' => [
+                'limit' => 5
+            ]
+        ]);
+        $crudBag->addColumn([
+            'name' => 'schedule_last_update',
+            'label' => 'Ngày cập nhật gần nhất',
+            'type' => 'text',
         ]);
         $crudBag->addColumn([
             'name' => 'total_meetings',
             'label' => 'Số buổi chạy của lớp',
             'type' => 'text',
         ]);
-//        $crudBag->addColumn([
-//            'name' => 'days',
-//            'label' => 'Danh sách các ngày trong tháng',
-//            'type' => 'text',
-//        ]);
 
         $crudBag->addColumn([
             'name' => 'student_attended',
@@ -139,6 +137,17 @@ class ClassroomController extends Controller
         ]);
 
         $crudBag->addColumn([
+            'name' => 'internal_salary',
+            'label' => 'Chi lương giáo viên VN',
+            'type' => 'number',
+        ]);
+        $crudBag->addColumn([
+            'name' => 'external_salary',
+            'label' => 'Chi lương giáo viên nước ngoài',
+            'type' => 'number',
+        ]);
+
+        $crudBag->addColumn([
             'name' => 'supporter_salary',
             'label' => 'Chi lương trợ giảng',
             'type' => 'number',
@@ -153,8 +162,36 @@ class ClassroomController extends Controller
         $crudBag->addColumn([
             'name' => 'gross_percent',
             'label' => '%lãi gộp',
+            'attributes' => [
+                'suffix' => '%',
+            ],
+            'type' => 'number',
+
         ]);
 
+        $crudBag->addColumn([
+            'name' => 'gross_status',
+            'label' => 'Tình trạng lớp',
+            'type' => 'select',
+            'attributes' => [
+                'options' => [
+                    'SOS' => 'SOS',
+                    'A' => 'A',
+                    'B' => 'B',
+                    'C' => 'C',
+                    'D' => 'D',
+                    'E' => 'E',
+                ],
+                'bg' => [
+                    'SOS' => 'bg-danger-dark',
+                    'A' => 'bg-danger',
+                    'B' => 'bg-danger-light',
+                    'C' => 'bg-green',
+                    'D' => 'bg-success',
+                    'E' => 'bg-purple',
+                ]
+            ]
+        ]);
 
         return $crudBag;
     }
@@ -173,80 +210,16 @@ class ClassroomController extends Controller
 
     public function create()
     {
-        $crudBag = new CrudBag();
+        $crudBag = $this->handleCreateOrEdit();
 
-        $crudBag->addFields([
-            'name' => 'avatar',
-            'type' => 'avatar-select',
-            'required' => false,
-            'label' => 'Chọn ảnh lớp học',
-            'options' => [
-                'https://www.iconbunny.com/icons/media/catalog/product/4/0/4082.9-class-icon-iconbunny.jpg',
-                'https://cdn-icons-png.flaticon.com/512/3352/3352938.png',
-                'https://www.iconbunny.com/icons/media/catalog/product/4/0/4082.9-class-icon-iconbunny.jpg',
-                'https://cdn-icons-png.flaticon.com/512/3352/3352938.png',
-                'https://www.iconbunny.com/icons/media/catalog/product/4/0/4082.9-class-icon-iconbunny.jpg',
-                'https://cdn-icons-png.flaticon.com/512/3352/3352938.png',
-            ],
-            'class' => 'col-10 mb-3'
+        return view('create', [
+            'crudBag' => $crudBag
         ]);
+    }
 
-        $crudBag->addFields([
-            'name' => 'name',
-            'type' => 'text',
-            'required' => true,
-            'label' => 'Tên lớp học',
-        ]);
-
-        if (Auth::user()->{'role'} === User::HOST_ROLE) {
-            $crudBag->addFields([
-                'name' => 'staff_id',
-                'type' => 'select',
-                'label' => 'Nhân viên phụ trách',
-                'nullable' => true,
-                'options' => Staff::query()->get()->mapwithkeys(function ($staff) {
-                    return [$staff->id => $staff->uuid . " - " . $staff->name];
-                })->all(),
-                'value' => null
-            ]);
-        }
-
-
-        $crudBag->addFields([
-            'name' => 'card_ids',
-            'type' => 'select-multiple',
-            'label' => 'Gắn thẻ học',
-            'options' => Card::query()->get()->mapwithkeys(function (Card $card) {
-                return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chưa gắn học sinh'];
-            })->all(),
-            'class' => 'col-10 mb-3',
-            'value' => json_encode([1])
-        ]);
-
-        $crudBag->addFields([
-            'name' => 'card_schedules',
-            'type' => 'custom_fields',
-            'label' => 'Lịch học',
-            'attributes' => [
-                'view' => 'classroom_schedule',
-                'value' => [
-                    'teacher_list' => Teacher::query()->get(['id', 'name', 'uuid'])->mapwithkeys(function (Teacher $teacher) {
-                        return [$teacher->id => $teacher->uuid . " - " . $teacher->name];
-                    })->all(),
-                    'supporter_list' => Supporter::query()->get(['id', 'name', 'uuid'])->mapwithkeys(function (Supporter $supporter) {
-                        return [$supporter->id => $supporter->uuid . " - " . $supporter->name];
-                    })->all(),
-                    'schedules' => [
-                        ClassroomSchedule::TEMPLATE
-                    ]
-                ],
-            ],
-            'class' => 'col-10'
-        ]);
-
-        $crudBag->setAction('classroom.store');
-        $crudBag->setEntity('classroom');
-        $crudBag->setLabel('Lớp học');
+    public function edit(int $id)
+    {
+        $crudBag = $this->handleCreateOrEdit($id);
 
         return view('create', [
             'crudBag' => $crudBag
@@ -272,7 +245,7 @@ class ClassroomController extends Controller
             'schedules.*.shifts.*.end_time' => 'required',
             'schedules.*.shifts.*.teacher_id' => 'required',
             'schedules.*.shifts.*.supporter_id' => 'integer|nullable',
-            'schedules.*.shifts.*.room' => 'required',
+            'schedules.*.shifts.*.room' => 'string|nullable',
             'card_ids' => 'array',
         ]);
 
@@ -290,7 +263,7 @@ class ClassroomController extends Controller
         DB::transaction(function () use ($dataToCreateClassroom, $schedules, $cardIds) {
             $classroom = Classroom::query()->create($dataToCreateClassroom);
 
-            foreach ($schedules as $schedule) {
+            foreach ($schedules??[] as $schedule) {
 
                 $classroomSchedule = new ClassroomSchedule();
                 $classroomSchedule->classroom_id = $classroom->id;
@@ -308,13 +281,13 @@ class ClassroomController extends Controller
                     $classroomShift->end_time = $shift['end_time'];
                     $classroomShift->teacher_id = $shift['teacher_id'];
                     $classroomShift->supporter_id = $shift['supporter_id'] ?? 0;
-                    $classroomShift->room = $shift['room'];
+                    $classroomShift->room = $shift['room'] ?? '--';
 
                     $classroomShift->save();
                 }
             }
 
-            foreach ($cardIds as $cardId) {
+            foreach ($cardIds??[] as $cardId) {
                 $card = Card::query()->find($cardId);
 
                 $card->classroom_id = $classroom->id;
@@ -324,5 +297,174 @@ class ClassroomController extends Controller
         });
 
         return redirect()->to('/classroom/list')->with('success', 'Tạo lớp học thành công');
+    }
+
+    public function update(Request $request, int $id)
+    {
+        /**
+         * @var Classroom $classroom
+         */
+        $classroom = Classroom::query()->where('id', $id)->firstOrFail();
+
+        request()->session()->flash('schedules', $request->get('schedules'));
+
+        $this->validate($request, [
+            'name' => 'required',
+            'avatar' => 'required',
+            'schedules' => 'array',
+            'schedules.*.week_day' => 'required',
+            'schedules.*.start_time' => 'required',
+            'schedules.*.end_time' => 'required',
+            'schedules.*.shifts' => 'array',
+            'schedules.*.shifts.*.start_time' => 'required',
+            'schedules.*.shifts.*.end_time' => 'required',
+            'schedules.*.shifts.*.teacher_id' => 'required',
+            'schedules.*.shifts.*.supporter_id' => 'integer|nullable',
+            'schedules.*.shifts.*.room' => 'string|nullable',
+            'card_ids' => 'array',
+        ]);
+
+        $dataToCreateClassroom = [
+            'name' => $request->get('name'),
+            'avatar' => $request->get('avatar'),
+            'book' => 'template'
+        ];
+
+        $schedules = $request->get('schedules');
+        $cardIds = $request->get('card_ids');
+
+
+        DB::transaction(function () use ($dataToCreateClassroom, $schedules, $cardIds, $classroom) {
+
+            $classroom->update(($dataToCreateClassroom));
+            $classroom->Schedules()->delete();
+            $classroom->Shifts()->delete();
+
+            foreach ($schedules??[] as $schedule) {
+
+                $classroomSchedule = new ClassroomSchedule();
+                $classroomSchedule->classroom_id = $classroom->id;
+                $classroomSchedule->week_day = $schedule['week_day'];
+                $classroomSchedule->start_time = $schedule['start_time'];
+                $classroomSchedule->end_time = $schedule['end_time'];
+
+                $classroomSchedule->save();
+
+                foreach ($schedule['shifts']??[] as $shift) {
+                    $classroomShift = new ClassroomShift();
+                    $classroomShift->classroom_schedule_id = $classroomSchedule->id;
+                    $classroomShift->classroom_id = $classroom->id;
+                    $classroomShift->start_time = $shift['start_time'];
+                    $classroomShift->end_time = $shift['end_time'];
+                    $classroomShift->teacher_id = $shift['teacher_id'];
+                    $classroomShift->supporter_id = $shift['supporter_id'] ?? 0;
+                    $classroomShift->room = $shift['room'] ?? '--';
+
+                    $classroomShift->save();
+                }
+            }
+
+            $classroom->Cards()->update([
+                'classroom_id' => null
+            ]);
+
+            foreach ($cardIds??[] as $cardId) {
+                $card = Card::query()->find($cardId);
+
+                $card->classroom_id = $classroom->id;
+
+                $card->save();
+            }
+        });
+        return redirect()->to('/classroom/list')->with('success', 'Sửa lớp học thanh cong');
+    }
+
+    private function handleCreateOrEdit($id = null): CrudBag
+    {
+        $crudBag = new CrudBag();
+        if ($id) {
+            /**
+             * @var Classroom $classroom
+             */
+            $classroom = Classroom::query()->where('id', $id)->firstOrFail();
+            $crudBag->setId($id);
+        }
+
+        $crudBag->addFields([
+            'name' => 'avatar',
+            'type' => 'avatar-select',
+            'required' => false,
+            'label' => 'Chọn ảnh lớp học',
+            'options' => [
+                'https://www.iconbunny.com/icons/media/catalog/product/4/0/4082.9-class-icon-iconbunny.jpg',
+                'https://cdn-icons-png.flaticon.com/512/3352/3352938.png',
+                'https://www.iconbunny.com/icons/media/catalog/product/4/0/4082.9-class-icon-iconbunny.jpg',
+                'https://cdn-icons-png.flaticon.com/512/3352/3352938.png',
+                'https://www.iconbunny.com/icons/media/catalog/product/4/0/4082.9-class-icon-iconbunny.jpg',
+                'https://cdn-icons-png.flaticon.com/512/3352/3352938.png',
+            ],
+            'class' => 'col-10 mb-3',
+            'value' => $classroom->avatar ?? 'https://www.iconbunny.com/icons/media/catalog/product/4/0/4082.9-class-icon-iconbunny.jpg',
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'name',
+            'type' => 'text',
+            'required' => true,
+            'label' => 'Tên lớp học',
+            'value' => $classroom->name ?? ''
+        ]);
+
+        if (Auth::user()->{'role'} === User::HOST_ROLE) {
+            $crudBag->addFields([
+                'name' => 'staff_id',
+                'type' => 'select',
+                'label' => 'Nhân viên phụ trách',
+                'nullable' => true,
+                'options' => Staff::query()->get()->mapwithkeys(function ($staff) {
+                    return [$staff->id => $staff->uuid . " - " . $staff->name];
+                })->all(),
+                'value' => $classroom->staff_id ?? null,
+            ]);
+        }
+
+        $crudBag->addFields([
+            'name' => 'card_ids',
+            'type' => 'select-multiple',
+            'label' => 'Gắn thẻ học',
+            'options' => Card::query()->where('classroom_id', null)
+                ->where('student_id', '!=', null)
+                ->where('card_status', Card::STATUS_ACTIVE)
+                ->orderBy('id')->get()->mapwithkeys(function (Card $card) {
+                    return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chưa gắn học sinh'];
+                })->all(),
+            'class' => 'col-10 mb-3',
+            'value' => json_encode($classroom?->Cards()?->get()?->pluck('id')->toArray() ?? [])
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'card_schedules',
+            'type' => 'custom_fields',
+            'label' => 'Lịch học',
+            'attributes' => [
+                'view' => 'classroom_schedule',
+                'value' => [
+                    'teacher_list' => Teacher::query()->get(['id', 'name', 'uuid'])->mapwithkeys(function (Teacher $teacher) {
+                        return [$teacher->id => $teacher->uuid . " - " . $teacher->name];
+                    })->all(),
+                    'supporter_list' => Supporter::query()->get(['id', 'name', 'uuid'])->mapwithkeys(function (Supporter $supporter) {
+                        return [$supporter->id => $supporter->uuid . " - " . $supporter->name];
+                    })->all(),
+                    'schedules' => $classroom->SchedulesFormat() ?? [ClassroomSchedule::TEMPLATE]
+                ],
+            ],
+            'class' => 'col-10'
+        ]);
+
+        $crudBag->setAction($id ? 'classroom.update' : 'classroom.store');
+        $crudBag->setEntity('classroom');
+        $crudBag->setLabel('Lớp học');
+
+        return $crudBag;
     }
 }

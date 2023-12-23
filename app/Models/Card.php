@@ -52,6 +52,9 @@ class Card extends Model
     use HasFactory;
     use SoftDeletes;
 
+    const STATUS_ACTIVE = 0;
+    const STATUS_STOP = 1;
+    const STATUS_STORE = 2;
     protected $table = 'cards';
     protected $guarded = ['id'];
 

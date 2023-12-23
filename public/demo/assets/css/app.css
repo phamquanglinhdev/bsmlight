@@ -8,3 +8,15 @@
 .bg-green{
     background: #3fe0d0;
 }
+
+.bg-red{
+    background: #ff0000;
+}
+
+.bg-danger-dark{
+    background: #ad0202;
+}
+
+.bg-danger-light{
+    background: #f85050;
+}

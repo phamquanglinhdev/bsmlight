@@ -23,7 +23,7 @@
                             data-live-search="true">
                         @foreach($teacherList as $teacherKey => $teacher)
                             <option
-                                    value="{{$teacherKey}}" {{(old('schedules.'.$scheduleKey.'.shifts.'.$shiftKey.'.teacher_id') == $shift['teacher_id'] || $teacherKey == $shift['teacher_id']) ? 'selected' : ''}}>{{$teacher}}</option>
+                                    value="{{$teacherKey}}" {{(old('schedules.'.$scheduleKey.'.shifts.'.$shiftKey.'.teacher_id') == ($shift['teacher_id']??null) || $teacherKey == ($shift['teacher_id']??null)) ? 'selected' : ''}}>{{$teacher}}</option>
                         @endforeach
                     </select>
                     <label for="basic-default-name">Chọn giáo viên</label>
@@ -35,11 +35,11 @@
             <div class="col-md-6 col-12">
                 <div class="form-floating form-floating-outline mb-3 mt-2">
                     <select class="form-select selectpicker w-100"
-                            name="schedules[{{$scheduleKey}}][shifts][{{$shiftKey}}][teacher_id]"
+                            name="schedules[{{$scheduleKey}}][shifts][{{$shiftKey}}][supporter_id]"
                             data-live-search="true">
                         @foreach($supporterList as $supporterKey => $supporter)
                             <option
-                                    value="{{$supporterKey}}" {{(old('schedules.'.$scheduleKey.'.shifts.'.$shiftKey.'.supporter_id') == $shift['supporter_id'] || $supporterKey == $shift['supporter_id']) ? 'selected' : ''}}>{{$supporter}}</option>
+                                    value="{{$supporterKey}}" {{(old('schedules.'.$scheduleKey.'.shifts.'.$shiftKey.'.supporter_id') == ($shift['supporter_id']??null) || $supporterKey == ($shift['supporter_id']??null)) ? 'selected' : ''}}>{{$supporter}}</option>
                         @endforeach
                     </select>
                     <label for="basic-default-name">Chọn trợ giảng</label>

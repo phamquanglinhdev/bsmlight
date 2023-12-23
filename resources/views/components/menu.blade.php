@@ -69,6 +69,14 @@
                 </a>
             </li>
         @endif
+        @if(force_permission('studylog list'))
+            <li class="menu-item {{is_module('studylog') ? ' active' :''}}">
+                <a href="{{url("/studylog/list")}}" class="menu-link">
+                    <i class="menu-icon tf-icons mdi mdi-ballot-outline"></i>
+                    <div>Điểm danh</div>
+                </a>
+            </li>
+        @endif
         @if(force_permission('list branch'))
             <li class="menu-item {{is_module('branch') ? ' active' :''}}">
                 <a href="{{url("/branch/list")}}" class="menu-link">

@@ -8,6 +8,7 @@ use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudyLogController;
 use App\Http\Controllers\SupporterController;
 use App\Http\Controllers\TeacherController;
 use Illuminate\Support\Facades\Route;
@@ -106,6 +107,16 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [ClassroomController::class, "edit", "id"])->name('classroom.edit');
             Route::post('/update/{id}', [ClassroomController::class, "update", "id"])->name('classroom.update');
             Route::get('/delete/{id}', [ClassroomController::class, "delete", "id"])->name('classroom.delete');
+        });
+
+        Route::prefix('studylog')->group(function () {
+
+            Route::get('/create', [StudyLogController::class, "create"])->name('studylog.create');
+            Route::any('/store', [StudyLogController::class, "store"])->name('studylog.store');
+            Route::get('/list', [StudyLogController::class, "list"])->name('studylog.list');
+            Route::get('/edit/{id}', [StudyLogController::class, "edit", "id"])->name('studylog.edit');
+            Route::post('/update/{id}', [StudyLogController::class, "update", "id"])->name('studylog.update');
+            Route::get('/delete/{id}', [StudyLogController::class, "delete", "id"])->name('studylog.delete');
         });
 
 
