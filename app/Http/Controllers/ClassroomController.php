@@ -12,6 +12,7 @@ use App\Models\Staff;
 use App\Models\Supporter;
 use App\Models\Teacher;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -264,7 +265,7 @@ class ClassroomController extends Controller
         DB::transaction(function () use ($dataToCreateClassroom, $schedules, $cardIds) {
             $classroom = Classroom::query()->create($dataToCreateClassroom);
 
-            foreach ($schedules??[] as $schedule) {
+            foreach ($schedules ?? [] as $schedule) {
 
                 $classroomSchedule = new ClassroomSchedule();
                 $classroomSchedule->classroom_id = $classroom->id;
@@ -288,7 +289,7 @@ class ClassroomController extends Controller
                 }
             }
 
-            foreach ($cardIds??[] as $cardId) {
+            foreach ($cardIds ?? [] as $cardId) {
                 $card = Card::query()->find($cardId);
 
                 $card->classroom_id = $classroom->id;
@@ -341,7 +342,7 @@ class ClassroomController extends Controller
             $classroom->Schedules()->delete();
             $classroom->Shifts()->delete();
 
-            foreach ($schedules??[] as $schedule) {
+            foreach ($schedules ?? [] as $schedule) {
 
                 $classroomSchedule = new ClassroomSchedule();
                 $classroomSchedule->classroom_id = $classroom->id;
@@ -351,7 +352,7 @@ class ClassroomController extends Controller
 
                 $classroomSchedule->save();
 
-                foreach ($schedule['shifts']??[] as $shift) {
+                foreach ($schedule['shifts'] ?? [] as $shift) {
                     $classroomShift = new ClassroomShift();
                     $classroomShift->classroom_schedule_id = $classroomSchedule->id;
                     $classroomShift->classroom_id = $classroom->id;
@@ -369,7 +370,7 @@ class ClassroomController extends Controller
                 'classroom_id' => null
             ]);
 
-            foreach ($cardIds??[] as $cardId) {
+            foreach ($cardIds ?? [] as $cardId) {
                 $card = Card::query()->find($cardId);
 
                 $card->classroom_id = $classroom->id;
@@ -429,16 +430,18 @@ class ClassroomController extends Controller
             ]);
         }
 
+        $cardList = Card::query()->where(function (Builder $query) use ($classroom) {
+            $query->where('classroom_id', $classroom->id)->orWhere('classroom_id', null);
+        })->where('student_id', '!=', null)->where('card_status', Card::STATUS_ACTIVE)
+        ->get()->mapwithkeys(function (Card $card) {
+            return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chọn gắn học sinh'];
+        })->all();
+
         $crudBag->addFields([
             'name' => 'card_ids',
             'type' => 'select-multiple',
             'label' => 'Gắn thẻ học',
-            'options' => Card::query()->where('classroom_id', null)
-                ->where('student_id', '!=', null)
-                ->where('card_status', Card::STATUS_ACTIVE)
-                ->orderBy('id')->get()->mapwithkeys(function (Card $card) {
-                    return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chưa gắn học sinh'];
-                })->all(),
+            'options' => $cardList,
             'class' => 'col-10 mb-3',
             'value' => isset($classroom) ? json_encode($classroom?->Cards()?->get()?->pluck('id')->toArray()) : []
         ]);

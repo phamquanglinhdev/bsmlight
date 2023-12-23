@@ -4,14 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Helper\CrudBag;
 use App\Helper\ListViewModel;
+use App\Models\Card;
 use App\Models\Classroom;
 use App\Models\ClassroomSchedule;
 use App\Models\ClassroomShift;
 use App\Models\StudyLog;
 use App\Models\Supporter;
 use App\Models\Teacher;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class StudyLogController extends Controller
@@ -33,9 +37,13 @@ class StudyLogController extends Controller
         ]);
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function create(Request $request): View
     {
         $crudBag = new CrudBag();
+
         $listTeacher = Teacher::query()->get(['id', 'name', 'uuid'])->mapWithKeys(function ($teacher) {
             return [$teacher->id => $teacher->uuid . ' - ' . $teacher->name];
         });
@@ -66,6 +74,12 @@ class StudyLogController extends Controller
             if (!$request->get('classroom_schedule_id')) {
                 $crudBag->setParam('step', 2);
             } else {
+                $validCardList = Card::query()->where('classroom_id', null)->where('student_id', '!=', null)->where('card_status', Card::STATUS_ACTIVE)
+                    ->get()->mapwithkeys(function (Card $card) {
+                        return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chọn gắn học sinh'];
+                    })->all();
+                $crudBag->setParam('validCardList', $validCardList);
+
                 $crudBag->setParam('classroom_schedule_id', $request->get('classroom_schedule_id'));
                 /**
                  * @var ClassroomSchedule $schedule
@@ -103,8 +117,91 @@ class StudyLogController extends Controller
 
                 $crudBag->setParam('shiftTemplates', $shiftTemplates);
 
+                $cardsTemplate = $classroom->Cards()?->get()->map(function (Card $card) {
+                    return [
+                        'card_id' => $card->id,
+                        'card_uuid' => $card->uuid,
+                        'student_id' => $card->student_id,
+                        'student_uuid' => $card->student?->uuid,
+                        'student_name' => $card->student?->name,
+                        'student_avatar' => $card->student?->avatar,
+                        'attended_days' => $card->attended_days + $card->van,
+                        'can_use_day' => $card->can_use_day,
+                        'day' => 0,
+                        'status' => null,
+                        'reason' => '',
+                        'teacher_note' => '',
+                        'supporter_note' => '',
+                    ];
+                });
+                $crudBag->setParam('cardsTemplate', $cardsTemplate);
+
+                $listCardLogStatus = [
+                    0 => 'Đi học, đúng giờ',
+                    1 => 'Đi học, muộn',
+                    2 => 'Đi học, sớm',
+                    3 => 'Vắng, có phép',
+                    4 => 'Vắng, không phép',
+                    5 => 'Không điểm danh',
+                ];
+
+                $crudBag->setParam('listCardLogStatus', $listCardLogStatus);
+                $crudBag->setParam('classroom_schedule_id', $request->get('classroom_schedule_id'));
                 $crudBag->setParam('step', 3);
             }
+        }
+
+        if ($request->get('submit')) {
+
+            $cardsTemplates = [];
+            $shiftTemplates = [];
+            foreach ($request->get('shifts') as $key => $shift) {
+                $dataShift = json_decode($shift['template'], true);
+                $shiftTemplates[$key] = array_replace($dataShift, $shift);
+
+            }
+
+            foreach ($request->get('cardlogs') as $key => $cardlog) {
+                $dataCard = json_decode($cardlog['template'], true);
+                $cardsTemplates[$key] = array_replace($dataCard, $cardlog);
+            }
+
+            $crudBag->setParam('cardsTemplate', $cardsTemplates);
+            $crudBag->setParam('shiftTemplates', $shiftTemplates);
+            $validate = Validator::make($request->all(), [
+                'classroom_id' => 'required|exists:classrooms,id',
+                'classroom_schedule_id' => 'required|exists:classroom_schedules,id',
+                'shifts' => 'array|required',
+                'shifts.*.start_time' => 'required',
+                'shifts.*.end_time' => 'required',
+                'shifts.*.room' => 'required|string',
+                'shifts.*.teacher_id' => 'required|exists:users,id',
+                'shifts.*.supporter_id' => 'required|exists:users,id',
+                'shifts.*.teacher_comment' => 'string|nullable',
+                'shifts.*.supporter_comment' => 'string|nullable',
+                'shifts.*.teacher_timestamp' => 'file|required',
+                'shifts.*.supporter_timestamp' => 'file|required',
+                'cardlogs' => 'array',
+                'cardlogs.*.student_id' => 'required|exists:users,id',
+                'cardlogs.*.card_id' => 'required|integer',
+                'cardlogs.*.day' => 'string',
+                'cardlogs.*.status' => 'integer|in:0,1,2,3,4,5',
+                'cardlogs.*.teacher_note' => 'string|nullable',
+                'cardlogs.*.supporter_note' => 'string|nullable',
+            ]);
+
+            if ($validate->fails()) {
+                return \view('studylog.create', [
+                    'crudBag' => $crudBag,
+                ])->withErrors($validate);
+            }
+
+            $dataToCreateStudyLog = [
+              'created_by' => auth()->user()->{'id'},
+              'classroom_id' => $request->get('classroom_id'),
+              'classroom_schedule_id' => $request->get('classroom_schedule_id'),
+              'shifts' => $shiftTemplates,
+            ];
         }
 
         return \view('studylog.create', [

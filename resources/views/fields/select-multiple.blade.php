@@ -3,11 +3,14 @@
     /**
      * @var Fields $field
      */
-    $arrayValue = old($field->getName() ?? json_decode($field->getValue(),true));
+
+
+    $arrayValue = old($field->getName())  ?? json_decode($field->getValue(), true) ?? [];
 
     if(empty($arrayValue)){
         $arrayValue = [-1];
     }
+
 
 @endphp
 <div class="form-floating form-floating-outline mb-4">

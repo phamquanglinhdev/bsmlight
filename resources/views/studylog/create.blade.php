@@ -3,8 +3,13 @@
         /**
          * @var CrudBag $crudBag
          */
+
         $listSupporter = $crudBag->getParam('listSupporter') ?? [];
-        $listTeacher = $crudBag->getParam('listTeacher') ?? [];
+        $listTeacher =  $crudBag->getParam('listTeacher') ?? [];
+        $cardsTemplate =  $crudBag->getParam('cardsTemplate') ?? [];
+        $listCardLogStatus = $crudBag->getParam('listCardLogStatus') ?? [];
+        $validCardList = $crudBag->getParam('validCardList') ?? [];
+        $shiftTemplates =$crudBag->getParam('shiftTemplates') ?? [];
 @endphp
 
 @extends('layouts.app')
@@ -121,131 +126,62 @@
                                 </button>
                                 <button class="btn btn-primary btn-next"><span
                                         class="align-middle d-sm-inline-block d-none me-sm-1">Bắt đầu điểm danh</span>
-                                    <i
-                                        class="mdi mdi-arrow-right"></i></button>
+                                    <i class="mdi mdi-arrow-right"></i></button>
                             </div>
                         </div>
                     </div>
                     <!-- Social Links -->
                     <div id="social-links" class="content">
-                        <div class="row g-4">
-                            @foreach($crudBag->getParam('shiftTemplates')??[] as $shiftKey => $shiftTemplate)
-                                <div class="border rounded p-3">
-                                    <div class="row">
-                                        <div class="col-md-3 col-12 mb-3">
-                                            <div class="form-floating form-floating-outline">
-                                                <input
-                                                    id="shifts[{{$shiftKey}}][start_time]"
-                                                    value="{{old('shifts.'.$shiftKey.'.start_time')??$shiftTemplate['start_time']}}"
-                                                    name="shifts[{{$shiftKey}}][start_time]" type="time"
-                                                    class="form-control">
-                                                <label for="shifts[{{$shiftKey}}][start_time]">Thời gian bắt đầu</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 col-12 mb-3">
-                                            <div class="form-floating form-floating-outline">
-                                                <input
-                                                    id="shifts[{{$shiftKey}}][end_time]"
-                                                    value="{{old('shifts.'.$shiftKey.'.end_time')??$shiftTemplate['end_time']}}"
-                                                    name="shifts[{{$shiftKey}}][end_time]" type="time"
-                                                    class="form-control">
-                                                <label for="shifts[{{$shiftKey}}][end_time]">Thời gian kết thúc</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 col-12 mb-3">
-                                            <div class="form-floating form-floating-outline">
-                                                <select
-                                                    id="shifts[{{$shiftKey}}][teacher_id]"
-                                                    name="shifts[{{$shiftKey}}][end_time]"
-                                                    class="selectpicker w-100">
-                                                    @foreach($listTeacher as $key => $value)
-                                                        <option
-                                                            value="{{$key}}" {{old('shifts.'.$shiftKey.'.teacher_id')==$key?'selected':''}}>{{$value}}</option>
-                                                    @endforeach
-                                                </select>
-                                                <label for="shifts[{{$shiftKey}}][teacher_id]">Giáo viên</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 col-12 mb-3">
-                                            <div class="form-floating form-floating-outline">
-                                                <select
-                                                    class="selectpicker w-100"
-                                                    name="shifts[{{$shiftKey}}][supporter_id]"
-                                                    id="shifts[{{$shiftKey}}][supporter_id]">
-                                                    @foreach( $listSupporter as $key => $value)
-                                                        <option
-                                                            value=" {{$key}}" {{old('shifts.'.$shiftKey.'.supporter_id')==$key?'selected':''}}>{{$value}}</option>
-                                                    @endforeach
-                                                </select>
-                                                <label for="shifts[{{$shiftKey}}][supporter_id]">Trợ giảng</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class="form-floating form-floating-outline">
-                                                <input type="text"
-                                                       class="form-control"
-                                                       id="shifts[{{$shiftKey}}][room]"
-                                                       name="shifts[{{$shiftKey}}][room]"
-                                                       value="{{old('shifts.'.$shiftKey.'.room')??$shiftTemplate['room']}}"
-                                                       placeholder="">
-                                                <label for="shifts[{{$shiftKey}}][room]">Phòng học</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <div class="form-floating form-floating-outline">
-                                                <input type="file"
-                                                       class="form-control"
-                                                       id="shifts[{{$shiftKey}}][teacher_timestamp]"
-                                                       name="shifts[{{$shiftKey}}][teacher_timestamp]"
-                                                       value="{{old('shifts.'.$shiftKey.'.teacher_timestamp')??$shiftTemplate['teacher_timestamp']}}"
-                                                       placeholder="">
-                                                <label for="shifts[{{$shiftKey}}][teacher_timestamp]">Ảnh điểm danh giáo viên *</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3 mb-3">
-                                            <div class="form-floating form-floating-outline">
-                                                <input type="file"
-                                                       class="form-control"
-                                                       id="shifts[{{$shiftKey}}][supporter_timestamp]"
-                                                       name="shifts[{{$shiftKey}}][supporter_timestamp]"
-                                                       value="{{old('shifts.'.$shiftKey.'.supporter_timestamp')??$shiftTemplate['supporter_timestamp']}}"
-                                                       placeholder="">
-                                                <label for="shifts[{{$shiftKey}}][supporter_timestamp]">Ảnh điểm danh trợ giảng *</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class="form-floating form-floating-outline">
-                                                <textarea
-                                                    class="textarea form-control w-100 h-px-200"
-                                                    id="shifts[{{$shiftKey}}][teacher_comment]"
-                                                    name="shifts[{{$shiftKey}}][teacher_comment]"
-                                                    placeholder="Ghi chú của giáo viên"
-                                                    rows="5"></textarea>
-                                                <label for="shifts[{{$shiftKey}}][teacher_comment]">Ghi chú của giáo viên</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 mb-3">
-                                            <div class="form-floating form-floating-outline">
-                                                <textarea
-                                                    class="textarea form-control w-100 h-px-200"
-                                                    id="shifts[{{$shiftKey}}][supporter_comment]"
-                                                    name="shifts[{{$shiftKey}}][supporter_comment]"
-                                                    placeholder="Ghi chú của trợ giảng"
-                                                    rows="5"></textarea>
-                                                <label for="shifts[{{$shiftKey}}][supporter_comment]">Ghi chú của trợ giảng</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                            {{--                            <div class="col-sm-6">--}}
-                            {{--                                <div class="form-floating form-floating-outline">--}}
-                            {{--                                    <input type="text" id="google" class="form-control"--}}
-                            {{--                                           placeholder="https://plus.google.com/abc"/>--}}
-                            {{--                                    <label for="google">Google+</label>--}}
-                            {{--                                </div>--}}
-                            {{--                            </div>--}}
+                        <div class="row g-4 mb-4">
+                            <div id="shiftsTemplate">
+                                @foreach($shiftTemplates as $shiftKey => $shiftTemplate)
+                                    @include('studylog.shiftTemplates',['shiftKey' => $shiftKey, 'shiftTemplate' => $shiftTemplate])
+                                @endforeach
+                            </div>
+                            <div type="button" id="add_new_shift" class="text-primary cursor-pointer text-start">Thêm ca
+                                học mới
+                            </div>
                         </div>
+                        <div class="row g-4">
+                            <div id="cardsTemplate">
+                                @foreach($cardsTemplate as $cardKey => $cardTemplate)
+                                    @include('studylog.cardsTemplate',['cardKey' => $cardKey, 'cardTemplate' => $cardTemplate])
+                                @endforeach
+                            </div>
+                            <div class="row justify-content-center align-items-center mt-3">
+                                <div class="col-md-6 form-floating form-floating-outline">
+                                    <select type="text" id="valid_card_id" name="card_id"
+                                            class="form-control selectpicker">
+                                        <option value="">Chọn thẻ học</option>
+                                        @foreach($validCardList as $key => $value)
+                                            <option value="{{$key}}">{{$value}}</option>
+                                        @endforeach
+                                    </select>
+                                    <label for="valid_card_id">Chọn thẻ học chưa gán lớp</label>
+                                </div>
+                                <div id="add_new_card" type="button"
+                                     class="col-md-6 text-primary cursor-pointer text-start">Thêm thẻ học vào lớp
+                                </div>
+                            </div>
+                        </div>
+                        @if($crudBag->getParam('classroom_schedule_id')!==null)
+                            <input type="hidden" name="classroom_schedule_id"
+                                   value="{{$crudBag->getParam('classroom_schedule_id')}}">
+                        @endif
+                        <div class="mt-4">
+                            <div class="form-floating form-floating-outline mb-3">
+                                <input class="form-control" name="title" id="content" value="{{old('title')??''}}"/>
+                                <label for="content">Tiêu đề</label>
+                            </div>
+
+                            <div class="form-floating form-floating-outline">
+                                <textarea class="form-control h-px-200" name="content" id="content">{{old('content')??''}}</textarea>
+                                <label for="content">Nội dung</label>
+                            </div>
+                        </div>
+                        <button name="submit" value="true" type="submit" class="btn btn-primary btn-submit mt-5">Điểm
+                            danh
+                        </button>
                     </div>
                 </form>
             </div>
@@ -299,8 +235,65 @@
     <script src="{{asset('/demo/assets/vendor/libs/select2/select2.js')}}"></script>
     <link rel="stylesheet" href="{{asset('/demo/assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}"/>
     <script src="{{asset('/demo/assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
         $(".select2").select2();
         $(".selectpicker").selectpicker();
+    </script>
+    <script>
+        const addNewShiftTemplate = () => {
+            const lastShiftTemplateId = $(`div[class^='shift-template']`).last();
+            const newId = parseInt(lastShiftTemplateId.attr('shift_id')) + 1
+            axios.post("{{ route('shiftTemplate.static.add') }}", {
+                    shift_id: newId,
+                    _token: "{{ csrf_token() }}"
+                }, {
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    }
+                },
+            ).then((response) => {
+                $("#shiftsTemplate").append(response.data)
+                $(".select2").select2();
+                $(".selectpicker").selectpicker();
+            })
+        }
+
+        const addNewCardTemplate = () => {
+            const selectCardId = $("#valid_card_id").val();
+
+            const lastCardTemplateId = $(`div[class^='card_template']`).last();
+            const newId = parseInt(lastCardTemplateId.attr('card_key')) + 1
+
+            axios.post("{{ route('cardTemplate.static.add') }}", {
+                    card_key: newId,
+                    card_id: selectCardId,
+                    _token: "{{ csrf_token() }}"
+                }, {
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                    }
+                },
+            ).then((response) => {
+                $("#cardsTemplate").append(response.data)
+                $(".select2").select2();
+                $(".selectpicker").selectpicker();
+                $("#valid_card_id option:selected").remove();
+                $("#valid_card_id").val('').trigger('change');
+            })
+        }
+
+        $("#add_new_shift").click(() => {
+            addNewShiftTemplate();
+        })
+
+        $("#add_new_card").click(() => {
+            addNewCardTemplate();
+        })
+
     </script>
 @endpush

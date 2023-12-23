@@ -179,5 +179,11 @@ return [
         'schedules.*.shifts.*.teacher_id' => 'giáo viên',
         'schedules.*.shifts.*.supporter_id' => 'trợ giảng',
         'schedules.*.shifts.*.room' => 'phòng học',
+        'shifts.*.teacher_timestamp' => 'Ảnh chấm ca GV',
+        'shifts.*.supporter_timestamp' => 'Ảnh chấm ca TA',
+        'shifts.*.start_time' => 'Thời gian bắt đầu',
+        'shifts.*.end_time' => 'Thời gian kết thúc ',
+        'shifts.*.teacher_id' => 'Giáo viên',
+        'shifts.*.supporter_id' => 'Trợ giảng',
     ],
 ];

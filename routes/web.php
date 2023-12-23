@@ -137,4 +137,6 @@ Route::middleware(['auth'])->group(function () {
 Route::prefix('static')->group(function () {
     Route::post('schedule', [ScheduleController::class, "staticAddSchedule"])->name('schedule.static.add');
     Route::post('shift', [ScheduleController::class, "staticAddShift"])->name('shift.static.add');
+    Route::post('shiftTemplate', [ScheduleController::class, "staticAddShiftTemplate"])->name('shiftTemplate.static.add');
+    Route::post('cardTemplate', [ScheduleController::class, "staticAddCardTemplate"])->name('cardTemplate.static.add');
 });
