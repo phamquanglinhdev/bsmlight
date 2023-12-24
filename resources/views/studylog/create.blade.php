@@ -10,6 +10,8 @@
         $listCardLogStatus = $crudBag->getParam('listCardLogStatus') ?? [];
         $validCardList = $crudBag->getParam('validCardList') ?? [];
         $shiftTemplates =$crudBag->getParam('shiftTemplates') ?? [];
+        $listSchedule = $crudBag->getParam('listSchedule') ?? [];
+        $allSchedules = $crudBag->getParam('allSchedules') ?? [];
 @endphp
 
 @extends('layouts.app')
@@ -36,14 +38,39 @@
                     </button>
                 </div>
                 <div class="line"></div>
-                <div class="step" data-target="#personal-info">
+                <div class="step" data-target="#personal-day">
                     <button type="button" class="step-trigger">
                         <span class="bs-stepper-circle"><i class="mdi mdi-check"></i></span>
                         <span class="bs-stepper-label">
                         <span class="bs-stepper-number">02</span>
                         <span class="d-flex flex-column gap-1 ms-2">
+                            <span class="bs-stepper-title">Chọn ngày học</span>
+                            <span class="bs-stepper-subtitle">
+                                  @if($crudBag->getParam('studylog_day')!==null && $crudBag->getParam('studylog_day')!=='')
+                                    {{\Illuminate\Support\Carbon::parse($crudBag->getParam('studylog_day'))->format('d/m/Y') ?? 'Chưa chọn ngày học'}}
+                                @else
+                                    Vui lòng chọn ngày học
+                                @endif
+                            </span>
+                        </span>
+                    </span>
+                    </button>
+                </div>
+                <div class="line"></div>
+                <div class="step" data-target="#personal-info">
+                    <button type="button" class="step-trigger">
+                        <span class="bs-stepper-circle"><i class="mdi mdi-check"></i></span>
+                        <span class="bs-stepper-label">
+                        <span class="bs-stepper-number">03</span>
+                        <span class="d-flex flex-column gap-1 ms-2">
                             <span class="bs-stepper-title">Chọn buổi học</span>
-                            <span class="bs-stepper-subtitle">Vui lòng chọn buổi học</span>
+                            <span class="bs-stepper-subtitle">
+                                  @if($crudBag->getParam('classroom_schedule_id')!==null && $crudBag->getParam('classroom_schedule_id')!=='')
+                                    {{$listSchedule[$crudBag->getParam('classroom_schedule_id')] ?? 'Chưa chọn buổi học'}}
+                                @else
+                                    Vui lòng chọn buổi học
+                                @endif
+                            </span>
                         </span>
                     </span>
                     </button>
@@ -53,10 +80,10 @@
                     <button type="button" class="step-trigger">
                         <span class="bs-stepper-circle"><i class="mdi mdi-check"></i></span>
                         <span class="bs-stepper-label">
-                        <span class="bs-stepper-number">03</span>
+                        <span class="bs-stepper-number">04</span>
                         <span class="d-flex flex-column gap-1 ms-2">
-                            <span class="bs-stepper-title">Social Links</span>
-                            <span class="bs-stepper-subtitle">Add social links</span>
+                            <span class="bs-stepper-title">Điểm danh</span>
+                            <span class="bs-stepper-subtitle">Tiến hành điểm danh</span>
                         </span>
                     </span>
                     </button>
@@ -89,11 +116,10 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Personal Info -->
-                    <div id="personal-info" class="content">
+                    <div id="personal-day" class="content">
                         <div class="row g-4">
-                            @if( $crudBag->getParam('classroom_id')!==null && $crudBag->getParam('classroom_id')!=='')
-                                <div class="col-sm-6">
+                            <div class="col-sm-6">
+                                @if( $crudBag->getParam('classroom_id')!==null && $crudBag->getParam('classroom_id')!=='')
                                     <div class="form-floating form-floating-outline">
                                         <input
                                             value="{{$crudBag->getParam('listClassroom')[$crudBag->getParam('classroom_id')]}}"
@@ -102,9 +128,60 @@
                                     </div>
                                     <input value="{{$crudBag->getParam('classroom_id')}}" type="hidden"
                                            name="classroom_id">
+                                    <div class="mt-2">
+                                        <div class="fw-bold mb-2">Lịch học của lớp : </div>
+                                        @foreach($allSchedules as $schedule)
+                                            <div class="badge-pro">
+                                                {{$schedule}}
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-floating form-floating-outline">
+                                    <input name="studylog_day" type="date" id="studylog_day" class="form-control">
+                                    <label for="studylog_day">Ngày điểm danh</label>
                                 </div>
+                            </div>
+                            <div class="col-12 d-flex justify-content-between">
+                                <button class="btn btn-outline-secondary btn-prev">
+                                    <i class="mdi mdi-arrow-left me-sm-1 me-0"></i>
+                                    <span class="align-middle d-sm-inline-block d-none">Quay lại chọn lớp</span>
+                                </button>
+                                <button class="btn btn-primary btn-next"><span
+                                        class="align-middle d-sm-inline-block d-none me-sm-1">Chọn buổi học</span>
+                                    <i class="mdi mdi-arrow-right"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Personal Info -->
+                    <div id="personal-info" class="content">
+                        <div class="row g-4">
+                            <div class="col-sm-6">
+                                @if( $crudBag->getParam('classroom_id')!==null && $crudBag->getParam('classroom_id')!=='')
+                                    <div class="form-floating form-floating-outline">
+                                        <input
+                                            value="{{$crudBag->getParam('listClassroom')[$crudBag->getParam('classroom_id')]}}"
+                                            type="text" id="first-name" class="form-control" disabled/>
+                                        <label for="first-name">Lớp học đã chọn</label>
+                                    </div>
+                                    <input value="{{$crudBag->getParam('classroom_id')}}" type="hidden"
+                                           name="classroom_id">
+                                @endif
+                                <div class="line my-3"></div>
+                                @if( $crudBag->getParam('studylog_day')!==null && $crudBag->getParam('studylog_day')!=='')
+                                    <div class="form-floating form-floating-outline">
+                                        <input
+                                            value="{{\Illuminate\Support\Carbon::parse($crudBag->getParam('studylog_day'))->format('d/m/Y')}}"
+                                            type="text" id="first-name" class="form-control" disabled/>
+                                        <label for="first-name">Ngày điểm danh</label>
+                                    </div>
+                                    <input value="{{$crudBag->getParam('studylog_day')}}" type="hidden"
+                                           name="studylog_day">
+                                @endif
+                            </div>
 
-                            @endif
                             <div class="col-sm-6">
                                 <div class="form-floating form-floating-outline">
                                     <select class="selectpicker w-auto" name="classroom_schedule_id" id="language"
@@ -122,7 +199,7 @@
                             <div class="col-12 d-flex justify-content-between">
                                 <button class="btn btn-outline-secondary btn-prev">
                                     <i class="mdi mdi-arrow-left me-sm-1 me-0"></i>
-                                    <span class="align-middle d-sm-inline-block d-none">Quay lại chọn lớp</span>
+                                    <span class="align-middle d-sm-inline-block d-none">Quay lại chọn ngày học</span>
                                 </button>
                                 <button class="btn btn-primary btn-next"><span
                                         class="align-middle d-sm-inline-block d-none me-sm-1">Bắt đầu điểm danh</span>
@@ -209,7 +286,7 @@
                                 <label for="content">Nội dung</label>
                             </div>
                         </div>
-                        <button name="submit" value="true" type="submit" class="btn btn-primary btn-submit mt-5">Điểm
+                        <button name="submit" value="true" type="submit" class="btn btn-primary btn-submit mt-5">Lưu thông tin điểm
                             danh
                         </button>
                     </div>

@@ -29,19 +29,19 @@ class ClassroomSchedule extends Model
     {
         switch ($this->week_day) {
             case 2:
-                return 'Monday';
+                return 'Thứ hai';
             case 3:
-                return 'Tuesday';
+                return 'Thứ ba';
             case 4:
-                return 'Wednesday';
+                return 'Thứ tư';
             case 5:
-                return 'Thursday';
+                return 'Thứ năm';
             case 6:
-                return 'Friday';
+                return 'Thứ sáu';
             case 7:
-                return 'Saturday';
+                return 'Thứ bày';
             case 8:
-                return 'Sunday';
+                return 'Chủ nhật';
         }
         return '';
     }

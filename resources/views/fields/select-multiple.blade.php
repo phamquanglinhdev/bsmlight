@@ -4,8 +4,11 @@
      * @var Fields $field
      */
 
-
-    $arrayValue = old($field->getName())  ?? json_decode($field->getValue(), true) ?? [];
+    $value = $field->getValue();
+    if(! is_array($value)){
+        $value = json_decode($value,true);
+    }
+    $arrayValue = old($field->getName())  ?? $value ?? [];
 
     if(empty($arrayValue)){
         $arrayValue = [-1];

@@ -61,93 +61,107 @@ class StudyLogController extends Controller
 
         if (!$request->get('classroom_id')) {
             $crudBag->setParam('step', 1);
-        } else {
+        } else{
             $crudBag->setParam('classroom_id', $request->get('classroom_id'));
-            $classroom = Classroom::query()->where('id', $request->get('classroom_id'))->first();
-
-            $listSchedule = $classroom->Schedules()->get()->mapWithKeys(function (ClassroomSchedule $schedule) {
-                return [$schedule->id => $schedule->getWeekStringAttribute() . ': ' . $schedule->start_time . ' - ' . $schedule->end_time];
+            $allSchedules = ClassroomSchedule::query()->where('classroom_id', $request->get('classroom_id'))->get()->map(function (ClassroomSchedule $schedule) {
+                return $schedule->getWeekStringAttribute() . ': ' . $schedule->start_time . ' - ' . $schedule->end_time;
             });
 
-            $crudBag->setParam('listSchedule', $listSchedule);
-
-            if (!$request->get('classroom_schedule_id')) {
+            $crudBag->setParam('allSchedules', $allSchedules);
+            if (!$request->get('studylog_day')) {
                 $crudBag->setParam('step', 2);
             } else {
-                $validCardList = Card::query()->where('classroom_id', null)->where('student_id', '!=', null)->where('card_status', Card::STATUS_ACTIVE)
-                    ->get()->mapwithkeys(function (Card $card) {
-                        return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chọn gắn học sinh'];
-                    })->all();
-                $crudBag->setParam('validCardList', $validCardList);
+                $crudBag->setParam('studylog_day', $request->get('studylog_day'));
+                $classroom = Classroom::query()->where('id', $request->get('classroom_id'))->first();
 
-                $crudBag->setParam('classroom_schedule_id', $request->get('classroom_schedule_id'));
-                /**
-                 * @var ClassroomSchedule $schedule
-                 */
-                $schedule = ClassroomSchedule::query()->where('id', $request->get('classroom_schedule_id'))->where('classroom_id', $request->get('classroom_id') ?? '')->first();
-                if (!$schedule) {
-                    $shiftTemplates = [
-                        [
-                            'teacher_id' => '',
-                            'supporter_id' => '',
-                            'start_time' => '',
-                            'end_time' => '',
-                            'room' => '',
-                            'teacher_timestamp' => '',
-                            'supporter_timestamp' => '',
-                            'teacher_comment' => '',
-                            'supporter_comment' => '',
-                        ]
-                    ];
-                } else {
-                    $shiftTemplates = $schedule->Shifts()->get()->map(function (ClassroomShift $shift) {
-                        return [
-                            'teacher_id' => $shift->student_id,
-                            'supporter_id' => $shift->supporter_id,
-                            'start_time' => $shift->start_time,
-                            'end_time' => $shift->end_time,
-                            'room' => $shift->room,
-                            'teacher_timestamp' => '',
-                            'supporter_timestamp' => '',
-                            'teacher_comment' => '',
-                            'supporter_comment' => '',
+                $listSchedule = $classroom->Schedules()->get()->mapWithKeys(function (ClassroomSchedule $schedule) {
+                    return [$schedule->id => $schedule->getWeekStringAttribute() . ': ' . $schedule->start_time . ' - ' . $schedule->end_time];
+                });
+
+                $crudBag->setParam('listSchedule', $listSchedule);
+
+                if (!$request->get('classroom_schedule_id')) {
+                    $crudBag->setParam('step', 3);
+                }else{
+                    $crudBag->setParam('step', 4);
+                    $crudBag->setParam('classroom_schedule_id', $request->get('classroom_schedule_id'));
+                    if ( $request->get('classroom_schedule_id')) {
+                        $validCardList = Card::query()->where('classroom_id', null)->where('student_id', '!=', null)->where('card_status', Card::STATUS_ACTIVE)
+                            ->get()->mapwithkeys(function (Card $card) {
+                                return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chọn gắn học sinh'];
+                            })->all();
+                        $crudBag->setParam('validCardList', $validCardList);
+
+                        $crudBag->setParam('classroom_schedule_id', $request->get('classroom_schedule_id'));
+                        /**
+                         * @var ClassroomSchedule $schedule
+                         */
+                        $schedule = ClassroomSchedule::query()->where('id', $request->get('classroom_schedule_id'))->where('classroom_id', $request->get('classroom_id') ?? '')->first();
+                        if (!$schedule) {
+                            $shiftTemplates = [
+                                [
+                                    'teacher_id' => '',
+                                    'supporter_id' => '',
+                                    'start_time' => '',
+                                    'end_time' => '',
+                                    'room' => '',
+                                    'teacher_timestamp' => '',
+                                    'supporter_timestamp' => '',
+                                    'teacher_comment' => '',
+                                    'supporter_comment' => '',
+                                ]
+                            ];
+                        } else {
+                            $shiftTemplates = $schedule->Shifts()->get()->map(function (ClassroomShift $shift) {
+                                return [
+                                    'teacher_id' => $shift->student_id,
+                                    'supporter_id' => $shift->supporter_id,
+                                    'start_time' => $shift->start_time,
+                                    'end_time' => $shift->end_time,
+                                    'room' => $shift->room,
+                                    'teacher_timestamp' => '',
+                                    'supporter_timestamp' => '',
+                                    'teacher_comment' => '',
+                                    'supporter_comment' => '',
+                                ];
+                            });
+                        }
+
+                        $crudBag->setParam('shiftTemplates', $shiftTemplates);
+
+                        $cardsTemplate = $classroom->Cards()?->get()->map(function (Card $card) {
+                            return [
+                                'card_id' => $card->id,
+                                'card_uuid' => $card->uuid,
+                                'student_id' => $card->student_id,
+                                'student_uuid' => $card->student?->uuid,
+                                'student_name' => $card->student?->name,
+                                'student_avatar' => $card->student?->avatar,
+                                'attended_days' => $card->attended_days + $card->van,
+                                'can_use_day' => $card->can_use_day,
+                                'day' => 0,
+                                'status' => null,
+                                'reason' => '',
+                                'teacher_note' => '',
+                                'supporter_note' => '',
+                            ];
+                        });
+                        $crudBag->setParam('cardsTemplate', $cardsTemplate);
+
+                        $listCardLogStatus = [
+                            0 => 'Đi học, đúng giờ',
+                            1 => 'Đi học, muộn',
+                            2 => 'Đi học, sớm',
+                            3 => 'Vắng, có phép',
+                            4 => 'Vắng, không phép',
+                            5 => 'Không điểm danh',
                         ];
-                    });
+
+                        $crudBag->setParam('listCardLogStatus', $listCardLogStatus);
+                        $crudBag->setParam('classroom_schedule_id', $request->get('classroom_schedule_id'));
+                    }
                 }
 
-                $crudBag->setParam('shiftTemplates', $shiftTemplates);
-
-                $cardsTemplate = $classroom->Cards()?->get()->map(function (Card $card) {
-                    return [
-                        'card_id' => $card->id,
-                        'card_uuid' => $card->uuid,
-                        'student_id' => $card->student_id,
-                        'student_uuid' => $card->student?->uuid,
-                        'student_name' => $card->student?->name,
-                        'student_avatar' => $card->student?->avatar,
-                        'attended_days' => $card->attended_days + $card->van,
-                        'can_use_day' => $card->can_use_day,
-                        'day' => 0,
-                        'status' => null,
-                        'reason' => '',
-                        'teacher_note' => '',
-                        'supporter_note' => '',
-                    ];
-                });
-                $crudBag->setParam('cardsTemplate', $cardsTemplate);
-
-                $listCardLogStatus = [
-                    0 => 'Đi học, đúng giờ',
-                    1 => 'Đi học, muộn',
-                    2 => 'Đi học, sớm',
-                    3 => 'Vắng, có phép',
-                    4 => 'Vắng, không phép',
-                    5 => 'Không điểm danh',
-                ];
-
-                $crudBag->setParam('listCardLogStatus', $listCardLogStatus);
-                $crudBag->setParam('classroom_schedule_id', $request->get('classroom_schedule_id'));
-                $crudBag->setParam('step', 3);
             }
         }
 

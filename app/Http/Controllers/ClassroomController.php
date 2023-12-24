@@ -430,12 +430,21 @@ class ClassroomController extends Controller
             ]);
         }
 
-        $cardList = Card::query()->where(function (Builder $query) use ($classroom) {
-            $query->where('classroom_id', $classroom->id)->orWhere('classroom_id', null);
-        })->where('student_id', '!=', null)->where('card_status', Card::STATUS_ACTIVE)
-        ->get()->mapwithkeys(function (Card $card) {
-            return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chọn gắn học sinh'];
-        })->all();
+        if($id) {
+            $cardList = Card::query()->where(function (Builder $query) use ($classroom) {
+                $query->where('classroom_id', $classroom->id)->orWhere('classroom_id', null);
+            })->where('student_id', '!=', null)->where('card_status', Card::STATUS_ACTIVE)
+                ->get()->mapwithkeys(function (Card $card) {
+                    return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chọn gắn học sinh'];
+                })->all();
+        } else {
+
+            $cardList = Card::query()->where('student_id','!=',null)->where('classroom_id',null)
+                ->where('card_status', Card::STATUS_ACTIVE)
+                ->get()->mapwithkeys(function ($card) {
+                return [$card->id => $card->uuid . " - " . $card->name];
+            })->all();
+        }
 
         $crudBag->addFields([
             'name' => 'card_ids',
