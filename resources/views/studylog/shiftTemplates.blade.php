@@ -24,6 +24,7 @@
                 <div class="form-floating form-floating-outline">
                     <input
                         id="shifts[{{$shiftKey}}][start_time]"
+                        onchange="calDuration('{{$shiftKey}}')"
                         value="{{old('shifts.'.$shiftKey.'.start_time')??$shiftTemplate['start_time']}}"
                         name="shifts[{{$shiftKey}}][start_time]" type="time"
                         class="form-control">
@@ -38,6 +39,7 @@
             <div class="col-md-2 col-12 mb-3">
                 <div class="form-floating form-floating-outline">
                     <input
+                        onchange="calDuration('{{$shiftKey}}')"
                         id="shifts[{{$shiftKey}}][end_time]"
                         value="{{old('shifts.'.$shiftKey.'.end_time')??$shiftTemplate['end_time']}}"
                         name="shifts[{{$shiftKey}}][end_time]" type="time"
@@ -141,8 +143,7 @@
                                                     name="shifts[{{$shiftKey}}][teacher_comment]"
                                                     placeholder="Ghi chú của giáo viên"
                                                     rows="5"></textarea>
-                    <label for="shifts[{{$shiftKey}}][teacher_comment]">Ghi chú của giáo
-                        viên</label>
+                    <label for="shifts[{{$shiftKey}}][teacher_comment]">Báo cáo của giáo viên cho Admin</label>
                 </div>
             </div>
             <div class="col-md-6 mb-3">
@@ -153,10 +154,19 @@
                                                     name="shifts[{{$shiftKey}}][supporter_comment]"
                                                     placeholder="Ghi chú của trợ giảng"
                                                     rows="5"></textarea>
-                    <label for="shifts[{{$shiftKey}}][supporter_comment]">Ghi chú của trợ
-                        giảng</label>
+                    <label for="shifts[{{$shiftKey}}][supporter_comment]">Báo cáo của trợ giảng cho Admin</label>
                 </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    function calDuration(sheetKey) {
+        const startTime = document.getElementById(`shifts[${sheetKey}][end_time]`).value;
+        const endTime =document.getElementById(`shifts[${sheetKey}][start_time]`).value;
+        const date1 = new Date("2023-01-01 " + startTime);
+        const date2 = new Date("2023-01-01 " + endTime);
+
+        document.getElementById(`shifts[${sheetKey}][duration]`).value = (date1 - date2) / (1000 * 60);
+    }
+</script>

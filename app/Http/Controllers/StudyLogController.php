@@ -237,7 +237,7 @@ class StudyLogController extends Controller
                         'supporter_id' => $shift->supporter_id,
                         'start_time' => $shift->start_time,
                         'end_time' => $shift->end_time,
-                        'duration' => 0,
+                        'duration' => Carbon::parse($shift->start_time)->diffInMinutes($shift->end_time),
                         'room' => $shift->room,
                         'teacher_timestamp' => '',
                         'supporter_timestamp' => '',

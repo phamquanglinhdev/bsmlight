@@ -59,8 +59,7 @@
                                                 <textarea id="cardlogs[{{$cardKey}}][teacher_note]"
                                                           name="cardlogs[{{$cardKey}}][teacher_note]"
                                                           class="h-px-200 form-control">{{old('cardlogs.'.$cardKey.'.teacher_note')??$cardTemplate['teacher_note']}}</textarea>
-                    <label for="cardlogs[{{$cardKey}}][teacher_note]">Nhận xét của giáo
-                        viên</label>
+                    <label for="cardlogs[{{$cardKey}}][teacher_note]">Lời nhắn của giáo viên cho HS/PHHS</label>
                 </div>
             </div>
             <div class="col-md-4">
@@ -68,8 +67,7 @@
                                                 <textarea id="cardlogs[{{$cardKey}}][supporter_note]"
                                                           name="cardlogs[{{$cardKey}}][supporter_note]"
                                                           class="h-px-200 form-control">{{old('cardlogs.'.$cardKey.'.supporter_note')??$cardTemplate['supporter_note']}}</textarea>
-                    <label for="cardlogs[{{$cardKey}}][supporter_note]">Nhận xét của trợ
-                        giảng</label>
+                    <label for="cardlogs[{{$cardKey}}][supporter_note]">Lời nhắn của giáo viên cho HS/PHHS</label>
                 </div>
             </div>
         </div>
