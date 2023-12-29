@@ -20,14 +20,14 @@
                                         <span class="mdi mdi-close text-danger fw-bold"></span>
                                     </span>
         <div class="row">
-            <div class="col-md-3 col-12 mb-3">
+            <div class="col-md-2 col-12 mb-3">
                 <div class="form-floating form-floating-outline">
                     <input
                         id="shifts[{{$shiftKey}}][start_time]"
                         value="{{old('shifts.'.$shiftKey.'.start_time')??$shiftTemplate['start_time']}}"
                         name="shifts[{{$shiftKey}}][start_time]" type="time"
                         class="form-control">
-                    <label for="shifts[{{$shiftKey}}][start_time]">Thời gian bắt đầu</label>
+                    <label for="shifts[{{$shiftKey}}][start_time]">Thời gian bắt đầu ca học</label>
                     @error('shifts.'.$shiftKey.'.start_time')
                     <div class="small mt-1 text-danger">
                         {{ $message }}
@@ -35,19 +35,29 @@
                     @enderror
                 </div>
             </div>
-            <div class="col-md-3 col-12 mb-3">
+            <div class="col-md-2 col-12 mb-3">
                 <div class="form-floating form-floating-outline">
                     <input
                         id="shifts[{{$shiftKey}}][end_time]"
                         value="{{old('shifts.'.$shiftKey.'.end_time')??$shiftTemplate['end_time']}}"
                         name="shifts[{{$shiftKey}}][end_time]" type="time"
                         class="form-control">
-                    <label for="shifts[{{$shiftKey}}][end_time]">Thời gian kết thúc</label>
+                    <label for="shifts[{{$shiftKey}}][end_time]">Thời gian kết thúc ca học</label>
                     @error('shifts.'.$shiftKey.'.end_time')
                     <div class="small mt-1 text-danger">
                         {{ $message }}
                     </div>
                     @enderror
+                </div>
+            </div>
+            <div class="col-md-2 col-12 mb-3">
+                <div class="form-floating form-floating-outline">
+                    <input
+                        id="shifts[{{$shiftKey}}][duration]"
+                        value="{{old('shifts.'.$shiftKey.'.duration')??$shiftTemplate['duration']}}"
+                        name="shifts[{{$shiftKey}}][duration]" type="number"
+                        class="form-control" readonly>
+                    <label for="shifts[{{$shiftKey}}][duration]">Thời lượng (phút) để tính lương</label>
                 </div>
             </div>
             <div class="col-md-3 col-12 mb-3">
