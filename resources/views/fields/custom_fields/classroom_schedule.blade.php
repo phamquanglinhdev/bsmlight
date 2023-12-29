@@ -2,7 +2,7 @@
 @php
 
     /** @var Fields $field */
-    $schedules = old('schedules') ?? $field->getAttributes()['value']['schedules'];
+    $schedules = old('schedules') ?? session('schedules') ?? $field->getAttributes()['value']['schedules'];
 
     $teacherList = $field->getAttributes()['value']['teacher_list'];
     $supporterList = $field->getAttributes()['value']['supporter_list'];
@@ -91,18 +91,38 @@
         }
 
         const removeSchedule = (id) => {
-            const result = confirm('Bạn có chắc chắn muốn xóa lịch học này ?')
+            if($("div[id^='schedule-']").length < 2) {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    positionClass: 'toast-bottom-right',
+                    timeOut: 2000 // Thời gian hiển thị thông báo (5 giây)
+                };
+                toastr.error('Không thể xóa');
+            }else {
+                const result = confirm('Bạn có chắc chắn muốn xóa lịch học này ?')
 
-            if(result){
-                $(`#schedule-${id}`).remove();
+                if(result){
+                    $(`#schedule-${id}`).remove();
+                }
             }
         }
 
         const removeShift = (id,scheduleId) => {
-            const result = confirm(' có chắc chắn muốn xóa ca học không ?')
+            if($(`#schedule-${scheduleId} div[class^='position-relative shift']`).length < 2) {
+                toastr.options = {
+                    closeButton: true,
+                    progressBar: true,
+                    positionClass: 'toast-bottom-right',
+                    timeOut: 2000 // Thời gian hiển thị thông báo (5 giây)
+                };
+                toastr.error('Không thể xóa');
+            }else {
+                const result = confirm(' có chắc chắn muốn xóa ca học không ?')
 
-            if(result){
-                $(`#shift_${id}_schedule_${scheduleId}`).remove();
+                if(result){
+                    $(`#shift_${id}_schedule_${scheduleId}`).remove();
+                }
             }
         }
     </script>

@@ -13,10 +13,13 @@ use App\Models\Supporter;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 class ClassroomController extends Controller
@@ -250,6 +253,15 @@ class ClassroomController extends Controller
             'card_ids' => 'array',
         ]);
 
+        $factory = $this->classroomFactory($request->input());
+
+        if (!empty($factory['errors'])) {
+
+            return redirect()->back()->withErrors($factory['errors'])->with('schedules', $request->get('schedules'));
+        }
+
+        $request->merge(['schedules' => $factory['data']]);
+
         $dataToCreateClassroom = [
             'name' => $request->get('name'),
             'avatar' => $request->get('avatar'),
@@ -301,7 +313,10 @@ class ClassroomController extends Controller
         return redirect()->to('/classroom/list')->with('success', 'Tạo lớp học thành công');
     }
 
-    public function update(Request $request, int $id)
+    /**
+     * @throws ValidationException
+     */
+    public function update(Request $request, int $id): RedirectResponse
     {
         /**
          * @var Classroom $classroom
@@ -317,14 +332,21 @@ class ClassroomController extends Controller
             'schedules.*.week_day' => 'required',
             'schedules.*.start_time' => 'required',
             'schedules.*.end_time' => 'required',
-            'schedules.*.shifts' => 'array',
-            'schedules.*.shifts.*.start_time' => 'required',
-            'schedules.*.shifts.*.end_time' => 'required',
+            'schedules.*.shifts' => 'array|required',
             'schedules.*.shifts.*.teacher_id' => 'required',
             'schedules.*.shifts.*.supporter_id' => 'integer|nullable',
             'schedules.*.shifts.*.room' => 'string|nullable',
             'card_ids' => 'array',
         ]);
+
+        $factory = $this->classroomFactory($request->input());
+
+        if (!empty($factory['errors'])) {
+
+            return redirect()->back()->withErrors($factory['errors'])->with('schedules', $request->get('schedules'));
+        }
+
+        $request->merge(['schedules' => $factory['data']]);
 
         $dataToCreateClassroom = [
             'name' => $request->get('name'),
@@ -430,7 +452,7 @@ class ClassroomController extends Controller
             ]);
         }
 
-        if($id) {
+        if ($id) {
             $cardList = Card::query()->where(function (Builder $query) use ($classroom) {
                 $query->where('classroom_id', $classroom->id)->orWhere('classroom_id', null);
             })->where('student_id', '!=', null)->where('card_status', Card::STATUS_ACTIVE)
@@ -439,11 +461,11 @@ class ClassroomController extends Controller
                 })->all();
         } else {
 
-            $cardList = Card::query()->where('student_id','!=',null)->where('classroom_id',null)
+            $cardList = Card::query()->where('student_id', '!=', null)->where('classroom_id', null)
                 ->where('card_status', Card::STATUS_ACTIVE)
                 ->get()->mapwithkeys(function ($card) {
-                return [$card->id => $card->uuid . " - " . $card->name];
-            })->all();
+                    return [$card->id => $card->uuid . " - " . $card->name];
+                })->all();
         }
 
         $crudBag->addFields([
@@ -479,5 +501,94 @@ class ClassroomController extends Controller
         $crudBag->setLabel('Lớp học');
 
         return $crudBag;
+    }
+
+    private function classroomFactory(array $dataValidate): array
+    {
+        $errors = [];
+        $schedules = $dataValidate['schedules'];
+
+        foreach ($schedules as $scheduleKey => $schedule) {
+            $startTimeBound = Carbon::parse($schedule['start_time']);
+            $endTimeBound = Carbon::parse($schedule['end_time']);
+
+            if ($startTimeBound > $endTimeBound) {
+                $errors["schedules.$scheduleKey.start_time"] = 'Thời gian bắt đầu không được lớn hơn thời gian kết thúc';
+                break;
+            }
+
+            $shifts = $schedule['shifts'];
+
+            if (count($shifts) == 1) {
+                if ($shifts[1]['start_time'] == null) {
+                    $schedules[$scheduleKey]['shifts'][1]['start_time'] = $schedule['start_time'];
+                } else {
+                    if ($schedule['start_time'] != $shifts[1]['start_time']) {
+                        $errors["schedules.$scheduleKey.shifts.1.start_time"] = 'Thời gian bắt đầu ca không hợp lệ';
+                        break;
+                    }
+                }
+                if ($shifts[1]['end_time'] == null) {
+                    $schedules[$scheduleKey]['shifts'][1]['end_time'] = $schedule['end_time'];
+                } else {
+                    if ($schedule['end_time'] != $shifts[1]['end_time']) {
+                        $errors["schedules.$scheduleKey.shifts.1.end_time"] = 'Thời gian kết thúc ca không hợp lệ';
+                    }
+                }
+
+            } else {
+                $scheduleTimeBound = Carbon::parse($schedule['start_time'])->diffInMinutes(Carbon::parse($schedule['end_time']));
+                $shiftTimeBound = 0;
+                foreach ($shifts as $shiftKey => $shift) {
+                    if ($shift['start_time'] == null) {
+                        $errors["schedules.$scheduleKey.shifts.$shiftKey.start_time"] = 'Trường thời gian bắt đầu ca không được để trống';
+                        break;
+                    }
+
+                    if ($shift['end_time'] == null) {
+                        $errors["schedules.$scheduleKey.shifts.$shiftKey.end_time"] = 'Trường thời gian kết thúc ca không được để trống';
+                        break;
+                    }
+
+                    $shiftStartTime = Carbon::parse($shift['start_time']);
+                    $shiftEndTime = Carbon::parse($shift['end_time']);
+
+                    if ($shiftStartTime > $shiftEndTime) {
+                        $errors["schedules.$scheduleKey.shifts.$shiftKey.start_time"] =
+                            "Thời gian bắt đầu không lớn hơn thời gian kết thúc";
+                        break;
+                    }
+
+                    if ($shiftStartTime != $startTimeBound) {
+                        $errors["schedules.$scheduleKey.shifts.$shiftKey.start_time"] =
+                            "Vượt quá phạm vi ({$startTimeBound->isoFormat('HH:mm')} - {$endTimeBound->isoFormat('HH:mm')}) ";
+                        break;
+                    }
+                    if ($shiftEndTime > $endTimeBound) {
+                        $errors["schedules.$scheduleKey.shifts.$shiftKey.end_time"] = "Vượt quá phạm vi ({$startTimeBound->isoFormat('HH:mm')} - {$endTimeBound->isoFormat('HH:mm')}) ";
+                        break;
+                    }
+
+                    $shiftTimeBound += $shiftStartTime->diffInMinutes($shiftEndTime);
+
+                    if ($shiftTimeBound > $scheduleTimeBound) {
+                        $errors["schedules.$scheduleKey.end_time"] = "Thời gian ca học vượt quá thời gian buổi học ({$shiftTimeBound} phút / {$scheduleTimeBound} phút)";
+                    }
+
+                    $startTimeBound = $shiftEndTime;
+                }
+
+                if (empty($errors)) {
+                    if ($shiftTimeBound < $scheduleTimeBound) {
+                        $errors["schedules.$scheduleKey.end_time"] = "Tổng thời gian ca học chưa đủ ({$shiftTimeBound} phút / {$scheduleTimeBound} phút)";
+                    }
+                }
+            }
+        }
+
+        return [
+            'errors' => $errors,
+            'data' => $schedules
+        ];
     }
 }

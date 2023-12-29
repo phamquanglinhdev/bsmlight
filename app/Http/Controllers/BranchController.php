@@ -49,11 +49,11 @@ class BranchController extends Controller
             'required' => true
         ]);
 
-        $crudBag->addFields([
-            'name' => 'description',
-            'label' => 'Mô tả chi nhánh',
-            'type' => 'textarea',
-        ]);
+//        $crudBag->addFields([
+//            'name' => 'description',
+//            'label' => 'Mô tả chi nhánh',
+//            'type' => 'textarea',
+//        ]);
 
         $crudBag->setLabel('Chi nhánh');
 

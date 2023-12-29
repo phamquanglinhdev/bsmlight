@@ -72,51 +72,107 @@
                                 </div>
 
                                 <div class="card-body">
-                                    <div class="d-flex align-items-center flex-wrap">
-                                        <div class="bg-lighter px-2 py-1 rounded-2 me-auto mb-3">
-                                            <span class="text-body">Doanh thu</span>
-                                            <p class="mb-1"><span class="fw-medium text-heading">{{number_format($branch['earned'])}} đ </span>
-                                            </p>
-                                        </div>
-                                        <div class="text-end mb-3">
-                                            <p class="mb-1"><span class="text-heading fw-medium">Ngày tạo: </span>
-                                                <span> {{$branch['created']}} </span>
-                                            </p>
-                                            <p class="mb-1"><span class="text-heading fw-medium">Truy cập: </span>
+                                    <div class="small align-items-center flex-wrap">
+                                        <div class="mb-0">
+{{--                                            <p class="mb-1"><span class="text-heading fw-medium">Ngày tạo: </span>--}}
+{{--                                                <span> {{$branch['created']}} </span>--}}
+{{--                                            </p>--}}
+                                            <p class="mb-1"><span class="text-heading fw-medium">Truy cập lần cuối: </span>
                                                 <span>{{$branch['last_active_time']}}</span></p>
                                         </div>
                                     </div>
-                                    <p class="mb-0">{{$branch['description']}}</p>
+{{--                                    <p class="mb-0">{{$branch['description']}}</p>--}}
                                 </div>
-                                <div class="card-body border-top">
-                                    <div class="d-flex align-items-center mb-3">
-                                        <p class="mb-1"><span class="text-heading fw-medium">Số phút học: </span>
-                                            <span>{{$branch['total_minutes']}}</span></p>
-                                        <span class="badge bg-label-success ms-auto rounded-pill">{{$branch['total_studylog']}} buổi học</span>
+                                <div class="card-body border-top small">
+                                    <div class="align-items-center mb-3">
+                                        <div class="fw-bold mb-2">Số giờ các lớp đã thực hiện:</div>
+                                        <div class="mb-2">
+                                            <span class="mdi mdi-timer-check me-1 mb-2"></span>
+                                            Tháng này: <span class="badge bg-label-success small"> 50 giờ</span>
+                                        </div>
+                                        <div>
+                                            <span class="mdi mdi-timer-check me-1 mb-2"></span>
+                                            Tháng trước: <span class="badge bg-label-danger small"> 50 giờ</span></div>
+                                        {{--                                        <span class="badge bg-label-success ms-auto rounded-pill">{{$branch['total_studylog']}} buổi học</span>--}}
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-6 d-flex align-items-center mb-3">
+                                    <div class="align-items-center mb-3">
+                                        <div class="fw-bold mb-2">Số buổi học các lớp đã thực hiện:</div>
+                                        <div class="mb-2">
+                                            <span class="mdi mdi-clipboard-text-clock me-1 mb-2"></span>
+                                            Tháng này: <span class="badge bg-label-success small"> 50 buổi</span>
+                                        </div>
+                                        <div>
+                                            <span class="mdi mdi-clipboard-text-clock me-1 mb-2"></span>
+                                            Tháng trước: <span class="badge bg-label-danger small"> 50 buổi</span></div>
+                                        {{--                                        <span class="badge bg-label-success ms-auto rounded-pill">{{$branch['total_studylog']}} buổi học</span>--}}
+                                    </div>
+                                    <div class="align-items-center mb-3">
+                                        <div class="fw-bold mb-2">Doanh thu thực :</div>
+                                        <div class="mb-2">
+                                            <span class="mdi mdi-cash me-1 mb-2"></span>
+                                            Tháng này: <span class="badge bg-label-success small"> 50.000.000 đ</span>
+                                        </div>
+                                        <div>
+                                            <span class="mdi mdi-cash me-1 mb-2"></span>
+                                            Tháng trước: <span class="badge bg-label-danger small"> 50.000.000 đ</span></div>
+                                        {{--                                        <span class="badge bg-label-success ms-auto rounded-pill">{{$branch['total_studylog']}} buổi học</span>--}}
+                                    </div>
+                                    <div class="align-items-center mb-3">
+                                        <div class="fw-bold mb-2">Nợ phải trả:</div>
+                                        <div class="mb-2">
+                                            <span class="mdi mdi-cash-multiple me-1 mb-2"></span>
+                                            Tháng này: <span class="badge bg-label-success small"> 425.000.000 đ</span>
+                                        </div>
+                                        <div>
+                                            <span class="mdi mdi-cash-multiple me-1 mb-2"></span>
+                                            Tháng trước: <span class="badge bg-label-danger small"> 475.000.000 đ</span></div>
+                                        {{--                                        <span class="badge bg-label-success ms-auto rounded-pill">{{$branch['total_studylog']}} buổi học</span>--}}
+                                    </div>
+                                    <div class="row mb-4">
+                                        <div class="col-md-4 d-flex align-items-center mb-3">
                                             <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2">
-                                                <li><small class="text-muted">{{$branch['total_student']}} Học
-                                                        sinh</small></li>
+                                                <li>
+                                                    <span class="mdi mdi-account"></span>
+                                                    <small class="text-muted">{{$branch['total_student']}} Học sinh</small>
+                                                </li>
                                             </ul>
                                         </div>
-                                        <div class="col-md-6 d-flex align-items-center mb-3">
+                                        <div class="col-md-4 d-flex align-items-center mb-3">
                                             <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2">
-                                                <li><small class="text-muted">{{$branch['total_teacher']}} Giáo
-                                                        viên</small></li>
+                                                <li>
+                                                    <span class="mdi mdi-account"></span>
+                                                    <small class="text-muted">{{$branch['total_teacher']}} Giáo viên</small></li>
                                             </ul>
                                         </div>
-                                        <div class="col-md-6 d-flex align-items-center mb-3">
+                                        <div class="col-md-4 d-flex align-items-center mb-3">
                                             <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2">
-                                                <li><small class="text-muted">{{$branch['total_supporter']}} Trợ
-                                                        giảng</small></li>
+                                                <li>
+                                                    <span class="mdi mdi-account"></span>
+                                                    <small class="text-muted">{{$branch['total_supporter']}} Trợ
+                                                        giảng</small>
+                                                </li>
                                             </ul>
                                         </div>
-                                        <div class="col-md-6 d-flex align-items-center mb-3">
+                                        <div class="col-md-4 d-flex align-items-center mb-3">
                                             <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2">
-                                                <li><small class="text-muted">{{$branch['total_staff']}} Nhân
-                                                        viên</small></li>
+                                                <li>
+
+                                                    <span class="mdi mdi-account"></span>
+                                                    <small class="text-muted">{{$branch['total_staff']}} Nhân viên</small></li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-4 d-flex align-items-center mb-3">
+                                            <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2">
+                                                <li>
+                                                    <span class="mdi mdi-google-classroom"></span>
+                                                    <small class="text-muted">{{$branch['total_staff']}} Lớp học</small></li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-4 d-flex align-items-center mb-3">
+                                            <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2">
+                                                <li>
+                                                    <span class="mdi mdi-card-text-outline"></span>
+                                                    <small class="text-muted">{{$branch['total_staff']}} Thẻ học</small></li>
                                             </ul>
                                         </div>
                                     </div>
