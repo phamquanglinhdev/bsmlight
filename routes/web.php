@@ -112,7 +112,7 @@ Route::middleware(['auth'])->group(function () {
         Route::prefix('studylog')->group(function () {
 
             Route::get('/create', [StudyLogController::class, "create"])->name('studylog.create');
-            Route::any('/store', [StudyLogController::class, "store"])->name('studylog.store');
+            Route::any('/store/{step?}', [StudyLogController::class, "store"])->name('studylog.store');
             Route::get('/list', [StudyLogController::class, "list"])->name('studylog.list');
             Route::get('/edit/{id}', [StudyLogController::class, "edit", "id"])->name('studylog.edit');
             Route::post('/update/{id}', [StudyLogController::class, "update", "id"])->name('studylog.update');
