@@ -5,18 +5,22 @@ namespace App\Http\Controllers;
 use App\Helper\CrudBag;
 use App\Helper\ListViewModel;
 use App\Models\Card;
+use App\Models\CardLog;
 use App\Models\Classroom;
 use App\Models\ClassroomSchedule;
 use App\Models\ClassroomShift;
 use App\Models\StudyLog;
 use App\Models\Supporter;
 use App\Models\Teacher;
+use App\Models\WorkingShift;
 use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
@@ -29,7 +33,7 @@ class StudyLogController extends Controller
         $crudBag->setLabel('Điểm danh');
         $crudBag->setEntity('studylog');
         $crudBag->setSearchValue($request->get('search'));
-
+        $crudBag = $crudBag->handleColumns($request, $crudBag);
         $query = StudyLog::query();
 
         $listViewModel = new ListViewModel($query->paginate($request->get('perPage') ?? 10));
@@ -41,7 +45,6 @@ class StudyLogController extends Controller
     }
 
     /**
-     * @throws ValidationException
      */
 
 
@@ -50,7 +53,7 @@ class StudyLogController extends Controller
         return $this->create($request, $step);
     }
 
-    public function create(Request $request, $step = 1): View
+    public function create(Request $request, $step = 1): View|RedirectResponse
     {
         $crudBag = new CrudBag();
 
@@ -288,12 +291,25 @@ class StudyLogController extends Controller
         ]);
     }
 
-    private function finalStore(Request $request, CrudBag $crudBag)
+    private function finalStore(Request $request, CrudBag $crudBag): RedirectResponse|View
     {
         $crudBag->setParam('step', 4);
 
         $cardsTemplates = [];
         $shiftTemplates = [];
+
+        foreach ($request->get('shifts') as $key => $shift) {
+            $files = $request->file('shifts')[$key] ?? [];
+            if (!empty($files)) {
+                $request->merge(["shifts" => [
+                    $key => array_merge($shift, [
+                        'teacher_timestamp' => uploads($files['teacher_timestamp']),
+                        'supporter_timestamp' => uploads($files['supporter_timestamp']),
+                    ])
+                ]]);
+            }
+        }
+
         foreach ($request->get('shifts') as $key => $shift) {
             $dataShift = json_decode($shift['template'], true);
             $shiftTemplates[$key] = array_replace($dataShift, $shift);
@@ -324,9 +340,9 @@ class StudyLogController extends Controller
             'shifts.*.supporter_id' => 'required|exists:users,id',
             'shifts.*.teacher_comment' => 'string|nullable',
             'shifts.*.supporter_comment' => 'string|nullable',
-            'shifts.*.teacher_timestamp' => 'file|required',
-            'shifts.*.supporter_timestamp' => 'file|required',
-            'cardlogs' => 'array',
+            'shifts.*.teacher_timestamp' => 'required',
+            'shifts.*.supporter_timestamp' => 'required',
+            'cardlogs' => 'array|required',
             'cardlogs.*.student_id' => 'required|exists:users,id',
             'cardlogs.*.card_id' => 'required|integer',
             'cardlogs.*.day' => 'string',
@@ -342,12 +358,73 @@ class StudyLogController extends Controller
         }
 
         $dataToCreateStudyLog = [
-            'created_by' => auth()->user()->{'id'},
+            'created_by' => Auth::id(),
             'classroom_id' => $request->get('classroom_id'),
             'classroom_schedule_id' => $request->get('classroom_schedule_id'),
             'shifts' => $shiftTemplates,
+            'studylog_day' => Carbon::parse($request->get('studylog_day'))->isoFormat('DD/MM/YYYY'),
+            'title' => $request->get('title') ?? 'Buổi học ngày ' . Carbon::parse($request->get('studylog_day'))->isoFormat('DD/MM/YYYY'),
+            'content' => $request->get('content') ?? '',
+            'image' => $request->get('image'),
+            'video' => $request->get('video'),
+            'file' => $request->get('file'),
+            'link' => $request->get('link'),
+            'status' => StudyLog::PROCESS_STATUS,
+            'notes' => $request->get('notes'),
         ];
+        DB::transaction(function () use ($cardsTemplates, $dataToCreateStudyLog, $request, $shiftTemplates) {
+            /**
+             * @var StudyLog $studyLog
+             */
+            $studyLog = StudyLog::query()->create($dataToCreateStudyLog);
 
-        dd($dataToCreateStudyLog);
+            foreach ($cardsTemplates as $cardLog) {
+                /**
+                 * @var Card $card
+                 */
+                $card = Card::query()->find($cardLog['card_id']);
+
+                $dataToCreateCardLog = [
+                    'card_id' => $cardLog['card_id'],
+                    'student_id' => $cardLog['student_id'],
+                    'studylog_id' => $studyLog['id'],
+                    'day' => $cardLog['day'] == 'on' ? 1 : 0,
+                    'fee' => $cardLog['day'] == 'on' ? $card->getDailyFeeAttribute() : 0,
+                    'status' => CardLog::UNVERIFIED,
+                    'reason' => '',
+                    'teacher_note' => $cardLog['teacher_note'] ?? '',
+                    'supporter_note' => $cardLog['supporter_note'] ?? '',
+                ];
+
+                CardLog::query()->create($dataToCreateCardLog);
+            }
+
+            foreach ($shiftTemplates as $shiftTemplate) {
+                $dataToCreateWorkingShift = [
+                    'staff_id' => Auth::id(),
+                    'teacher_id' => $shiftTemplate['teacher_id'],
+                    'supporter_id' => $shiftTemplate['supporter_id'],
+                    'room' => $shiftTemplate['room'] ?? '',
+                    'teacher_timestamp' => $shiftTemplate['teacher_timestamp'],
+                    'supporter_timestamp' => $shiftTemplate['supporter_timestamp'],
+                    'start_time' => $shiftTemplate['start_time'],
+                    'end_time' => $shiftTemplate['end_time'],
+                    'studylog_id' => $studyLog['id'],
+                    'status' => WorkingShift::UNVERIFIED,
+                    'teacher_comment' => $shiftTemplate['teacher_comment'],
+                    'supporter_comment' => $shiftTemplate['supporter_comment'],
+                ];
+
+                WorkingShift::query()->create($dataToCreateWorkingShift);
+            }
+
+        });
+
+        return redirect()->to('studylog/list')->with('success', "Thêm mới thành công");
+    }
+
+    public function show(int $id)
+    {
+
     }
 }

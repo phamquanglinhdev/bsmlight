@@ -20,4 +20,9 @@ class WorkingShift extends Model
         'teacher_comment' => '',
         'supporter_comment' => '',
     ];
+    const UNVERIFIED = 0;
+    const VERIFIED = 1;
+
+    protected $table = 'working_shifts';
+    protected $guarded = ['id'];
 }

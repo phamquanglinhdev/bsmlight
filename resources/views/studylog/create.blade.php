@@ -99,6 +99,7 @@
             </div>
             <div class="bs-stepper-content">
                 <form id="studylog_form"
+                      enctype="multipart/form-data"
                       action="{{route('studylog.store', ['step' => $crudBag->getParam('step') + 1])}}" method="post">
                     @csrf
                     <!-- Account Details -->

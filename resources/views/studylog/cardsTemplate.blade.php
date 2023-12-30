@@ -67,7 +67,7 @@
                                                 <textarea id="cardlogs[{{$cardKey}}][supporter_note]"
                                                           name="cardlogs[{{$cardKey}}][supporter_note]"
                                                           class="h-px-200 form-control">{{old('cardlogs.'.$cardKey.'.supporter_note')??$cardTemplate['supporter_note']}}</textarea>
-                    <label for="cardlogs[{{$cardKey}}][supporter_note]">Lời nhắn của giáo viên cho HS/PHHS</label>
+                    <label for="cardlogs[{{$cardKey}}][supporter_note]">Lời nhắn của trợ giảng cho HS/PHHS</label>
                 </div>
             </div>
         </div>

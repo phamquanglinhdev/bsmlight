@@ -521,7 +521,7 @@
                         key: "_initStyle", value: function () {
                             if (this._hasControls("style")) {
                                 var t = this.settings.style;
-                                this._insertStylesheet("template-customizer-core-css", this.pathResolver(this.settings.cssPath + this.settings.cssFilenamePattern.replace("%name%", "core".concat("light" !== t ? "-".concat(t) : "")))), ("light" === t ? ["dark-style"] : ["light-style"]).forEach((function (t) {
+                                this._insertStylesheet("template-customizer-core-css", this.pathResolver(this.settings.cssPath + this.settings.cssFilenamePattern.replace("%name%", "core".concat("light" !== t ? "-".concat(t) : "")))), ("light" === t ? ["dark-style"] : ["dark-style"]).forEach((function (t) {
                                     document.documentElement.classList.remove(t)
                                 })), document.documentElement.classList.add("".concat(t, "-style"))
                             }
@@ -530,7 +530,7 @@
                         key: "_initTheme", value: function () {
                             if (this._hasControls("themes")) this._insertStylesheet("template-customizer-theme-css", this.pathResolver(this.settings.themesPath + this.settings.cssFilenamePattern.replace("%name%", this.settings.theme.name + ("light" !== this.settings.style ? "-".concat(this.settings.style) : "")))); else {
                                 var t = this._getSetting("Theme");
-                                this._insertStylesheet("template-customizer-theme-css", this.pathResolver(this.settings.themesPath + this.settings.cssFilenamePattern.replace("%name%", t || "theme-default" + ("light" !== this.settings.style ? "-".concat(this.settings.style) : ""))))
+                                this._insertStylesheet("template-customizer-theme-css", this.pathResolver(this.settings.themesPath + this.settings.cssFilenamePattern.replace("%name%", t || "theme-default" + ("dark" !== this.settings.style ? "-".concat(this.settings.style) : ""))))
                             }
                         }
                     }, {

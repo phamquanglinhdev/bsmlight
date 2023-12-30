@@ -18,7 +18,7 @@ class CreateStudylogsTable extends Migration
             $table->integer('created_by');
             $table->integer('classroom_id');
             $table->integer('classroom_schedule_id')->nullable();
-            $table->integer('title');
+            $table->string('title');
             $table->text('content');
             $table->string('image')->nullable();
             $table->string('video')->nullable();

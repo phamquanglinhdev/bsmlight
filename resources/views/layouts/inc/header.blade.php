@@ -3,17 +3,15 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"/>
 
-    <title>Dashboard - Analytics |
-        Materio -
-        Bootstrap 5 HTML + Laravel Admin Template</title>
+    <title>BSM</title>
     <meta name="description"
-          content="Most Powerful &amp; Comprehensive Bootstrap 5 + Laravel HTML Admin Dashboard Template built for developers!"/>
+          content=""/>
     <meta name="keywords"
-          content="dashboard, material, material design, bootstrap 5 dashboard, bootstrap 5 design, bootstrap 5">
+          content="">
     <!-- laravel CRUD token -->
-    <meta name="csrf-token" content="AWM0dy6GxyF3Li6w5zpJLQzO3DeA2lhKfNmSxVzP">
+{{--    <meta name="csrf-token" content="AWM0dy6GxyF3Li6w5zpJLQzO3DeA2lhKfNmSxVzP">--}}
     <!-- Canonical SEO -->
-    <link rel="canonical" href="https://themeselection.com/item/materio-bootstrap-laravel-admin-template/">
+{{--    <link rel="canonical" href="https://themeselection.com/item/materio-bootstrap-laravel-admin-template/">--}}
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon"
           href="https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo/assets/img/favicon/favicon.ico"/>
@@ -75,7 +73,7 @@
         window.templateCustomizer = new TemplateCustomizer({
             cssPath: '',
             themesPath: '',
-            defaultStyle: "light",
+            defaultStyle: "dark",
             defaultShowDropdownOnHover: "true", // true/false (for horizontal layout only)
             displayCustomizer: "true",
             lang: 'en',

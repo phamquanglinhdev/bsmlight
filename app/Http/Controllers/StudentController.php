@@ -69,12 +69,13 @@ class StudentController extends Controller
         $this->crudBag->addFields([
             'name' => 'status',
             'type' => 'select',
+            'value' => "0",
             'required' => true,
             'label' => 'Trạng thái',
             'options' => [
-                0 => 'Đang học',
-                1 => 'Đã nghỉ',
-                2 => 'Đang bảo lưu'
+                "0" => 'Đang học',
+                "1" => 'Đã nghỉ',
+                "2" => 'Đang bảo lưu'
             ]
         ]);
 

@@ -21,4 +21,9 @@
             <span class="mdi mdi-square-edit-outline"></span>
         </a>
     @endif
+    @if(isset($attributes['show']))
+        <a href="{{url($attributes['entity']."/show/".$item['id'])}}">
+            <span class="mdi mdi-list-box"></span>
+        </a>
+    @endif
 </td>

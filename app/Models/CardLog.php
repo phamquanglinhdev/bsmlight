@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class CardLog extends Model
 {
     use HasFactory;
+
+    const UNVERIFIED = 0;
+    const VERIFIED = 1;
+
+    protected $table = 'card_logs';
+    protected $guarded = ['id'];
 }

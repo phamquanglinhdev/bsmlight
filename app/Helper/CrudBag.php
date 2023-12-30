@@ -2,6 +2,9 @@
 
 namespace App\Helper;
 
+use App\Models\StudyLog;
+use Illuminate\Http\Request;
+
 /**
  *
  */
@@ -160,5 +163,67 @@ class CrudBag
     public function getParam(string $key)
     {
         return $this->params[$key] ?? null;
+    }
+
+    public function handleColumns(Request $request, CrudBag $crudBag): CrudBag
+    {
+        $crudBag->addColumn([
+            'label' => 'ID Buổi học',
+            'type' => 'text',
+            'name' => 'supportId',
+            'attributes' => [
+                'show' => true,
+                'entity' => 'studylog'
+            ]
+        ]);
+        $crudBag->addColumn([
+            'name' => 'status',
+            'label' => 'Trạng thái',
+            'type' => 'select',
+            'attributes' => [
+                'options' => [
+                    StudyLog::DRAFT_STATUS => 'Chưa nộp, đang nháp',
+                    StudyLog::PROCESS_STATUS => 'Đã gửi, chờ xác nhận',
+                    StudyLog::COMMITTED_STATUS => 'Đã xác nhận xong, chờ duyệt',
+                    StudyLog::ACCEPTED_STATUS => 'Đã duyệt',
+                    StudyLog::CANCELLED_STATUS => 'Đã tự hủy',
+                    StudyLog::REJECTED_STATUS => 'Từ chối duyệt',
+                ],
+                'bg' => [
+                    StudyLog::DRAFT_STATUS => 'bg-primary',
+                    StudyLog::PROCESS_STATUS => 'bg-orange',
+                    StudyLog::COMMITTED_STATUS => 'bg-warning',
+                    StudyLog::ACCEPTED_STATUS => 'bg-success',
+                    StudyLog::CANCELLED_STATUS => 'bg-dark',
+                    StudyLog::REJECTED_STATUS => 'bg-danger',
+                ]
+            ]
+        ]);
+        $crudBag->addColumn([
+            'name' => 'title',
+            'label' => 'Tiêu đề buổi học'
+        ]);
+        $crudBag->addColumn([
+            'name' => 'studylog_day',
+            'label' => 'Ngày điểm danh'
+        ]);
+
+        $crudBag->addColumn([
+            'name' => 'classroomEntity',
+            'type' => 'entity',
+            'label' => 'Lớp học',
+            'entity' => 'classroomEntity',
+            'attributes' => [
+                'avatar' => 'avatar',
+                'name' => 'name',
+                'uuid' => 'uuid',
+                'id' => 'id',
+                'entity' => 'classroomEntity',
+                'model' => 'classroom'
+            ]
+        ]);
+
+
+        return $crudBag;
     }
 }

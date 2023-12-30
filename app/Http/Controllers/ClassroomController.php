@@ -53,7 +53,8 @@ class ClassroomController extends Controller
                 'entity' => 'classroom',
                 'address' => 'uuid',
                 'avatar' => 'avatar',
-            ]
+            ],
+            'fixed' => 'first'
         ]);
         /**
          * @property string $uuid # Mã lớp
@@ -245,8 +246,6 @@ class ClassroomController extends Controller
             'schedules.*.start_time' => 'required',
             'schedules.*.end_time' => 'required',
             'schedules.*.shifts' => 'array',
-            'schedules.*.shifts.*.start_time' => 'required',
-            'schedules.*.shifts.*.end_time' => 'required',
             'schedules.*.shifts.*.teacher_id' => 'required',
             'schedules.*.shifts.*.supporter_id' => 'integer|nullable',
             'schedules.*.shifts.*.room' => 'string|nullable',
@@ -524,7 +523,7 @@ class ClassroomController extends Controller
                     $schedules[$scheduleKey]['shifts'][1]['start_time'] = $schedule['start_time'];
                 } else {
                     if ($schedule['start_time'] != $shifts[1]['start_time']) {
-                        $errors["schedules.$scheduleKey.shifts.1.start_time"] = 'Thời gian bắt đầu ca không hợp lệ';
+                        $errors["schedules.$scheduleKey.shifts.1.start_time"] = 'Thời gian ca học phải nằm trong thời gian của buổi học';
                         break;
                     }
                 }
@@ -532,7 +531,7 @@ class ClassroomController extends Controller
                     $schedules[$scheduleKey]['shifts'][1]['end_time'] = $schedule['end_time'];
                 } else {
                     if ($schedule['end_time'] != $shifts[1]['end_time']) {
-                        $errors["schedules.$scheduleKey.shifts.1.end_time"] = 'Thời gian kết thúc ca không hợp lệ';
+                        $errors["schedules.$scheduleKey.shifts.1.end_time"] = 'Thời gian ca học phải nằm trong thời gian của buổi học';
                     }
                 }
 

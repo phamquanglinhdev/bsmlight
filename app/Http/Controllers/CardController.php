@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helper\CrudBag;
 use App\Helper\ListViewModel;
 use App\Models\Card;
+use App\Models\Classroom;
 use App\Models\Student;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -360,6 +361,10 @@ class CardController extends Controller
             return [$student->id => $student->uuid . "-" . $student->name];
         })->all();
 
+        $classroomSelects = Classroom::query()->get(['name', 'id', 'uuid'])->mapWithKeys(function ($classroom) {
+            return [$classroom->id => $classroom->uuid . "-" . $classroom->name];
+        })->all();
+
         $crudBag->addFields([
             'name' => 'student_id',
             'label' => 'Học sinh gắn với thẻ học',
@@ -375,7 +380,7 @@ class CardController extends Controller
             'label' => 'Lớp học gắn với thẻ học',
             'type' => 'select',
             'nullable' => true,
-            'options' => [],
+            'options' => $classroomSelects,
             'placeholder' => 'Học sinh gắn với thẻ học',
             'value' => $card->classroom_id ?? null
         ]);
@@ -448,7 +453,7 @@ class CardController extends Controller
             'name' => 'promotion_fee',
             'label' => 'Học phí ưu đãi',
             'type' => 'number',
-            'required' => true,
+            'required' => false,
             'suffix' => 'đ',
             'class' => 'col-3 mb-2',
             'value' => $card->promotion_fee ?? null
