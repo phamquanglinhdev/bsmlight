@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="{{asset("demo/assets/vendor/css/pages/app-chat.css")}}">
-<div class="bg-label-github mb-2 p-2 rounded d-flex  align-items-center">
+<div class="bg-label-github mb-2 p-2 rounded d-flex  align-items-center mt-4">
     <span class="me-2 fw-bold">Trao đổi</span>
     <img
         src="https://demos.themeselection.com/materio-bootstrap-html-admin-template/documentation/assets/img/avatars/1.png"
