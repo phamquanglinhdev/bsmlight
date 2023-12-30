@@ -425,6 +425,6 @@ class StudyLogController extends Controller
 
     public function show(int $id)
     {
-
+        return \view('studylog.show');
     }
 }
