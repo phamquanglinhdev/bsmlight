@@ -82,8 +82,11 @@ class ScheduleController extends Controller
         ];
 
         $card = Card::find($request->get('card_id'));
+        $card->update([
+            'classroom_id' => $request->get('classroom_id'),
+        ]);
 
-        $cardTemplate =[
+        $cardTemplate = [
             'card_id' => $card->id,
             'card_uuid' => $card->uuid,
             'student_id' => $card->student_id,

@@ -1,49 +1,39 @@
 <div class="small">
     <div class="my-2 badge bg-label-google-plus">Học sinh - Thẻ học</div>
-    <div class="accordion" id="accordionExample">
-        <div class="accordion-item active">
-            <h2 class="accordion-header" id="headingOne">
-                <button type="button" class="accordion-button" data-bs-toggle="collapse" data-bs-target="#accordionOne" aria-expanded="true" aria-controls="accordionOne" role="tabpanel">
-                    Accordion Item 1
-                </button>
-            </h2>
 
-            <div id="accordionOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                    Lemon drops chocolate cake gummies carrot cake chupa chups muffin topping. Sesame snaps icing marzipan gummi
-                    bears macaroon dragée danish caramels powder. Bear claw dragée pastry topping soufflé. Wafer gummi bears
-                    marshmallow pastry pie.
-                </div>
-            </div>
-        </div>
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingTwo">
-                <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#accordionTwo" aria-expanded="false" aria-controls="accordionTwo" role="tabpanel">
-                    Accordion Item 2
-                </button>
-            </h2>
-            <div id="accordionTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                    Dessert ice cream donut oat cake jelly-o pie sugar plum cheesecake. Bear claw dragée oat cake dragée ice
-                    cream halvah tootsie roll. Danish cake oat cake pie macaroon tart donut gummies. Jelly beans candy canes
-                    carrot cake. Fruitcake chocolate chupa chups.
-                </div>
-            </div>
-        </div>
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="headingThree">
-                <button type="button" class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#accordionThree" aria-expanded="false" aria-controls="accordionThree" role="tabpanel">
-                    Accordion Item 3
-                </button>
-            </h2>
-            <div id="accordionThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-                <div class="accordion-body">
-                    Oat cake toffee chocolate bar jujubes. Marshmallow brownie lemon drops cheesecake. Bonbon gingerbread
-                    marshmallow sweet jelly beans muffin. Sweet roll bear claw candy canes oat cake dragée caramels. Ice cream
-                    wafer danish cookie caramels muffin.
-                </div>
-            </div>
-        </div>
-    </div>
+   <div class="row">
+       @foreach([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17] as $k)
+           <div class="col-md-6 col-12 mb-2">
+               <a class="small p-2 bg-label-github me-1 w-100 text-start" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#multiCollapseExample{{$k}}" aria-expanded="false" aria-controls="multiCollapseExample{{$k}}">
+                   <div class="d-flex align-items-center">
+                       <img src="https://i.pinimg.com/474x/01/0d/85/010d85a0b5b608e2c3e43b32e44897be.jpg" class="avatar-xs me-2 rounded-circle">
+                       <span>Phạm Quang Linh [BSM-CN-0001-StudyCard.0001]</span>
+                   </div>
+               </a>
+               <div class="collapse multi-collapse" id="multiCollapseExample{{$k}}">
+                   <div class="p-3 border">
+                       <div>Thẻ học: BSM-CN-0001-StudyCard.0001 </div>
+                       <div>Tên học sinh: Phạm Quang Linh  </div>
+                       <div>Mã học sinh: BSM-CN-0001-HS.0001 </div>
+                       <div>Trạng thái:  Đi học, đúng giờ</div>
+                       <div>Trừ buổi học:  <span class="text-success fw-bold">Có</span></div>
+                       <div class="mt-2">Lời nhắn của giáo viên cho HS/PHHS:  </div>
+                       <div class="p-1">
+                           <i>
+                               "Bạn linh học tốt lắm"
+                           </i>
+                       </div>
+                       <div class="mt-2">Lời nhắn của trợ giảng cho HS/PHHS:  </div>
+                       <div class="p-1">
+                           <i>
+                               "Bạn linh học tốt lắm"
+                           </i>
+                       </div>
+                   </div>
+               </div>
+           </div>
+       @endforeach
+   </div>
 
 </div>

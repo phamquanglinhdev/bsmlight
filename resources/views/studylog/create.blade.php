@@ -25,7 +25,8 @@
                             <span class="mdi mdi-check-decagram text-primary"></span>
                         @endif
                         <span class="bs-stepper-label">
-                        <span class="bs-stepper-number {{$crudBag->getParam('step') == 1 ? " fw-bold text-primary" :''}}">01</span>
+                        <span
+                            class="bs-stepper-number {{$crudBag->getParam('step') == 1 ? " fw-bold text-primary" :''}}">01</span>
                         <span class="d-flex flex-column gap-1 ms-2">
                             <span class="bs-stepper-title">Chọn lớp điểm danh</span>
                             <span class="bs-stepper-subtitle">
@@ -46,7 +47,8 @@
                             <span class="mdi mdi-check-decagram text-primary"></span>
                         @endif
                         <span class="bs-stepper-label">
-                        <span class="bs-stepper-number {{$crudBag->getParam('step') == 2 ? " fw-bold text-primary" :''}}">02</span>
+                        <span
+                            class="bs-stepper-number {{$crudBag->getParam('step') == 2 ? " fw-bold text-primary" :''}}">02</span>
                         <span class="d-flex flex-column gap-1 ms-2">
                             <span class="bs-stepper-title">Chọn ngày học</span>
                             <span class="bs-stepper-subtitle">
@@ -67,7 +69,8 @@
                             <span class="mdi mdi-check-decagram text-primary"></span>
                         @endif
                         <span class="bs-stepper-label">
-                        <span class="bs-stepper-number {{$crudBag->getParam('step') == 3 ? " fw-bold text-primary" :''}}">03</span>
+                        <span
+                            class="bs-stepper-number {{$crudBag->getParam('step') == 3 ? " fw-bold text-primary" :''}}">03</span>
                         <span class="d-flex flex-column gap-1 ms-2">
                             <span class="bs-stepper-title">Chọn buổi học</span>
                             <span class="bs-stepper-subtitle">
@@ -88,7 +91,8 @@
                             <span class="mdi mdi-check-decagram text-primary"></span>
                         @endif
                         <span class="bs-stepper-label">
-                        <span class="bs-stepper-number {{$crudBag->getParam('step') == 4 ? " fw-bold text-primary" :''}}">04</span>
+                        <span
+                            class="bs-stepper-number {{$crudBag->getParam('step') == 4 ? " fw-bold text-primary" :''}}">04</span>
                         <span class="d-flex flex-column gap-1 ms-2">
                             <span class="bs-stepper-title">Điểm danh</span>
                             <span class="bs-stepper-subtitle">Tiến hành điểm danh</span>
@@ -114,7 +118,7 @@
                                                 <option value="">Chọn</option>
                                                 @foreach($crudBag->getParam('listClassroom') as $key => $value)
                                                     <option
-                                                            value="{{$key}}" {{old('classroom_id') == $key ? 'selected' : ''}}>{{$value}}</option>
+                                                        value="{{$key}}" {{old('classroom_id') == $key ? 'selected' : ''}}>{{$value}}</option>
                                                 @endforeach
                                             </select>
                                             <label for="classroom_id">Chọn lớp</label>
@@ -122,7 +126,7 @@
                                     </div>
                                     <div class="col-12 d-flex justify-content-between">
                                         <button type="submit" class="btn btn-primary"><span
-                                                    class="align-middle d-sm-inline-block d-none me-sm-1">Chọn buổi học</span>
+                                                class="align-middle d-sm-inline-block d-none me-sm-1">Chọn buổi học</span>
                                             <i class="mdi mdi-arrow-right"></i></button>
                                     </div>
                                 </div>
@@ -134,8 +138,8 @@
                                     <div class="col-sm-6">
                                         <div class="form-floating form-floating-outline">
                                             <input
-                                                    value="{{$crudBag->getParam('listClassroom')[$crudBag->getParam('classroom_id')]}}"
-                                                    type="text" id="first-name" class="form-control" disabled/>
+                                                value="{{$crudBag->getParam('listClassroom')[$crudBag->getParam('classroom_id')]}}"
+                                                type="text" id="first-name" class="form-control" disabled/>
                                             <label for="first-name">Lớp học đã chọn</label>
                                         </div>
                                         <input value="{{$crudBag->getParam('classroom_id')}}" type="hidden"
@@ -159,12 +163,13 @@
                                         </div>
                                     </div>
                                     <div class="col-12 d-flex justify-content-between">
-                                        <button type="button" onclick="sendPrevForm()" class="btn btn-outline-secondary">
+                                        <button type="button" onclick="sendPrevForm()"
+                                                class="btn btn-outline-secondary">
                                             <i class="mdi mdi-arrow-left me-sm-1 me-0"></i>
                                             <span class="align-middle d-sm-inline-block d-none">Quay lại chọn lớp</span>
                                         </button>
                                         <button class="btn btn-primary"><span
-                                                    class="align-middle d-sm-inline-block d-none me-sm-1">Chọn buổi học</span>
+                                                class="align-middle d-sm-inline-block d-none me-sm-1">Chọn buổi học</span>
                                             <i class="mdi mdi-arrow-right"></i></button>
                                     </div>
                                 </div>
@@ -176,8 +181,8 @@
                                     <div class="col-sm-6">
                                         <div class="form-floating form-floating-outline">
                                             <input
-                                                    value="{{$crudBag->getParam('listClassroom')[$crudBag->getParam('classroom_id')]}}"
-                                                    type="text" id="first-name" class="form-control" disabled/>
+                                                value="{{$crudBag->getParam('listClassroom')[$crudBag->getParam('classroom_id')]}}"
+                                                type="text" id="first-name" class="form-control" disabled/>
                                             <label for="first-name">Lớp học đã chọn</label>
                                         </div>
                                         <input value="{{$crudBag->getParam('classroom_id')}}" type="hidden"
@@ -185,8 +190,8 @@
                                         <div class="line my-3"></div>
                                         <div class="form-floating form-floating-outline">
                                             <input
-                                                    value="{{Carbon::parse($crudBag->getParam('studylog_day'))->format('d/m/Y')}}"
-                                                    type="text" id="first-name" class="form-control" disabled/>
+                                                value="{{Carbon::parse($crudBag->getParam('studylog_day'))->format('d/m/Y')}}"
+                                                type="text" id="first-name" class="form-control" disabled/>
                                             <label for="first-name">Ngày điểm danh</label>
                                         </div>
                                         <input value="{{$crudBag->getParam('studylog_day')}}" type="hidden"
@@ -209,13 +214,14 @@
                                         </div>
                                     </div>
                                     <div class="col-12 d-flex justify-content-between">
-                                        <button type="button" onclick="sendPrevForm()" class="btn btn-outline-secondary">
+                                        <button type="button" onclick="sendPrevForm()"
+                                                class="btn btn-outline-secondary">
                                             <i class="mdi mdi-arrow-left me-sm-1 me-0"></i>
                                             <span
-                                                    class="align-middle d-sm-inline-block d-none">Quay lại chọn ngày học</span>
+                                                class="align-middle d-sm-inline-block d-none">Quay lại chọn ngày học</span>
                                         </button>
                                         <button type="submit" class="btn btn-primary"><span
-                                                    class="align-middle d-sm-inline-block d-none me-sm-1">Bắt đầu điểm danh</span>
+                                                class="align-middle d-sm-inline-block d-none me-sm-1">Bắt đầu điểm danh</span>
                                             <i class="mdi mdi-arrow-right"></i></button>
                                     </div>
                                 </div>
@@ -372,6 +378,7 @@
             axios.post("{{ route('cardTemplate.static.add') }}", {
                     card_key: newId,
                     card_id: selectCardId,
+                    classroom_id: "{{ $crudBag->getParam('classroom_id') }}",
                     _token: "{{ csrf_token() }}"
                 }, {
                     headers: {

@@ -369,7 +369,7 @@ class StudyLogController extends Controller
             'video' => $request->get('video'),
             'file' => $request->get('file'),
             'link' => $request->get('link'),
-            'status' => StudyLog::PROCESS_STATUS,
+            'status' => StudyLog::DRAFT_STATUS,
             'notes' => $request->get('notes'),
         ];
         DB::transaction(function () use ($cardsTemplates, $dataToCreateStudyLog, $request, $shiftTemplates) {
