@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helper\CrudBag;
 use App\Helper\ListViewModel;
+use App\Helper\StudyLogShowViewModel;
 use App\Models\Card;
 use App\Models\CardLog;
 use App\Models\Classroom;
@@ -390,7 +391,8 @@ class StudyLogController extends Controller
                     'studylog_id' => $studyLog['id'],
                     'day' => $cardLog['day'] == 'on' ? 1 : 0,
                     'fee' => $cardLog['day'] == 'on' ? $card->getDailyFeeAttribute() : 0,
-                    'status' => CardLog::UNVERIFIED,
+                    'active' => CardLog::UNVERIFIED,
+                    'status' => $cardLog['status'],
                     'reason' => '',
                     'teacher_note' => $cardLog['teacher_note'] ?? '',
                     'supporter_note' => $cardLog['supporter_note'] ?? '',
@@ -425,6 +427,51 @@ class StudyLogController extends Controller
 
     public function show(int $id)
     {
-        return \view('studylog.show');
+        /**
+         * @var StudyLog $studyLog
+         */
+
+        $studyLog = StudyLog::query()->where('id', $id)->first();
+
+        switch ($studyLog['status']) {
+            case StudyLog::DRAFT_STATUS:
+            case StudyLog::CANCELLED_STATUS:
+                if ($studyLog['created_by'] !== Auth::id()) {
+                    abort(403);
+                }
+                break;
+            case StudyLog::PROCESS_STATUS:
+            case StudyLog::COMMITTED_STATUS:
+            case StudyLog::REJECTED_STATUS:
+                $existWorkingShift = WorkingShift::query()->where('studylog_id', $id)->where(function (Builder $builder) {
+                    $builder->where('teacher_id', Auth::id())->orWhere('supporter_id', Auth::id());
+                })->exists();
+
+                $isAuthor = $studyLog['created_by'] === Auth::id();
+
+                $existStudent = CardLog::query()->where('studylog_id', $id)->where('student_id', Auth::id())->exists();
+
+                if (!$isAuthor && !$existWorkingShift && !$existStudent) {
+                    abort(403);
+                }
+                break;
+            default:
+                abort(403);
+        }
+        $cardLogs = CardLog::query()->where('studylog_id', $id)->get();
+
+        $relationUsers = $studyLog->getAcceptedUsers();
+
+
+        $studyLogShowViewModel = new StudyLogShowViewModel(
+            studyLog: $studyLog,
+            cardLogs: $cardLogs,
+            workingShifts: WorkingShift::query()->where('studylog_id', $id)->get(),
+            comments: [],
+            studyLogAcceptedUsers: $relationUsers
+        );
+        return \view('studylog.show', [
+            'studyLogShowViewModel' => $studyLogShowViewModel
+        ]);
     }
 }

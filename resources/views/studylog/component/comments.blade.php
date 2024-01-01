@@ -1,16 +1,10 @@
+@php
+    use App\Helper\Object\StudyLogAcceptedObject;
+        /**
+         * @var StudyLogAcceptedObject[] $users
+         */
+@endphp
 <link rel="stylesheet" href="{{asset("demo/assets/vendor/css/pages/app-chat.css")}}">
-<div class="bg-label-github mb-2 p-2 rounded d-flex  align-items-center mt-4">
-    <span class="me-2 fw-bold">Trao đổi</span>
-    <img
-        src="https://demos.themeselection.com/materio-bootstrap-html-admin-template/documentation/assets/img/avatars/1.png"
-        alt="Avatar" class="rounded-circle avatar-xs me-1">
-    <img
-        src="https://demos.themeselection.com/materio-bootstrap-html-admin-template/documentation/assets/img/avatars/1.png"
-        alt="Avatar" class="rounded-circle avatar-xs me-1">
-    <img
-        src="https://demos.themeselection.com/materio-bootstrap-html-admin-template/documentation/assets/img/avatars/1.png"
-        alt="Avatar" class="rounded-circle avatar-xs me-1">
-</div>
 <div class="app-chat rounded">
     <div class="app-chat-history">
         <div class="chat-history-body rounded ps ps--active-y" style="overflow-y: scroll!important;">

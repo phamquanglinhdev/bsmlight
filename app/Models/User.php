@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -78,5 +79,9 @@ class User extends Authenticatable
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, "user_permission", "user_id", "permission_id");
+    }
+
+    public function StudyLogAccept(): HasMany{
+        return $this->hasMany(StudyLogAccept::class, 'studylog_id', 'id');
     }
 }
