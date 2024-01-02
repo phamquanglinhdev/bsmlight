@@ -16,7 +16,7 @@
                     aria-controls="offcanvasEnd">Duyệt giao dịch
                 @if($newTransactionCount > 0)
                     <span
-                        class="ms-2 rounded-circle badge bg-danger">{{$newTransactionCount}}</span>
+                            class="ms-2 rounded-circle badge bg-danger">{{$newTransactionCount}}</span>
                 @endif
             </button>
             <a href="{{url("transaction/create/card?card_id={$card['id']}")}}" class="btn bg-label-primary my-2">
@@ -30,9 +30,9 @@
                 </div>
                 <div class="offcanvas-body my-auto mx-0">
                     <div class="overflow-auto">
-                       @foreach($transactions as $transaction)
+                        @foreach($transactions as $transaction)
                             @include("cards.transaction",['transaction' =>$transaction])
-                       @endforeach
+                        @endforeach
                     </div>
                     <button type="button" class="btn btn-outline-secondary d-grid w-100" data-bs-dismiss="offcanvas">
                         Đóng
@@ -44,7 +44,7 @@
             <div class=" col-md-6 ">
                 <div class="card h-100">
                     <div class="card-header d-flex align-items-center justify-content-between">
-                        <h5 class="card-title m-0 me-2">Thẻ học : XXX-XXXXXX.0001</h5>
+                        <h5 class="card-title m-0 me-2">Thẻ học : {{$card['uuid']}}</h5>
                     </div>
                     <div class="card-body">
                         <ul class="p-0 m-0">
