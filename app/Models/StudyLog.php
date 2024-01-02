@@ -48,12 +48,12 @@ class StudyLog extends Model
         }
 
         return 'Buổi học tuỳ chọn';
-
     }
 
     public function getWeekDayAttribute(): string
     {
         $studyLogDay = Carbon::parse($this->studylog_day);
+
         return $studyLogDay->shortEnglishDayOfWeek . ", " . $studyLogDay->format('d/m/Y');
     }
 
@@ -88,6 +88,7 @@ class StudyLog extends Model
     public function getAcceptedUsers(): array
     {
         $relationUsers = Collection::make();
+
         $this->WorkingShifts()->get()->map(function (WorkingShift $workingShift) use ($relationUsers) {
             $relationUsers[] = $workingShift->Teacher()->first();
             $relationUsers[] = $workingShift->Supporter()->first();
@@ -98,30 +99,32 @@ class StudyLog extends Model
             $relationUsers[] = $cardLog->Student()->first();
         });
 
+        $relationUsers = $relationUsers->filter(fn($item) => $item != null);
+
+
         return $relationUsers->map(function ($user) {
             $studyLogAccepts = StudyLogAccept::query()->where('studylog_id', $this->id)->where('user_id', $user->id)->first();
             if ($studyLogAccepts) {
                 return new StudyLogAcceptedObject(
-                    user_id: $user->id,
-                    name: $user->name,
-                    avatar: $user->avatar,
-                    studylog_id: $this->id ?? '',
-                    accepted: true,
-                    accepted_time: $studyLogAccepts->accepted_time,
-                    accepted_by_system: $studyLogAccepts->accepted_by_system
+                    user_id : $user->id,
+                    name : $user->name,
+                    avatar : $user->avatar,
+                    studylog_id : $this->id ?? '',
+                    accepted : true,
+                    accepted_time : $studyLogAccepts->accepted_time,
+                    accepted_by_system : $studyLogAccepts->accepted_by_system
                 );
             }
 
             return new StudyLogAcceptedObject(
-                user_id: $user->id,
-                name: $user->name,
-                avatar: $user->avatar,
-                studylog_id: $this->id,
-                accepted: false,
-                accepted_time: '',
-                accepted_by_system: 0
+                user_id : $user->id,
+                name : $user->name,
+                avatar : $user->avatar,
+                studylog_id : $this->id,
+                accepted : false,
+                accepted_time : '',
+                accepted_by_system : 0
             );
-
         })->toArray();
     }
 

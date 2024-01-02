@@ -6,6 +6,7 @@
         $studyLog  = $studyLogShowViewModel->getStudyLog();
         $cardLogs = $studyLogShowViewModel->getCardLogs();
         $workingShifts = $studyLogShowViewModel->getWorkingShifts();
+        $comments = $studyLogShowViewModel->getComments();
 @endphp
 @extends("layouts.app")
 @section('content')
@@ -107,7 +108,7 @@
             </div>
             <div class="col-md-6">
                 <div class="rounded small">
-                    @include("studylog.component.comments",['users' => $studyLogShowViewModel->getStudyLogAcceptedUsers()])
+                    @include("studylog.component.comments",['comments' => $studyLogShowViewModel->getComments(),'studyLog' => $studyLog])
                 </div>
             </div>
         </div>

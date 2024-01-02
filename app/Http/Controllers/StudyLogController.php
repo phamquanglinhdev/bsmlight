@@ -10,6 +10,7 @@ use App\Models\CardLog;
 use App\Models\Classroom;
 use App\Models\ClassroomSchedule;
 use App\Models\ClassroomShift;
+use App\Models\Comment;
 use App\Models\StudyLog;
 use App\Models\Supporter;
 use App\Models\Teacher;
@@ -47,7 +48,6 @@ class StudyLogController extends Controller
 
     /**
      */
-
 
     public function store(Request $request, $step = 1): View|RedirectResponse
     {
@@ -109,7 +109,7 @@ class StudyLogController extends Controller
 
     private function selectStudyLogDay(Request $request, CrudBag $crudBag): View
     {
-        if (!$request->get('classroom_id')) {
+        if (! $request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
@@ -132,11 +132,11 @@ class StudyLogController extends Controller
 
     private function selectSchedule(Request $request, CrudBag $crudBag): View
     {
-        if (!$request->get('classroom_id')) {
+        if (! $request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
-        if (!$request->get('studylog_day')) {
+        if (! $request->get('studylog_day')) {
             return $this->selectStudyLogDay($request, $crudBag);
         }
 
@@ -172,18 +172,17 @@ class StudyLogController extends Controller
 
     private function startCreate(Request $request, CrudBag $crudBag)
     {
-        if (!$request->get('classroom_id')) {
+        if (! $request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
-        if (!$request->get('studylog_day')) {
+        if (! $request->get('studylog_day')) {
             return $this->selectStudyLogDay($request, $crudBag);
         }
 
-        if (!$request->get('classroom_schedule_id')) {
+        if (! $request->get('classroom_schedule_id')) {
             return $this->selectSchedule($request, $crudBag);
         }
-
 
         $crudBag->setParam('classroom_id', $request->get('classroom_id'));
         $allSchedules = ClassroomSchedule::query()->where('classroom_id', $request->get('classroom_id'))->get()->map(function (ClassroomSchedule $schedule) {
@@ -219,7 +218,7 @@ class StudyLogController extends Controller
              * @var ClassroomSchedule $schedule
              */
             $schedule = ClassroomSchedule::query()->where('id', $request->get('classroom_schedule_id'))->where('classroom_id', $request->get('classroom_id') ?? '')->first();
-            if (!$schedule) {
+            if (! $schedule) {
                 $shiftTemplates = [
                     [
                         'teacher_id' => '',
@@ -301,20 +300,21 @@ class StudyLogController extends Controller
 
         foreach ($request->get('shifts') as $key => $shift) {
             $files = $request->file('shifts')[$key] ?? [];
-            if (!empty($files)) {
-                $request->merge(["shifts" => [
-                    $key => array_merge($shift, [
-                        'teacher_timestamp' => uploads($files['teacher_timestamp']),
-                        'supporter_timestamp' => uploads($files['supporter_timestamp']),
-                    ])
-                ]]);
+            if (! empty($files)) {
+                $request->merge([
+                    "shifts" => [
+                        $key => array_merge($shift, [
+                            'teacher_timestamp' => uploads($files['teacher_timestamp']),
+                            'supporter_timestamp' => uploads($files['supporter_timestamp']),
+                        ])
+                    ]
+                ]);
             }
         }
 
         foreach ($request->get('shifts') as $key => $shift) {
             $dataShift = json_decode($shift['template'], true);
             $shiftTemplates[$key] = array_replace($dataShift, $shift);
-
         }
 
         foreach ($request->get('cardlogs') as $key => $cardlog) {
@@ -419,7 +419,6 @@ class StudyLogController extends Controller
 
                 WorkingShift::query()->create($dataToCreateWorkingShift);
             }
-
         });
 
         return redirect()->to('studylog/list')->with('success', "Thêm mới thành công");
@@ -451,7 +450,7 @@ class StudyLogController extends Controller
 
                 $existStudent = CardLog::query()->where('studylog_id', $id)->where('student_id', Auth::id())->exists();
 
-                if (!$isAuthor && !$existWorkingShift && !$existStudent) {
+                if (! $isAuthor && ! $existWorkingShift && ! $existStudent) {
                     abort(403);
                 }
                 break;
@@ -462,14 +461,17 @@ class StudyLogController extends Controller
 
         $relationUsers = $studyLog->getAcceptedUsers();
 
+        $comments = Comment::query()->where('object_id', $id)->where('object_type', Comment::STUDY_LOG_COMMENT)
+            ->orderBy('created_at', 'DESC')->get();
 
         $studyLogShowViewModel = new StudyLogShowViewModel(
-            studyLog: $studyLog,
-            cardLogs: $cardLogs,
-            workingShifts: WorkingShift::query()->where('studylog_id', $id)->get(),
-            comments: [],
-            studyLogAcceptedUsers: $relationUsers
+            studyLog : $studyLog,
+            cardLogs : $cardLogs,
+            workingShifts : WorkingShift::query()->where('studylog_id', $id)->get(),
+            comments : $comments,
+            studyLogAcceptedUsers : $relationUsers
         );
+
         return \view('studylog.show', [
             'studyLogShowViewModel' => $studyLogShowViewModel
         ]);

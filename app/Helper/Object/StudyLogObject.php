@@ -3,6 +3,7 @@ namespace App\Helper\Object;
 class StudyLogObject
 {
     public function __construct(
+        private readonly int $id,
         private readonly string $title,
         private readonly string $status_text,
         private readonly string $classroomName,
@@ -17,6 +18,11 @@ class StudyLogObject
         private readonly string $notes,
     )
     {
+    }
+
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     public function getStatusText(): string
