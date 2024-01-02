@@ -230,7 +230,8 @@ class CardController extends Controller
             'attributes' => [
                 'edit' => true,
                 'entity' => 'card',
-                'transaction' => true
+                'transaction' => true,
+                'show' => true
             ],
         ]);
 
