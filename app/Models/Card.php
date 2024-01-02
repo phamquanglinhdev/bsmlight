@@ -151,17 +151,17 @@ class Card extends Model
 
     public function getClassroomEntityAttribute(): ?array
     {
-        return null;
-//        $classroom = $this->classroom?->first() ?? null;
-//        if (!$classroom) {
-//            return null;
-//        }
-//        return [
-//            'id' => $classroom->id,
-//            'name' => $classroom->name,
-//            'uuid' => $classroom->uuid,
-//            'avatar' => $classroom->thumbnail
-//        ];
+
+        $classroom = $this->Classroom()?->first() ?? null;
+        if (!$classroom) {
+            return null;
+        }
+        return [
+            'id' => $classroom->id,
+            'name' => $classroom->name,
+            'uuid' => $classroom->uuid,
+            'avatar' => $classroom->avatar
+        ];
     }
 
     public function getAttendedDaysAttribute(): int
@@ -222,6 +222,11 @@ class Card extends Model
     public function getSaleUpdatedAtAttribute()
     {
         return null;
+    }
+
+    public function Classroom(): BelongsTo
+    {
+        return $this->belongsTo(Classroom::class, 'classroom_id', 'id');
     }
 
 

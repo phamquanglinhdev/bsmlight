@@ -53,7 +53,7 @@
                 </a>
             </li>
         @endif
-        @if(force_permission('list card'))
+        @if(check_permission('list card'))
             <li class="menu-item {{is_module('card') ? ' active' :''}}">
                 <a href="{{url("/card/list")}}" class="menu-link">
                     <i class="menu-icon tf-icons mdi mdi-card-bulleted"></i>
@@ -61,7 +61,7 @@
                 </a>
             </li>
         @endif
-        @if(force_permission('list classroom'))
+        @if(check_permission('list classroom'))
             <li class="menu-item {{is_module('classroom') ? ' active' :''}}">
                 <a href="{{url("/classroom/list")}}" class="menu-link">
                     <i class="menu-icon tf-icons mdi mdi-google-classroom"></i>
@@ -69,7 +69,7 @@
                 </a>
             </li>
         @endif
-        @if(force_permission('studylog list'))
+        @if(check_permission('list studylog'))
             <li class="menu-item {{is_module('studylog') ? ' active' :''}}">
                 <a href="{{url("/studylog/list")}}" class="menu-link">
                     <i class="menu-icon tf-icons mdi mdi-ballot-outline"></i>

@@ -296,10 +296,24 @@ class Classroom extends Model
     {
         parent::boot();
 
-        static::addGlobalScope('branch', function (Builder $builder) {
-            $builder->whereHas('staff', function (Builder $builder) {
+        if (Auth::user()->role != User::HOST_ROLE) {
+            static::addGlobalScope('relation', function (Builder $builder) {
+                $builder->where(function ($builder) {
+                    $builder->where('staff_id', Auth::id())->orWhere(function ($builder) {
+                        $builder->whereHas('Shifts', function (Builder $shift) {
+                            $shift->where('supporter_id', Auth::id())->orWhere('teacher_id', Auth::id());
+                        });
+                    })->orWhereHas('Cards', function (Builder $card) {
+                        $card->where('student_id', Auth::id());
+                    });
+                });
+            });
+        } else {
+            static::addGlobalScope('relation', function (Builder $builder) {
                 $builder->where('branch', Auth::user()->{'branch'});
             });
-        });
+        }
+
+
     }
 }

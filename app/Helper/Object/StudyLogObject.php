@@ -6,6 +6,8 @@ class StudyLogObject
         private readonly int $id,
         private readonly string $title,
         private readonly string $status_text,
+        private readonly string $status,
+        private readonly string $status_background,
         private readonly string $classroomName,
         private readonly string $classroomUuid,
         private readonly string $classroomAvatar,
@@ -18,6 +20,16 @@ class StudyLogObject
         private readonly string $notes,
     )
     {
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function getStatusBackground(): string
+    {
+        return $this->status_background;
     }
 
     public function getId(): int

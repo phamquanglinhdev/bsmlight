@@ -2,8 +2,12 @@
 
 namespace App\Helper;
 
+use App\Models\CardLog;
 use App\Models\StudyLog;
+use App\Models\WorkingShift;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  *
@@ -200,15 +204,6 @@ class CrudBag
             ]
         ]);
         $crudBag->addColumn([
-            'name' => 'title',
-            'label' => 'Tiêu đề buổi học'
-        ]);
-        $crudBag->addColumn([
-            'name' => 'studylog_day',
-            'label' => 'Ngày điểm danh'
-        ]);
-
-        $crudBag->addColumn([
             'name' => 'classroomEntity',
             'type' => 'entity',
             'label' => 'Lớp học',
@@ -222,8 +217,69 @@ class CrudBag
                 'model' => 'classroom'
             ]
         ]);
-
-
+        $crudBag->addColumn([
+            'name' => 'studylog_day',
+            'label' => 'Ngày tháng năm buổi học'
+        ]);
+        $crudBag->addColumn([
+            'name' => 'title',
+            'label' => 'Tiêu đề buổi học'
+        ]);
+        $crudBag->addColumn([
+            'name' => 'statistics',
+            'type' => 'statistics',
+            'label' => 'Thống kê buổi học',
+            'attributes' => [
+                'statistics_fields' => [
+                    [
+                        'name' => 'attendances',
+                        'label' => 'Đi học',
+                        'color' => 'text-success'
+                    ],
+                    [
+                        'name' => 'left',
+                        'label' => 'Vắng',
+                        'color' => 'text-danger'
+                    ],
+                    [
+                        'name' => 'calculated',
+                        'label' => 'Trừ buổi',
+                        'color' => 'text-success'
+                    ],
+                    [
+                        'name' => 'not_calculated',
+                        'label' => 'Không trừ buổi',
+                        'color' => 'text-danger'
+                    ]
+                ]
+            ]
+        ]);
+        $crudBag->addColumn([
+            'name' => 'teachers',
+            'type' => 'array',
+            'label' => 'Giáo viên',
+        ]);
+        $crudBag->addColumn([
+            'name' => 'supporters',
+            'type' => 'array',
+            'label' => 'Trợ giảng'
+        ]);
         return $crudBag;
+    }
+
+    public function handleQuery(Request $request, Builder $query): Builder
+    {
+        $query->where(function (Builder $query) {
+            $query->where('status', '!=', StudyLog::DRAFT_STATUS)->where('status', '!=', StudyLog::CANCELLED_STATUS)
+                ->orWhere('created_by', Auth::user()->id)->orWhere(function (Builder $query) {
+                    $query->whereHas('CardLogs', function (Builder $query) {
+                        $query->where('student_id', Auth::user()->id);
+                    })->orWhereHas('WorkingShifts', function (Builder $query) {
+                        $query->where('teacher_id', Auth::user()->id)->orWhere('supporter_id', Auth::user()->id);
+                    });
+                });
+        });
+
+        return $query;
     }
 }

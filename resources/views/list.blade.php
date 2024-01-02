@@ -15,7 +15,7 @@
         </h4>
         @include("components.statistics",['statistics'=>$crudBag->getStatistics()])
         <div class="d-flex justify-content-between mt-4">
-            @if(force_permission("list ".$crudBag->getEntity()))
+            @if(check_permission("create ".$crudBag->getEntity()))
                 <a href="{{url($crudBag->getEntity()."/create")}}"
                    class="btn btn-primary waves-effect waves-light mb-2">
                     Thêm mới {{$crudBag->getLabel()}}</a>

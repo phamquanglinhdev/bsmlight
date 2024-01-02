@@ -1,22 +1,27 @@
 .bg-purple {
-    background: #9055fd!important;
+    background: #9055fd !important;
 }
 
 .bg-orange {
     background: #ff7000 !important;
 }
-.bg-green{
+
+.bg-green {
     background: #3fe0d0;
 }
 
-.bg-red{
+.bg-red {
     background: #ff0000;
 }
 
-.bg-danger-dark{
+.bg-danger-dark {
     background: #ad0202;
 }
 
-.bg-danger-light{
+.bg-danger-light {
     background: #f85050;
+}
+
+#template-customizer {
+    display: none!important;
 }

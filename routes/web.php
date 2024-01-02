@@ -12,6 +12,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\StudyLogController;
 use App\Http\Controllers\SupporterController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -90,6 +91,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [CardController::class, "edit", "id"])->name('card.edit');
             Route::post('/update/{id}', [CardController::class, "update", "id"])->name('card.update');
             Route::get('/delete/{id}', [CardController::class, "delete", "id"])->name('card.delete');
+            Route::get('/show/{id}', [CardController::class, "show", "id"])->name('card.show');
         });
 
         Route::prefix('classroom')->group(function () {
@@ -109,6 +111,15 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/show/{id}', [StudyLogController::class, "show", "id"])->name('studylog.show');
             Route::post('/update/{id}', [StudyLogController::class, "update", "id"])->name('studylog.update');
             Route::get('/delete/{id}', [StudyLogController::class, "delete", "id"])->name('studylog.delete');
+
+
+            Route::get('/submit/{id}', [StudyLogController::class, "submit", "id"])->name('studylog.submit');
+            Route::get('/cancel/{id}', [StudyLogController::class, "cancel", "id"])->name('studylog.cancel');
+            Route::get('/recover/{id}', [StudyLogController::class, "recover", "id"])->name('studylog.recover');
+            Route::get('/confirm/{id}', [StudyLogController::class, "confirm", "id"])->name('studylog.confirm');
+            Route::get('/accept/{id}', [StudyLogController::class, "accept", "id"])->name('studylog.accept');
+            Route::get('/reject/{id}', [StudyLogController::class, "reject", "id"])->name('studylog.reject');
+
         });
 
         Route::prefix('branch')->withoutMiddleware(['host'])->group(function () {
@@ -119,6 +130,13 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [BranchController::class, "edit", "id"])->name('branch.edit');
             Route::post('/update/{id}', [BranchController::class, "update", "id"])->name('branch.update');
             Route::get('/delete/{id}', [BranchController::class, "destroy", "id"])->name('branch.delete');
+        });
+        //
+        Route::prefix('transaction')->group(function () {
+            Route::get('/create/card', [TransactionController::class, "createCardTransaction"])->name('transaction.create.card');
+            Route::post('/create/card', [TransactionController::class, "storeCardTransaction"])->name('transaction.store.card');
+            Route::get('/accept/{id}', [TransactionController::class, "accept"])->name('transaction.accept');
+            Route::get('/deny/{id}', [TransactionController::class, "deny"])->name('transaction.deny');
         });
 
 

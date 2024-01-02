@@ -117,7 +117,9 @@ class StudyLogShowViewModel
         return new StudyLogObject(
             id: $studyLog->id,
             title : $studyLog->title ?? '',
-            status_text : "Bản nháp, chưa gửi lên",
+            status_text : $studyLog->statusList()[$studyLog->status] ?? '',
+            status: $studyLog->status,
+            status_background : $studyLog->statusBackground()[$studyLog->status] ?? '',
             classroomName : $studyLog->classroom->name ?? '',
             classroomUuid : $studyLog->classroom->uuid ?? '',
             classroomAvatar : $studyLog->classroom->avatar ?? '',

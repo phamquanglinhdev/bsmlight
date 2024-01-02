@@ -34,6 +34,9 @@ function defineScope(): array
             'supporter',
             'studylog',
             'transaction',
+        ],
+        User::SUPPORTER_ROLE => [
+
         ]
     ];
 }
@@ -42,6 +45,7 @@ function definePermission(): array
 {
     return [
         User::TEACHER_ROLE => [
+            'create studylog',
             'list student',
             'show student',
             'list studylog',
@@ -52,6 +56,7 @@ function definePermission(): array
             'show classroom',
         ],
         User::SUPPORTER_ROLE => [
+            'create studylog',
             'list student',
             'show student',
             'list studylog',
@@ -65,6 +70,9 @@ function definePermission(): array
             'list transaction',
             'show card',
             'list card',
+            'list studylog',
+            'list classroom',
+            'show classroom'
         ],
 
     ];

@@ -12,8 +12,10 @@ use App\Models\ClassroomSchedule;
 use App\Models\ClassroomShift;
 use App\Models\Comment;
 use App\Models\StudyLog;
+use App\Models\StudyLogAccept;
 use App\Models\Supporter;
 use App\Models\Teacher;
+use App\Models\User;
 use App\Models\WorkingShift;
 use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
@@ -37,6 +39,7 @@ class StudyLogController extends Controller
         $crudBag->setSearchValue($request->get('search'));
         $crudBag = $crudBag->handleColumns($request, $crudBag);
         $query = StudyLog::query();
+        $query = $crudBag->handleQuery($request, $query);
 
         $listViewModel = new ListViewModel($query->paginate($request->get('perPage') ?? 10));
 
@@ -109,7 +112,7 @@ class StudyLogController extends Controller
 
     private function selectStudyLogDay(Request $request, CrudBag $crudBag): View
     {
-        if (! $request->get('classroom_id')) {
+        if (!$request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
@@ -132,11 +135,11 @@ class StudyLogController extends Controller
 
     private function selectSchedule(Request $request, CrudBag $crudBag): View
     {
-        if (! $request->get('classroom_id')) {
+        if (!$request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
-        if (! $request->get('studylog_day')) {
+        if (!$request->get('studylog_day')) {
             return $this->selectStudyLogDay($request, $crudBag);
         }
 
@@ -172,15 +175,15 @@ class StudyLogController extends Controller
 
     private function startCreate(Request $request, CrudBag $crudBag)
     {
-        if (! $request->get('classroom_id')) {
+        if (!$request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
-        if (! $request->get('studylog_day')) {
+        if (!$request->get('studylog_day')) {
             return $this->selectStudyLogDay($request, $crudBag);
         }
 
-        if (! $request->get('classroom_schedule_id')) {
+        if (!$request->get('classroom_schedule_id')) {
             return $this->selectSchedule($request, $crudBag);
         }
 
@@ -218,7 +221,7 @@ class StudyLogController extends Controller
              * @var ClassroomSchedule $schedule
              */
             $schedule = ClassroomSchedule::query()->where('id', $request->get('classroom_schedule_id'))->where('classroom_id', $request->get('classroom_id') ?? '')->first();
-            if (! $schedule) {
+            if (!$schedule) {
                 $shiftTemplates = [
                     [
                         'teacher_id' => '',
@@ -300,7 +303,7 @@ class StudyLogController extends Controller
 
         foreach ($request->get('shifts') as $key => $shift) {
             $files = $request->file('shifts')[$key] ?? [];
-            if (! empty($files)) {
+            if (!empty($files)) {
                 $request->merge([
                     "shifts" => [
                         $key => array_merge($shift, [
@@ -442,6 +445,15 @@ class StudyLogController extends Controller
             case StudyLog::PROCESS_STATUS:
             case StudyLog::COMMITTED_STATUS:
             case StudyLog::REJECTED_STATUS:
+            case StudyLog::ACCEPTED_STATUS:
+                if (Auth::user()->role == User::HOST_ROLE) {
+                    $validByClassroom = $studyLog->Classroom()->where('branch', Auth::user()->{'branch'})->exists();
+
+                    if (!$validByClassroom) {
+                        abort(403);
+                    }
+                    break;
+                }
                 $existWorkingShift = WorkingShift::query()->where('studylog_id', $id)->where(function (Builder $builder) {
                     $builder->where('teacher_id', Auth::id())->orWhere('supporter_id', Auth::id());
                 })->exists();
@@ -450,7 +462,7 @@ class StudyLogController extends Controller
 
                 $existStudent = CardLog::query()->where('studylog_id', $id)->where('student_id', Auth::id())->exists();
 
-                if (! $isAuthor && ! $existWorkingShift && ! $existStudent) {
+                if (!$isAuthor && !$existWorkingShift && !$existStudent) {
                     abort(403);
                 }
                 break;
@@ -465,15 +477,153 @@ class StudyLogController extends Controller
             ->orderBy('created_at', 'DESC')->get();
 
         $studyLogShowViewModel = new StudyLogShowViewModel(
-            studyLog : $studyLog,
-            cardLogs : $cardLogs,
-            workingShifts : WorkingShift::query()->where('studylog_id', $id)->get(),
-            comments : $comments,
-            studyLogAcceptedUsers : $relationUsers
+            studyLog: $studyLog,
+            cardLogs: $cardLogs,
+            workingShifts: WorkingShift::query()->where('studylog_id', $id)->get(),
+            comments: $comments,
+            studyLogAcceptedUsers: $relationUsers
         );
 
         return \view('studylog.show', [
             'studyLogShowViewModel' => $studyLogShowViewModel
         ]);
+    }
+
+    public function submit(int $id)
+    {
+        /**
+         * @var StudyLog $studyLog
+         */
+        $studyLog = StudyLog::query()->where('id', $id)->first();
+
+        if ($studyLog['created_by'] !== Auth::id()) {
+            abort(403);
+        }
+
+        StudyLog::query()->where('id', $id)->update([
+            'status' => StudyLog::PROCESS_STATUS
+        ]);
+
+        return redirect()->back()->with('success', "Gửi lên thành công");
+    }
+
+    public function cancel(int $id)
+    {
+        /**
+         * @var StudyLog $studyLog
+         */
+        $studyLog = StudyLog::query()->where('id', $id)->first();
+
+        if ($studyLog['created_by'] !== Auth::id()) {
+            abort(403);
+        }
+
+        StudyLog::query()->where('id', $id)->update([
+            'status' => StudyLog::CANCELLED_STATUS
+        ]);
+
+        return redirect()->back()->with('success', "Huỷ thành công");
+    }
+
+    public function recover(int $id)
+    {
+        /**
+         * @var StudyLog $studyLog
+         */
+        $studyLog = StudyLog::query()->where('id', $id)->first();
+
+        if ($studyLog['created_by'] !== Auth::id()) {
+            abort(403);
+        }
+
+        StudyLog::query()->where('id', $id)->update([
+            'status' => StudyLog::DRAFT_STATUS
+        ]);
+        return redirect()->back()->with('success', "Khôi phục thành công");
+    }
+
+    public function confirm(int $id)
+    {
+        /**
+         * @var StudyLog $studyLog
+         */
+        $studyLog = StudyLog::query()->where('id', $id)->first();
+
+        $relationUsers = array_map(function ($user) {
+            return $user->getUserId();
+        }, $studyLog->getAcceptedUsers());
+
+        if (!in_array(Auth::id(), $relationUsers)) {
+            abort(403);
+        }
+
+        StudyLogAccept::query()->updateOrCreate([
+            'studylog_id' => $id,
+            'user_id' => Auth::id()
+        ], [
+            'studylog_id' => $id,
+            'user_id' => Auth::id(),
+            'accepted_time' => Carbon::now(),
+            'accepted_by_system' => 0
+        ]);
+
+        $this->handleSwitchToCommitted($studyLog);
+
+        return redirect()->back()->with('success', "Đã xác nhận");
+    }
+
+    private function handleSwitchToCommitted(StudyLog $studyLog): void
+    {
+        $relationUsers = $studyLog->getAcceptedUsers();
+
+        foreach ($relationUsers as $relationUser) {
+            if (!$relationUser->isAccepted()) {
+                return;
+            }
+        }
+
+        StudyLog::query()->where('id', $studyLog['id'])->update([
+            'status' => StudyLog::COMMITTED_STATUS
+        ]);
+    }
+
+    public function accept(int $id): RedirectResponse
+    {
+        /**
+         * @var StudyLog $studyLog
+         */
+        $studyLog = StudyLog::query()->where('id', $id)->first();
+
+        DB::transaction(fn() => [
+            $studyLog->update([
+                'status' => StudyLog::ACCEPTED_STATUS
+            ]),
+
+            $this->handleActiveStudyLog($studyLog)
+        ]);
+
+        return redirect()->back()->with('success', "Đã xác nhận");
+    }
+
+    public function reject(int $id): RedirectResponse
+    {
+        StudyLog::query()->where('id', $id)->update([
+            'status' => StudyLog::REJECTED_STATUS
+        ]);
+
+        return redirect()->back()->with('success', "Đã từ chối");
+    }
+
+    private function handleActiveStudyLog(StudyLog $studyLog): bool
+    {
+        $studyLog->CardLogs()->update([
+            'status' => CardLog::VERIFIED
+        ]);
+
+        $studyLog->WorkingShifts()->update([
+            'status' => WorkingShift::VERIFIED
+        ]);
+
+        return true;
     }
 }

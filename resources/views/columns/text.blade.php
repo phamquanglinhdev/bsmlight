@@ -26,4 +26,9 @@
             <span class="mdi mdi-list-box"></span>
         </a>
     @endif
+    @if(isset($attributes['transaction']))
+        <a href="{{url('transaction/create/'.$attributes['entity']."?".$attributes["entity"]."_id=".$item['id'])}}">
+            <span class="mdi mdi-database-plus"></span>
+        </a>
+    @endif
 </td>

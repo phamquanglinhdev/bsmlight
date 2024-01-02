@@ -24,7 +24,7 @@ class CommentController extends Controller
     {
         $this->validate($request, [
             'object_type' => 'required|in:' . Comment::STUDY_LOG_COMMENT . ',' . Comment::CARD_COMMENT,
-            'object_id' => 'required|integer|exists:studylogs,id',
+            'object_id' => 'required|integer',
             'content' => 'required|string',
             'type' => 'nullable|integer|in:' . Comment::TEXT_TYPE . ',' . Comment::IMAGE_TYPE . ',' . Comment::ATTACHMENT_TYPE,
         ]);

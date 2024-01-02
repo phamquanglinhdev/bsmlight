@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 
 /**
  * @property mixed $created_at
+ * @property mixed $status
  */
 class StudyLog extends Model
 {
@@ -35,8 +36,35 @@ class StudyLog extends Model
         'classroomEntity',
         'supportId',
         'week_day',
-        'schedule_text'
+        'schedule_text',
+        'teachers',
+        'supporters',
+        'statistics'
     ];
+
+    public function getStatisticsAttribute(): array
+    {
+        return [
+            'attendances' => $this->CardLogs()->where('day', 1)->count(),
+            'left' => $this->CardLogs()->where('day', 0)->count(),
+            'calculated' => $this->CardLogs()->where('status', "<=", 3)->count(),
+            'not_calculated' => $this->CardLogs()->where('status', ">", 3)->count()
+        ];
+    }
+
+    public function getTeachersAttribute(): array
+    {
+        return $this->WorkingShifts()->get()->mapWithKeys(function (WorkingShift $item) {
+            return [$item->teacher_id => $item?->teacher->name . "-" . $item->teacher?->uuid];
+        })->toArray();
+    }
+
+    public function getSupportersAttribute(): array
+    {
+        return $this->WorkingShifts()->get()->mapWithKeys(function (WorkingShift $item) {
+            return [$item->supporter_id => $item?->supporter->name . "-" . $item->supporter?->uuid];
+        })->toArray();
+    }
 
     public function getScheduleTextAttribute(): string
     {
@@ -64,7 +92,7 @@ class StudyLog extends Model
 
     public function getClassroomEntityAttribute(): array
     {
-        return $this->Classroom()->first(['name', 'avatar', 'id', 'uuid'])->toArray();
+        return $this->Classroom()?->first(['name', 'avatar', 'id', 'uuid'])?->toArray() ?? [];
     }
 
     public function Classroom(): \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -82,6 +110,11 @@ class StudyLog extends Model
         return $this->hasMany(WorkingShift::class, 'studylog_id', 'id');
     }
 
+    public function CardLogs(): HasMany
+    {
+        return $this->hasMany(CardLog::class, 'studylog_id', 'id');
+    }
+
     /**
      * @return StudyLogAcceptedObject[]
      */
@@ -92,7 +125,6 @@ class StudyLog extends Model
         $this->WorkingShifts()->get()->map(function (WorkingShift $workingShift) use ($relationUsers) {
             $relationUsers[] = $workingShift->Teacher()->first();
             $relationUsers[] = $workingShift->Supporter()->first();
-            $relationUsers[] = $workingShift->Staff()->first();
         });
 
         $this->CardLogs()->get()->map(function (CardLog $cardLog) use ($relationUsers) {
@@ -106,30 +138,50 @@ class StudyLog extends Model
             $studyLogAccepts = StudyLogAccept::query()->where('studylog_id', $this->id)->where('user_id', $user->id)->first();
             if ($studyLogAccepts) {
                 return new StudyLogAcceptedObject(
-                    user_id : $user->id,
-                    name : $user->name,
-                    avatar : $user->avatar,
-                    studylog_id : $this->id ?? '',
-                    accepted : true,
-                    accepted_time : $studyLogAccepts->accepted_time,
-                    accepted_by_system : $studyLogAccepts->accepted_by_system
+                    user_id: $user->id,
+                    name: $user->name,
+                    avatar: $user->avatar,
+                    studylog_id: $this->id ?? '',
+                    accepted: true,
+                    accepted_time: $studyLogAccepts->accepted_time,
+                    accepted_by_system: $studyLogAccepts->accepted_by_system
                 );
             }
 
             return new StudyLogAcceptedObject(
-                user_id : $user->id,
-                name : $user->name,
-                avatar : $user->avatar,
-                studylog_id : $this->id,
-                accepted : false,
-                accepted_time : '',
-                accepted_by_system : 0
+                user_id: $user->id,
+                name: $user->name,
+                avatar: $user->avatar,
+                studylog_id: $this->id,
+                accepted: false,
+                accepted_time: '',
+                accepted_by_system: 0
             );
         })->toArray();
     }
 
-    private function CardLogs(): HasMany
+
+    public function statusList(): array
     {
-        return $this->hasMany(CardLog::class, 'studylog_id', 'id');
+        return [
+            self::DRAFT_STATUS => 'Bản nháp, chưa gửi lên',
+            self::ACCEPTED_STATUS => 'Đã duyệt',
+            self::CANCELLED_STATUS => 'Đã huỷ',
+            self::REJECTED_STATUS => 'Đã bị từ chối',
+            self::PROCESS_STATUS => 'Đã gửi, chờ các bên xác nhận',
+            self::COMMITTED_STATUS => 'Đã xác nhận xong, chờ duyệt'
+        ];
+    }
+
+    public function statusBackground(): array
+    {
+        return [
+            self::DRAFT_STATUS => 'bg-primary',
+            self::ACCEPTED_STATUS => 'bg-success',
+            self::CANCELLED_STATUS => 'bg-dark',
+            self::REJECTED_STATUS => 'bg-danger',
+            self::PROCESS_STATUS => 'bg-warning',
+            self::COMMITTED_STATUS => 'bg-primary'
+        ];
     }
 }

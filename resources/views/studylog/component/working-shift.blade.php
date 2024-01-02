@@ -58,18 +58,24 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mt-4">
-                        <div class="form-floating form-floating-outline w-100">
-                            <div id="teacher-note-{{$workingShift->getId()}}" class="form-control">{{$workingShift->getTeacherComment()}}</div>
-                            <label for="teacher-note-{{$workingShift->getId()}}">Báo cáo của giáo viên cho Admin</label>
+                    @if(\Illuminate\Support\Facades\Auth::user()->role!==\App\Models\User::STUDENT_ROLE)
+                        <div class="mt-4">
+                            <div class="form-floating form-floating-outline w-100">
+                                <div id="teacher-note-{{$workingShift->getId()}}"
+                                     class="form-control">{{$workingShift->getTeacherComment()}}</div>
+                                <label for="teacher-note-{{$workingShift->getId()}}">Báo cáo của giáo viên cho
+                                    Admin</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="mt-4">
-                        <div class="form-floating form-floating-outline w-100">
-                            <div id="teacher-note-{{$workingShift->getId()}}" class="form-control">{{$workingShift->getSupporterComment()}}</div>
-                            <label for="teacher-note-{{$workingShift->getId()}}">Báo cáo của trợ giảng cho Admin</label>
+                        <div class="mt-4">
+                            <div class="form-floating form-floating-outline w-100">
+                                <div id="teacher-note-{{$workingShift->getId()}}"
+                                     class="form-control">{{$workingShift->getSupporterComment()}}</div>
+                                <label for="teacher-note-{{$workingShift->getId()}}">Báo cáo của trợ giảng cho
+                                    Admin</label>
+                            </div>
                         </div>
-                    </div>
+                    @endif
                 </div>
             </div>
         </div>

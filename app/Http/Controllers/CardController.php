@@ -4,11 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Helper\CrudBag;
 use App\Helper\ListViewModel;
+use App\Helper\Object\CommentObject;
+use App\Helper\Object\TransactionObject;
 use App\Models\Card;
 use App\Models\Classroom;
+use App\Models\Comment;
 use App\Models\Student;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
@@ -137,6 +142,52 @@ class CardController extends Controller
 
     public function show(int $id)
     {
+        $card = Card::query()->where('id', $id)->firstOrFail();
+        $commentRecords = Comment::query()
+            ->where('object_id', $id)
+            ->where('object_type', Comment::CARD_COMMENT)
+            ->orderBy('created_at', 'desc')->get();
+        $comments = $commentRecords->map(function (Comment $comment) {
+            return new CommentObject(
+                user_id: $comment['user_id'],
+                user_name: $comment->user?->name,
+                user_avatar: $comment->user?->avatar,
+                comment_time: Carbon::parse($comment['created_at'])->toDateTimeLocalString('minutes'),
+                type: $comment['type'],
+                content: $comment['content'],
+                self: $comment['user_id'] == Auth::id()
+            );
+        });
+
+        $builder = Transaction::query()->where('object_type', 'card')
+            ->where('object_id', $id);
+
+        $newTransactionCount = $builder->clone()->where('status', 0)->count();
+
+        $transactions = $builder->orderBy('created_at', 'DESC')->get()->map(fn(Transaction $transaction)=>
+            new TransactionObject(
+                id: $transaction['id'],
+                uuid: $transaction['uuid'],
+                type: $transaction['transaction_type'],
+                note: $transaction['notes'],
+                amount: $transaction['amount'], new: $transaction['status'] == 0,
+                accepted: $transaction['status'] == 1,
+                created_at: Carbon::parse($transaction['created_at'])->isoFormat('DD/MM/YYYY HH:mm:ss'),
+                image: $transaction['object_image'],
+                creator_name: $transaction->creator?->name,
+                creator_uuid: $transaction->creator?->uuid,
+                creator_avatar: $transaction->creator?->avatar,
+                created_by: $transaction['created_by']
+            )
+        )->toArray();
+
+
+        return view('cards.show', [
+            'card' => $card,
+            'comments' => $comments,
+            'transactions' => $transactions,
+            'newTransactionCount' => $newTransactionCount
+        ]);
     }
 
     public function edit(int $id)
@@ -178,7 +229,8 @@ class CardController extends Controller
             'fixed' => 'first',
             'attributes' => [
                 'edit' => true,
-                'entity' => 'card'
+                'entity' => 'card',
+                'transaction' => true
             ],
         ]);
 
@@ -468,7 +520,7 @@ class CardController extends Controller
                 'js' => asset('/demo/js/handle-promotion-percent.js'),
                 'identity' => 'promotion-percent'
             ],
-            'value' => isset($card) ? $card->promotion_fee  / $card->original_fee * 100 : null
+            'value' => isset($card) ? $card->promotion_fee / $card->original_fee * 100 : null
         ]);
 
         $crudBag->addFields([

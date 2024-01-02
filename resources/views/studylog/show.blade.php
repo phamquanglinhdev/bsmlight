@@ -1,5 +1,6 @@
 @php
     use App\Helper\StudyLogShowViewModel;
+    use App\Models\StudyLog;
         /**
          * @var StudyLogShowViewModel $studyLogShowViewModel
          */
@@ -16,25 +17,52 @@
                 <div class="h5 mb-0 me-2">
                     {{$studyLog->getTitle()}}
                 </div>
-                <div class="badge bg-primary small rounded">{{$studyLog->getStatusText()}}</div>
+                <div
+                    class="badge {{$studyLog->getStatusBackground()}} small rounded">{{$studyLog->getStatusText()}}</div>
             </div>
             <div>
-                <button class="btn btn-success small me-1">
-                    <span class="mdi mdi-check-circle me-1"></span>
-                    <span class="small">Xác nhận buổi học chính xác</span>
-                </button>
-                <button class="btn btn-success small me-1">
-                    <span class="mdi mdi-check-circle me-1"></span>
-                    <span class="small">Duyệt buổi học</span>
-                </button>
-                <button class="btn btn-danger small me-1">
-                    <span class="mdi mdi-cancel me-1"></span>
-                    <span class="small">Hủy buổi học</span>
-                </button>
-                <button class="btn btn-primary small">
-                    <span class="mdi mdi-check-circle me-1"></span>
-                    <span class="small">Gửi lên</span>
-                </button>
+                @if(! in_array($studyLog->getStatus(),[StudyLog::DRAFT_STATUS, StudyLog::CANCELLED_STATUS, StudyLog::REJECTED_STATUS, StudyLog::ACCEPTED_STATUS]))
+                    <a href="{{url('/studylog/confirm/'.$studyLog->getId())}}" class="btn btn-success small me-1">
+                        <span class="mdi mdi-check-circle me-1"></span>
+                        <span class="small">Xác nhận buổi học chính xác</span>
+                    </a>
+                @endif
+
+                @if($studyLog->getStatus() == StudyLog::COMMITTED_STATUS && force_permission('studyLog accept'))
+                    <a href="{{url('/studylog/accept/'.$studyLog->getId())}}" class="btn btn-success small me-1">
+                        <span class="mdi mdi-check-circle me-1"></span>
+                        <span class="small">Duyệt buổi học</span>
+                    </a>
+                        <a href="{{url('/studylog/reject/'.$studyLog->getId())}}" class="btn btn-danger small me-1">
+                            <span class="mdi mdi-cancel me-1"></span>
+                            <span class="small">Từ chối duyệt buổi học</span>
+                        </a>
+                @endif
+
+                @if(in_array($studyLog->getStatus(),[StudyLog::PROCESS_STATUS,StudyLog::DRAFT_STATUS]))
+                    <a href="{{url('/studylog/cancel/'.$studyLog->getId())}}" class="btn btn-danger small me-1">
+                        <span class="mdi mdi-cancel me-1"></span>
+                        <span class="small">Hủy buổi học</span>
+                    </a>
+                @endif
+                @if($studyLog->getStatus() == StudyLog::CANCELLED_STATUS)
+                    <a href="{{url('/studylog/recover/'.$studyLog->getId())}}" class="btn btn-primary small me-1">
+                        <span class="mdi mdi-history me-1"></span>
+                        <span class="small">Khôi phục buổi học</span>
+                    </a>
+                @endif
+                @if($studyLog->getStatus() == 0)
+                    <a href="{{url('/studylog/edit/'.$studyLog->getId())}}" id="edit_action"
+                       class="btn btn-primary small me-1">
+                        <span class="mdi mdi-file-edit me-1"></span>
+                        <span class="small">Chỉnh sửa</span>
+                    </a>
+                    <a href="{{url('/studylog/submit/'.$studyLog->getId())}}" id="submit_action"
+                       class="btn btn-primary small">
+                        <span class="mdi mdi-upload me-1"></span>
+                        <span class="small">Gửi lên</span>
+                    </a>
+                @endif
             </div>
         </div>
         <div class="my-3">
@@ -114,3 +142,26 @@
         </div>
     </div>
 @endsection
+@push('after_scripts')
+    <script>
+        $(document).ready(function () {
+            $('#submit_action').click(function (e) {
+                e.preventDefault()
+                const result = confirm("Bạn có chắc chắn muốn gửi lên?")
+
+                if (result) {
+                    window.location.href = $(this).attr('href')
+                }
+            })
+
+            $('#cancel_action').click(function (e) {
+                e.preventDefault()
+                const result = confirm("Bạn có chắc chắn muốn huỷ?")
+
+                if (result) {
+                    window.location.href = $(this).attr('href')
+                }
+            })
+        })
+    </script>
+@endpush

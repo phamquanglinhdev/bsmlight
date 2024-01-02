@@ -84,15 +84,9 @@
                     'core-dark.css': '{{asset('demo/assets/vendor/css/rtl/core-dark.css')}}',
 
                     // Themes
-                    'theme-default.css': 'https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo/assets/vendor/css/rtl/theme-default.css?id=52fab3455fdcaff9f4acefe519ec216b',
-                    'theme-default-dark.css':
-                        'https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo/assets/vendor/css/rtl/theme-default-dark.css?id=c8fd4937f51751cb21fc1b850985e28d',
-                    'theme-bordered.css': 'https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo/assets/vendor/css/rtl/theme-bordered.css?id=2e360cd4013a77f41e5735180028af47',
-                    'theme-bordered-dark.css':
-                        'https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo/assets/vendor/css/rtl/theme-bordered-dark.css?id=0fd70b0f8c51077b53c94c534b6dea08',
-                    'theme-semi-dark.css': 'https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo/assets/vendor/css/rtl/theme-semi-dark.css?id=7eb0cf231320db79df76c9cc343a9c64',
-                    'theme-semi-dark-dark.css':
-                        'https://demos.themeselection.com/materio-bootstrap-html-laravel-admin-template/demo/assets/vendor/css/rtl/theme-semi-dark-dark.css?id=0d086bfea4ae48a5c1384981979967ac',
+                    'theme-default.css': '{{asset('demo/assets/vendor/css/rtl/theme-default.css')}}',
+                    'theme-default-dark.css': '{{asset('demo/assets/vendor/css/rtl/theme-default-dark.css')}}',
+
                 }
                 return resolvedPaths[path] || path;
             },

@@ -266,7 +266,8 @@ class ClassroomController extends Controller
             'avatar' => $request->get('avatar'),
             'uuid' => Classroom::generateUUID(),
             'book' => 'template',
-            'staff_id' => $request->get('staff_id') ?? Auth::user()->{'id'}
+            'staff_id' => $request->get('staff_id') ?? null,
+            'branch' => Auth::user()->{'branch'},
         ];
 
         $schedules = $request->get('schedules');
