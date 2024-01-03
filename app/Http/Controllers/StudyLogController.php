@@ -112,7 +112,7 @@ class StudyLogController extends Controller
 
     private function selectStudyLogDay(Request $request, CrudBag $crudBag): View
     {
-        if (!$request->get('classroom_id')) {
+        if (! $request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
@@ -135,11 +135,11 @@ class StudyLogController extends Controller
 
     private function selectSchedule(Request $request, CrudBag $crudBag): View
     {
-        if (!$request->get('classroom_id')) {
+        if (! $request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
-        if (!$request->get('studylog_day')) {
+        if (! $request->get('studylog_day')) {
             return $this->selectStudyLogDay($request, $crudBag);
         }
 
@@ -175,15 +175,15 @@ class StudyLogController extends Controller
 
     private function startCreate(Request $request, CrudBag $crudBag)
     {
-        if (!$request->get('classroom_id')) {
+        if (! $request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
-        if (!$request->get('studylog_day')) {
+        if (! $request->get('studylog_day')) {
             return $this->selectStudyLogDay($request, $crudBag);
         }
 
-        if (!$request->get('classroom_schedule_id')) {
+        if (! $request->get('classroom_schedule_id')) {
             return $this->selectSchedule($request, $crudBag);
         }
 
@@ -221,7 +221,7 @@ class StudyLogController extends Controller
              * @var ClassroomSchedule $schedule
              */
             $schedule = ClassroomSchedule::query()->where('id', $request->get('classroom_schedule_id'))->where('classroom_id', $request->get('classroom_id') ?? '')->first();
-            if (!$schedule) {
+            if (! $schedule) {
                 $shiftTemplates = [
                     [
                         'teacher_id' => '',
@@ -296,6 +296,15 @@ class StudyLogController extends Controller
 
     private function finalStore(Request $request, CrudBag $crudBag): RedirectResponse|View
     {
+        $listCardLogStatus = [
+            0 => 'Đi học, đúng giờ',
+            1 => 'Đi học, muộn',
+            2 => 'Đi học, sớm',
+            3 => 'Vắng, có phép',
+            4 => 'Vắng, không phép',
+            5 => 'Không điểm danh',
+        ];
+
         $crudBag->setParam('step', 4);
 
         $cardsTemplates = [];
@@ -303,7 +312,7 @@ class StudyLogController extends Controller
 
         foreach ($request->get('shifts') as $key => $shift) {
             $files = $request->file('shifts')[$key] ?? [];
-            if (!empty($files)) {
+            if (! empty($files)) {
                 $request->merge([
                     "shifts" => [
                         $key => array_merge($shift, [
@@ -325,9 +334,9 @@ class StudyLogController extends Controller
             $cardsTemplates[$key] = array_replace($dataCard, $cardlog);
         }
 
-        $crudBag->setParam('cardsTemplate', $cardsTemplates);
+        $crudBag->setParam('cardsTemplates', $cardsTemplates);
         $crudBag->setParam('shiftTemplates', $shiftTemplates);
-
+        $crudBag->setParam('listCardLogStatus', $listCardLogStatus);
         $crudBag->setParam('classroom_id', $request->get('classroom_id'));
         $crudBag->setParam('classroom_schedule_id', $request->get('classroom_schedule_id'));
         $crudBag->setParam('studylog_day', $request->get('studylog_day'));
@@ -449,7 +458,7 @@ class StudyLogController extends Controller
                 if (Auth::user()->role == User::HOST_ROLE) {
                     $validByClassroom = $studyLog->Classroom()->where('branch', Auth::user()->{'branch'})->exists();
 
-                    if (!$validByClassroom) {
+                    if (! $validByClassroom) {
                         abort(403);
                     }
                     break;
@@ -462,7 +471,7 @@ class StudyLogController extends Controller
 
                 $existStudent = CardLog::query()->where('studylog_id', $id)->where('student_id', Auth::id())->exists();
 
-                if (!$isAuthor && !$existWorkingShift && !$existStudent) {
+                if (! $isAuthor && ! $existWorkingShift && ! $existStudent) {
                     abort(403);
                 }
                 break;
@@ -477,11 +486,11 @@ class StudyLogController extends Controller
             ->orderBy('created_at', 'DESC')->get();
 
         $studyLogShowViewModel = new StudyLogShowViewModel(
-            studyLog: $studyLog,
-            cardLogs: $cardLogs,
-            workingShifts: WorkingShift::query()->where('studylog_id', $id)->get(),
-            comments: $comments,
-            studyLogAcceptedUsers: $relationUsers
+            studyLog : $studyLog,
+            cardLogs : $cardLogs,
+            workingShifts : WorkingShift::query()->where('studylog_id', $id)->get(),
+            comments : $comments,
+            studyLogAcceptedUsers : $relationUsers
         );
 
         return \view('studylog.show', [
@@ -539,6 +548,7 @@ class StudyLogController extends Controller
         StudyLog::query()->where('id', $id)->update([
             'status' => StudyLog::DRAFT_STATUS
         ]);
+
         return redirect()->back()->with('success', "Khôi phục thành công");
     }
 
@@ -553,7 +563,7 @@ class StudyLogController extends Controller
             return $user->getUserId();
         }, $studyLog->getAcceptedUsers());
 
-        if (!in_array(Auth::id(), $relationUsers)) {
+        if (! in_array(Auth::id(), $relationUsers)) {
             abort(403);
         }
 
@@ -577,7 +587,7 @@ class StudyLogController extends Controller
         $relationUsers = $studyLog->getAcceptedUsers();
 
         foreach ($relationUsers as $relationUser) {
-            if (!$relationUser->isAccepted()) {
+            if (! $relationUser->isAccepted()) {
                 return;
             }
         }

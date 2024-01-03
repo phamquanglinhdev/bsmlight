@@ -29,115 +29,14 @@ class StudentController extends Controller
 
     public function create(): View
     {
-        if (!check_permission('create student')) {
+        if (! check_permission('create student')) {
             abort(403);
         }
 
         $this->crudBag->setEntity('student');
         $this->crudBag->setLabel('Học sinh');
         $this->crudBag->setAction('student.store');
-        $this->crudBag->addFields([
-            'name' => 'avatar',
-            'type' => 'avatar-select',
-            'required' => false,
-            'label' => 'Chọn avatar',
-            'options' => [
-                0 => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS0Oi53Y0SYUnNZ6FDFALWjbzr2siFFZqRAI_ygcnbVunsa0Ywsn1u1xGx7FisdgzGdcQ&usqp=CAU',
-                1 => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFrh7xFLdXWAgC4xrL9rtaOMMI1W_ifWqbMzlvWwjSiNg1QRSpe6XwNEalJXfoNUaVHt8&usqp=CAU',
-                3 => 'https://png.pngtree.com/png-clipart/20231002/original/pngtree-santa-smiling-face-with-red-hat-say-hohoho-png-image_13063768.png',
-                4 => 'https://dthezntil550i.cloudfront.net/9m/latest/9m2306211009227300024981607/1280_960/7e11d8f6-5a3f-4121-8a4f-57653520ae98.png',
-                5 => 'https://i.pinimg.com/originals/4a/5f/a7/4a5fa77ce26719459ecaab07353ef645.png',
-                6 => 'https://static-cdn.jtvnw.net/jtv_user_pictures/f275797c-e631-4a89-b7d2-952c3a79c789-profile_image-300x300.png',
-            ],
-            'class' => 'col-10 mb-3'
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'name',
-            'type' => 'text',
-            'required' => true,
-            'label' => 'Tên học sinh'
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'english_name',
-            'type' => 'text',
-            'required' => false,
-            'label' => 'Tên tiếng anh'
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'status',
-            'type' => 'select',
-            'value' => "0",
-            'required' => true,
-            'label' => 'Trạng thái',
-            'options' => [
-                "0" => 'Đang học',
-                "1" => 'Đã nghỉ',
-                "2" => 'Đang bảo lưu'
-            ]
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'gender',
-            'type' => 'select',
-            'required' => true,
-            'label' => 'Giới tính',
-            'options' => [
-                0 => 'Nam',
-                1 => 'Nữ',
-            ]
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'birthday',
-            'type' => 'date',
-            'required' => false,
-            'label' => 'Ngày sinh',
-        ]);
-        $this->crudBag->addFields([
-            'name' => 'phone',
-            'type' => 'phone',
-            'required' => false,
-            'label' => 'Số điện thoại',
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'facebook',
-            'type' => 'text',
-            'required' => false,
-            'label' => 'Link facebook của học sinh',
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'email',
-            'type' => 'email',
-            'required' => false,
-            'label' => 'Email của học sinh',
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'address',
-            'type' => 'address',
-            'required' => false,
-            'label' => 'Địa chỉ sinh sống',
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'school',
-            'type' => 'text',
-            'required' => false,
-            'label' => 'Trường đang theo học',
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'user_ref',
-            'type' => 'select',
-            'required' => false,
-            'label' => 'Người giới thiệu',
-            'nullable' => true
-        ]);
+        $this->crudBag = $this->handleFields($this->crudBag);
 
         return view('create', [
             'crudBag' => $this->crudBag
@@ -151,7 +50,7 @@ class StudentController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        if (!check_permission('create student')) {
+        if (! check_permission('create student')) {
             abort(403);
         }
 
@@ -204,7 +103,7 @@ class StudentController extends Controller
 
     public function list(Request $request): View
     {
-        if (!check_permission('list student')) {
+        if (! check_permission('list student')) {
             abort(403);
         }
         $perPage = $request->get('perPage') ?? 10;
@@ -229,13 +128,11 @@ class StudentController extends Controller
             'crudBag' => $crudBag,
             'listViewModel' => new ListViewModel($students)
         ]);
-
-
     }
 
     public function edit(int $id): View
     {
-        if (!check_permission('edit student')) {
+        if (! check_permission('edit student')) {
             abort(403);
         }
         $this->crudBag->setEntity('student');
@@ -245,119 +142,10 @@ class StudentController extends Controller
 
         $student = Student::query()->where('id', $id)->firstOrFail();
 
-        $this->crudBag->addFields([
-            'name' => 'avatar',
-            'type' => 'avatar-select',
-            'required' => false,
-            'label' => 'Chọn avatar',
-            'options' => [
-                0 => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS0Oi53Y0SYUnNZ6FDFALWjbzr2siFFZqRAI_ygcnbVunsa0Ywsn1u1xGx7FisdgzGdcQ&usqp=CAU',
-                1 => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFrh7xFLdXWAgC4xrL9rtaOMMI1W_ifWqbMzlvWwjSiNg1QRSpe6XwNEalJXfoNUaVHt8&usqp=CAU',
-                3 => 'https://png.pngtree.com/png-clipart/20231002/original/pngtree-santa-smiling-face-with-red-hat-say-hohoho-png-image_13063768.png',
-                4 => 'https://dthezntil550i.cloudfront.net/9m/latest/9m2306211009227300024981607/1280_960/7e11d8f6-5a3f-4121-8a4f-57653520ae98.png',
-                5 => 'https://i.pinimg.com/originals/4a/5f/a7/4a5fa77ce26719459ecaab07353ef645.png',
-                6 => 'https://static-cdn.jtvnw.net/jtv_user_pictures/f275797c-e631-4a89-b7d2-952c3a79c789-profile_image-300x300.png',
-            ],
-            'value' => $student['avatar'],
-            'class' => 'col-10 mb-3'
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'name',
-            'type' => 'text',
-            'required' => true,
-            'label' => 'Tên học sinh',
-            'value' => $student['name'],
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'english_name',
-            'type' => 'text',
-            'required' => false,
-            'label' => 'Tên tiếng anh',
-            'value' => $student['english_name'],
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'status',
-            'type' => 'select',
-            'required' => true,
-            'label' => 'Trạng thái',
-            'options' => [
-                0 => 'Đang học',
-                1 => 'Đã nghỉ',
-                2 => 'Đang bảo lưu'
-            ],
-            'value' => $student['status'],
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'gender',
-            'value' => $student['gender'],
-            'type' => 'select',
-            'required' => true,
-            'label' => 'Giới tính',
-            'options' => [
-                0 => 'Nam',
-                1 => 'Nữ',
-            ]
-        ]);
-
-        $this->crudBag->addFields([
-            'name' => 'birthday',
-            'value' => Carbon::parse($student['birthday'])->toDateString(),
-            'type' => 'date',
-            'required' => false,
-            'label' => 'Ngày sinh',
-        ]);
-        $this->crudBag->addFields([
-            'name' => 'phone',
-            'value' => $student['phone'],
-            'type' => 'phone',
-            'required' => false,
-            'label' => 'Số điện thoại',
-        ]);
-
-        $this->crudBag->addFields([
-            'value' => $student['facebook'],
-            'name' => 'facebook',
-            'type' => 'text',
-            'required' => false,
-            'label' => 'Link facebook của học sinh',
-        ]);
-
-        $this->crudBag->addFields([
-            'value' => $student['email'],
-            'name' => 'email',
-            'type' => 'email',
-            'required' => false,
-            'label' => 'Email của học sinh',
-        ]);
-
-        $this->crudBag->addFields([
-            'value' => $student['address'],
-            'name' => 'address',
-            'type' => 'address',
-            'required' => false,
-            'label' => 'Địa chỉ sinh sống',
-        ]);
-
-        $this->crudBag->addFields([
-            'value' => $student['school'],
-            'name' => 'school',
-            'type' => 'text',
-            'required' => false,
-            'label' => 'Trường đang theo học',
-        ]);
-
-        $this->crudBag->addFields([
-            'value' => $student['user_ref'],
-            'name' => 'user_ref',
-            'type' => 'select',
-            'required' => false,
-            'label' => 'Người giới thiệu',
-            'nullable' => true
-        ]);
+        /**
+         * @var Student $student
+         */
+        $this->crudBag = $this->handleFields($this->crudBag, $student);
 
         return view('create', [
             'crudBag' => $this->crudBag
@@ -366,7 +154,7 @@ class StudentController extends Controller
 
     public function update(int $id, Request $request): RedirectResponse
     {
-        if (!check_permission('edit student')) {
+        if (! check_permission('edit student')) {
             abort(403);
         }
 
@@ -414,7 +202,7 @@ class StudentController extends Controller
 
     public function delete(int $id): RedirectResponse
     {
-        if (!check_permission('delete student')) {
+        if (! check_permission('delete student')) {
             abort(403);
         }
         $student = Student::query()->where('id', $id)->firstOrFail();
@@ -514,7 +302,6 @@ class StudentController extends Controller
             ],
             'value' => $request->get('grade:handle')
         ]);
-
 
         $crudBag->addFilter([
             'label' => 'Cấp học',
@@ -802,6 +589,136 @@ class StudentController extends Controller
                 'relation.label' => 'uuid',
                 'relation.entity' => 'student'
             ]
+        ]);
+
+        return $crudBag;
+    }
+
+    /**
+     * @param CrudBag $crudBag
+     * @param Student|null $student
+     * @return CrudBag
+     * @author Phạm Quang Linh <linhpq@getflycrm.com>
+     * @since 03/01/2024 5:35 pm
+     */
+    private function handleFields(CrudBag $crudBag, Student $student = null): CrudBag
+    {
+        $crudBag->addFields([
+            'name' => 'avatar',
+            'type' => 'avatar-select',
+            'required' => false,
+            'label' => 'Chọn avatar',
+            'options' => [
+                0 => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS0Oi53Y0SYUnNZ6FDFALWjbzr2siFFZqRAI_ygcnbVunsa0Ywsn1u1xGx7FisdgzGdcQ&usqp=CAU',
+                1 => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFrh7xFLdXWAgC4xrL9rtaOMMI1W_ifWqbMzlvWwjSiNg1QRSpe6XwNEalJXfoNUaVHt8&usqp=CAU',
+                3 => 'https://png.pngtree.com/png-clipart/20231002/original/pngtree-santa-smiling-face-with-red-hat-say-hohoho-png-image_13063768.png',
+                4 => 'https://dthezntil550i.cloudfront.net/9m/latest/9m2306211009227300024981607/1280_960/7e11d8f6-5a3f-4121-8a4f-57653520ae98.png',
+                5 => 'https://i.pinimg.com/originals/4a/5f/a7/4a5fa77ce26719459ecaab07353ef645.png',
+                6 => 'https://static-cdn.jtvnw.net/jtv_user_pictures/f275797c-e631-4a89-b7d2-952c3a79c789-profile_image-300x300.png',
+            ],
+            'value' => $student ? $student['avatar'] : null,
+            'class' => 'col-10 mb-3'
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'name',
+            'type' => 'text',
+            'required' => true,
+            'label' => 'Tên học sinh',
+            'value' => $student ? $student['name'] : null,
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'english_name',
+            'type' => 'text',
+            'required' => false,
+            'label' => 'Tên tiếng anh',
+            'value' => $student ? $student['english_name'] : null
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'status',
+            'type' => 'select',
+            'required' => true,
+            'label' => 'Trạng thái',
+            'options' => [
+                1 => 'Đang học',
+                2 => 'Đã nghỉ',
+                3 => 'Đang bảo lưu'
+            ],
+            'value' => $student ? $student['status'] : "",
+            'nullable' => 1,
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'gender',
+            'nullable' => 1,
+            'value' => $student ? $student['gender'] : "",
+            'type' => 'select',
+            'required' => true,
+            'label' => 'Giới tính',
+            'options' => [
+                1 => 'Nam',
+                2 => 'Nữ',
+            ]
+        ]);
+
+        $crudBag->addFields([
+            'name' => 'birthday',
+            'value' => $student['birthday'] != "" ? Carbon::parse($student['birthday'])->toDateString() : null,
+            'type' => 'date',
+            'required' => false,
+            'label' => 'Ngày sinh',
+        ]);
+
+
+        $crudBag->addFields([
+            'name' => 'phone',
+            'value' => $student ? $student['phone'] : null,
+            'type' => 'phone',
+            'required' => false,
+            'label' => 'Số điện thoại',
+        ]);
+
+        $crudBag->addFields([
+            'value' => $student ? $student['facebook'] : null,
+            'name' => 'facebook',
+            'type' => 'text',
+            'required' => false,
+            'label' => 'Link facebook của học sinh',
+        ]);
+
+        $crudBag->addFields([
+            'value' => $student ? $student['email'] : null,
+            'name' => 'email',
+            'type' => 'email',
+            'required' => false,
+            'label' => 'Email của học sinh',
+        ]);
+
+        $crudBag->addFields([
+            'value' => $student ? $student['address'] : null,
+            'name' => 'address',
+            'type' => 'address',
+            'required' => false,
+            'label' => 'Địa chỉ sinh sống',
+        ]);
+
+        $crudBag->addFields([
+            'value' => $student ? $student['school'] : null,
+            'name' => 'school',
+            'type' => 'text',
+            'required' => false,
+            'label' => 'Trường đang theo học',
+        ]);
+
+        $this->crudBag->addFields([
+            'value' => $student ? $student['user_ref'] : null,
+            'name' => 'user_ref',
+            'type' => 'select',
+            'required' => false,
+            'label' => 'Người giới thiệu',
+            'nullable' => true
         ]);
 
         return $crudBag;

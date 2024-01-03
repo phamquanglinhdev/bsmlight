@@ -6,7 +6,7 @@
 
         $listSupporter = $crudBag->getParam('listSupporter') ?? [];
         $listTeacher =  $crudBag->getParam('listTeacher') ?? [];
-        $cardsTemplate =  $crudBag->getParam('cardsTemplate') ?? [];
+        $cardsTemplates =  $crudBag->getParam('cardsTemplate') ?? [];
         $listCardLogStatus = $crudBag->getParam('listCardLogStatus') ?? [];
         $validCardList = $crudBag->getParam('validCardList') ?? [];
         $shiftTemplates =$crudBag->getParam('shiftTemplates') ?? [];
@@ -252,7 +252,7 @@
                                 </div>
                                 <div class="row g-4">
                                     <div id="cardsTemplate">
-                                        @foreach($cardsTemplate as $cardKey => $cardTemplate)
+                                        @foreach($cardsTemplates as $cardKey => $cardTemplate)
                                             @include('studylog.cardsTemplate',['cardKey' => $cardKey, 'cardTemplate' => $cardTemplate])
                                         @endforeach
                                     </div>

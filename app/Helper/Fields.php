@@ -15,7 +15,7 @@ class Fields
     private string $prefix = "";
     private string $suffix = "";
 
-    private bool $nullable = false;
+    private int $nullable = 0;
     private ?string $class = null;
 
     public function getClass(): ?string
@@ -37,14 +37,15 @@ class Fields
     {
         foreach ($data as $key => $value) {
             if (property_exists($this, $key)) {
-                $this->{$key} = $value;
+                if ($value != null) {
+                    $this->{$key} = $value;
+                }
             }
         }
     }
 
     public function getName(): string
     {
-
         return $this->name;
     }
 
@@ -58,6 +59,7 @@ class Fields
         if ($this->isRequired()) {
             return $this->label . " *";
         }
+
         return $this->label;
     }
 
@@ -81,7 +83,7 @@ class Fields
         return $this->attributes;
     }
 
-    public function isNullable(): bool
+    public function isNullable(): int
     {
         return $this->nullable;
     }

@@ -138,6 +138,9 @@ class CardController extends Controller
 
     public function delete(int $id)
     {
+        $card = Card::query()->where('id',$id)->where('branch', Auth::user()->{'branch'})->firstOrFail();
+        $card->delete();
+        return redirect()->to('/card/list')->with('success', 'Xoá thành công');
     }
 
     public function show(int $id)
@@ -149,13 +152,13 @@ class CardController extends Controller
             ->orderBy('created_at', 'desc')->get();
         $comments = $commentRecords->map(function (Comment $comment) {
             return new CommentObject(
-                user_id: $comment['user_id'],
-                user_name: $comment->user?->name,
-                user_avatar: $comment->user?->avatar,
-                comment_time: Carbon::parse($comment['created_at'])->toDateTimeLocalString('minutes'),
-                type: $comment['type'],
-                content: $comment['content'],
-                self: $comment['user_id'] == Auth::id()
+                user_id : $comment['user_id'],
+                user_name : $comment->user?->name,
+                user_avatar : $comment->user?->avatar,
+                comment_time : Carbon::parse($comment['created_at'])->toDateTimeLocalString('minutes'),
+                type : $comment['type'],
+                content : $comment['content'],
+                self : $comment['user_id'] == Auth::id()
             );
         });
 
@@ -164,23 +167,21 @@ class CardController extends Controller
 
         $newTransactionCount = $builder->clone()->where('status', 0)->count();
 
-        $transactions = $builder->orderBy('created_at', 'DESC')->get()->map(fn(Transaction $transaction)=>
-            new TransactionObject(
-                id: $transaction['id'],
-                uuid: $transaction['uuid'],
-                type: $transaction['transaction_type'],
-                note: $transaction['notes'],
-                amount: $transaction['amount'], new: $transaction['status'] == 0,
-                accepted: $transaction['status'] == 1,
-                created_at: Carbon::parse($transaction['created_at'])->isoFormat('DD/MM/YYYY HH:mm:ss'),
-                image: $transaction['object_image'],
-                creator_name: $transaction->creator?->name,
-                creator_uuid: $transaction->creator?->uuid,
-                creator_avatar: $transaction->creator?->avatar,
-                created_by: $transaction['created_by']
-            )
+        $transactions = $builder->orderBy('created_at', 'DESC')->get()->map(fn(Transaction $transaction) => new TransactionObject(
+            id : $transaction['id'],
+            uuid : $transaction['uuid'],
+            type : $transaction['transaction_type'],
+            note : $transaction['notes'],
+            amount : $transaction['amount'], new : $transaction['status'] == 0,
+            accepted : $transaction['status'] == 1,
+            created_at : Carbon::parse($transaction['created_at'])->isoFormat('DD/MM/YYYY HH:mm:ss'),
+            image : $transaction['object_image'],
+            creator_name : $transaction->creator?->name,
+            creator_uuid : $transaction->creator?->uuid,
+            creator_avatar : $transaction->creator?->avatar,
+            created_by : $transaction['created_by']
+        )
         )->toArray();
-
 
         return view('cards.show', [
             'card' => $card,
@@ -197,9 +198,7 @@ class CardController extends Controller
         ]);
     }
 
-    private function handleQuery(Request $request, Builder $query)
-    {
-    }
+    private function handleQuery(Request $request, Builder $query) {}
 
     private function handleColumn(Request $request, CrudBag $crudBag, Card $card = null): CrudBag
     {
@@ -500,7 +499,6 @@ class CardController extends Controller
             'suffix' => 'đ',
             'value' => $card->original_fee ?? null
         ]);
-
 
         $crudBag->addFields([
             'name' => 'promotion_fee',
