@@ -345,8 +345,10 @@
             form.submit()
         }
 
-        $(".select2").select2();
-        $(".selectpicker").selectpicker();
+       $(document).ready(()=>{
+           $(".select2").select2();
+           $(".selectpicker").selectpicker();
+       })
     </script>
     <script>
         const addNewShiftTemplate = () => {
