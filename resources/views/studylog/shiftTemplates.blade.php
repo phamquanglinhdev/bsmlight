@@ -62,7 +62,7 @@
                     <label for="shifts[{{$shiftKey}}][duration]">Thời lượng (phút) để tính lương</label>
                 </div>
             </div>
-            <div class="col-md-3 col-12 mb-3">
+            <div class="col-md-12 col-12 mb-3">
                 <div class="form-floating form-floating-outline">
                     <select
                         id="shifts[{{$shiftKey}}][teacher_id]"
@@ -76,7 +76,7 @@
                     <label for="shifts[{{$shiftKey}}][teacher_id]">Giáo viên</label>
                 </div>
             </div>
-            <div class="col-md-3 col-12 mb-3">
+            <div class="col-md-12 col-12 mb-3">
                 <div class="form-floating form-floating-outline">
                     <select
                         class="selectpicker w-100"
