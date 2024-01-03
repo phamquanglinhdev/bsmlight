@@ -121,7 +121,7 @@
             <div class="col-md-3 mb-3">
                 <div class="form-floating form-floating-outline">
                     <input type="file"
-                           class="form-control"
+                           class="form-control selectpicker"
                            id="shifts[{{$shiftKey}}][supporter_timestamp]"
                            name="shifts[{{$shiftKey}}][supporter_timestamp]"
                            value="{{old('shifts.'.$shiftKey.'.supporter_timestamp')??$shiftTemplate['supporter_timestamp']}}"
