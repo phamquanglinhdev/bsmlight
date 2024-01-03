@@ -6,7 +6,7 @@
 
         $listSupporter = $crudBag->getParam('listSupporter') ?? [];
         $listTeacher =  $crudBag->getParam('listTeacher') ?? [];
-        $cardsTemplates =  $crudBag->getParam('cardsTemplate') ?? [];
+        $cardsTemplates =  $crudBag->getParam('cardsTemplates') ?? [];
         $listCardLogStatus = $crudBag->getParam('listCardLogStatus') ?? [];
         $validCardList = $crudBag->getParam('validCardList') ?? [];
         $shiftTemplates =$crudBag->getParam('shiftTemplates') ?? [];
