@@ -170,3 +170,8 @@
         document.getElementById(`shifts[${sheetKey}][duration]`).value = (date1 - date2) / (1000 * 60);
     }
 </script>
+@push("after_scripts")
+    <script>
+        $(".selectpicker").selectpicker();
+    </script>
+@endpush
