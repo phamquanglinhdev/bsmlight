@@ -457,14 +457,14 @@ class ClassroomController extends Controller
                 $query->where('classroom_id', $classroom->id)->orWhere('classroom_id', null);
             })->where('student_id', '!=', null)->where('card_status', Card::STATUS_ACTIVE)
                 ->get()->mapwithkeys(function (Card $card) {
-                    return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chọn gắn học sinh'];
+                    return [$card->id => $card->uuid . '-' . $card->student?->name ?? 'Chưa gắn học sinh'];
                 })->all();
         } else {
 
             $cardList = Card::query()->where('student_id', '!=', null)->where('classroom_id', null)
                 ->where('card_status', Card::STATUS_ACTIVE)
                 ->get()->mapwithkeys(function ($card) {
-                    return [$card->id => $card->uuid . " - " . $card->name];
+                    return [$card->id => $card->uuid . " - " . $card->name.$card->student->name];
                 })->all();
         }
 

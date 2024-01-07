@@ -128,12 +128,12 @@ class Classroom extends Model
 
     public function getScheduleLastUpdateAttribute(): string
     {
-        return '10/10/2021 19:10';
+        return $this->created_at ?? '';
     }
 
     public function getTotalMeetingsAttribute(): int
     {
-        return 10;
+        return $this->StudyLogs()->count();
     }
 
     public function getDaysAttribute(): array
@@ -144,37 +144,57 @@ class Classroom extends Model
 
     public function getStudentAttendedAttribute(): int
     {
-        return 19;
+        $studyLogs = $this->StudyLogs()->get();
+        return array_sum($studyLogs->map(function (StudyLog $studyLog) {
+            return $studyLog->CardLogs()->where('status', CardLog::VERIFIED)->where('status', '<', 3)->count();
+
+        })->toArray());
+
     }
 
     public function getStudentLeftAttribute(): int
     {
-        return 5;
+        $studyLogs = $this->StudyLogs()->get();
+        return array_sum($studyLogs->map(function (StudyLog $studyLog) {
+            return $studyLog->CardLogs()->where('status', CardLog::VERIFIED)->where('status', '>', 3)->count();
+
+        })->toArray());
     }
 
     public function getAvgAttendanceAttribute(): float
     {
-        return 12.48;
+        if ($this->getStudentLeftAttribute() == 0) {
+            return 0;
+        }
+        return $this->getStudentAttendedAttribute() / ($this->getStudentAttendedAttribute() + $this->getStudentLeftAttribute());
     }
 
     public function getTotalEarnedAttribute(): int
     {
-        return 1000000000;
+        return array_sum($this->StudyLogs()->get()->map(function (StudyLog $studyLog) {
+            return $studyLog->CardLogs()->where('status', CardLog::VERIFIED)->sum('fee');
+        })->toArray());
     }
 
     public function getExternalSalaryAttribute(): int
     {
-        return 4000000;
+        #TODO Bổ sung thẻ lương giáo viên
+        $totalStudyLog = $this->StudyLogs()->get()->map(function (StudyLog $studyLog) {
+            return $studyLog->WorkingShifts()->get()->Teachers();
+        });
+        return 0;
     }
 
     public function getInternalSalaryAttribute(): int
     {
-        return 5000000;
+        #TODO Bổ sung thẻ lương giáo viên
+        return 0;
     }
 
     public function getSupporterSalaryAttribute(): int
     {
-        return 10000;
+        #TODO Bổ sung thẻ lương
+        return 0;
     }
 
     public function getGrossAttribute(): int
@@ -184,6 +204,9 @@ class Classroom extends Model
 
     public function getGrossPercentAttribute(): float|int
     {
+        if ($this->total_earned == 0) {
+            return 0;
+        }
         return $this->gross / $this->total_earned * 100;
     }
 
@@ -315,5 +338,10 @@ class Classroom extends Model
         }
 
 
+    }
+
+    public function StudyLogs(): HasMany
+    {
+        return $this->hasMany(StudyLog::class, 'classroom_id', 'id')->where('status', StudyLog::ACCEPTED_STATUS);
     }
 }

@@ -13,8 +13,8 @@ class Student extends User
     use HasFactory;
     use SoftDeletes;
 
-    const MALE = 0;
-    const FEMALE = 1;
+    const MALE = 1;
+    const FEMALE = 2;
     protected $table = 'users';
 
     public function __construct(array $attributes = [])
@@ -42,7 +42,6 @@ class Student extends User
     }
 
     protected $appends = [
-        'status',
         'gender',
         'english_name',
         'school',
@@ -132,10 +131,6 @@ class Student extends User
         return 1;
     }
 
-    public function getStatusAttribute($value)
-    {
-        return $this->profile?->status;
-    }
 
     public function getGenderAttribute($value)
     {

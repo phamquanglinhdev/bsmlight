@@ -58,7 +58,6 @@ class StudentController extends Controller
             'name' => 'required|string',
             'english_name' => 'string|nullable',
             'avatar' => 'string',
-            'status' => 'integer|in:0,1,2|required',
             'gender' => 'integer|in:0,1|required',
             'facebook' => 'string|nullable',
             'email' => 'email|nullable',
@@ -77,7 +76,6 @@ class StudentController extends Controller
 
         $dataToCreateProfile = $request->only([
             'english_name',
-            'status',
             'gender',
             'facebook',
             'address',
@@ -162,7 +160,6 @@ class StudentController extends Controller
             'name' => 'required|string',
             'english_name' => 'string|nullable',
             'avatar' => 'string|required',
-            'status' => 'integer|in:0,1,2|required',
             'gender' => 'integer|in:0,1|required',
             'facebook' => 'string|nullable',
             'email' => 'email|nullable',
@@ -181,7 +178,6 @@ class StudentController extends Controller
 
         $dataToCreateProfile = $request->only([
             'english_name',
-            'status',
             'gender',
             'facebook',
             'address',
@@ -217,19 +213,6 @@ class StudentController extends Controller
 
     private function handleFiltering(CrudBag $crudBag, Request $request): CrudBag
     {
-        $crudBag->addFilter([
-            'label' => 'Trạng thái thẻ học',
-            'name' => 'card_status:eq',
-            'value' => $request->get('card_status:eq') ?? -1,
-            'type' => 'select',
-            'attributes' => [
-                'options' => [
-                    0 => 'Đang học',
-                    1 => 'Bảo lưu',
-                    2 => 'Đã kết thúc'
-                ]
-            ]
-        ]);
         $crudBag->addFilter([
             'name' => 'gender:eq',
             'value' => $request->get('gender:eq') ?? -1,
@@ -385,30 +368,6 @@ class StudentController extends Controller
             'image' => asset('demo/assets/img/illustrations/illustration-1.png')
         ]);
 
-        $crudBag->addStatistic([
-            'label' => 'Đang học',
-            'value' => Student::query()->whereHas('profile', function (Builder $profile) {
-                $profile->where('status', 0);
-            })->count(),
-            'badge' => 'Thời điểm hiện tại',
-            'image' => asset('demo/assets/img/illustrations/illustration-1.png')
-        ]);
-        $crudBag->addStatistic([
-            'label' => 'Đã ngừng học',
-            'value' => Student::query()->whereHas('profile', function (Builder $profile) {
-                $profile->where('status', 1);
-            })->count(),
-            'badge' => 'Thời điểm hiện tại',
-            'image' => asset('demo/assets/img/illustrations/illustration-1.png')
-        ]);
-        $crudBag->addStatistic([
-            'label' => 'Đang bảo lưu',
-            'value' => Student::query()->whereHas('profile', function (Builder $profile) {
-                $profile->where('status', 2);
-            })->count(),
-            'badge' => 'Thời điểm hiện tại',
-            'image' => asset('demo/assets/img/illustrations/illustration-1.png')
-        ]);
 
         return $crudBag;
     }
@@ -634,20 +593,6 @@ class StudentController extends Controller
             'required' => false,
             'label' => 'Tên tiếng anh',
             'value' => $student ? $student['english_name'] : null
-        ]);
-
-        $crudBag->addFields([
-            'name' => 'status',
-            'type' => 'select',
-            'required' => true,
-            'label' => 'Trạng thái',
-            'options' => [
-                1 => 'Đang học',
-                2 => 'Đã nghỉ',
-                3 => 'Đang bảo lưu'
-            ],
-            'value' => $student ? $student['status'] : "",
-            'nullable' => 1,
         ]);
 
         $crudBag->addFields([

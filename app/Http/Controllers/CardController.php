@@ -471,7 +471,7 @@ class CardController extends Controller
         ]);
 
         $crudBag->addFields([
-            'name' => false,
+            'name' => 'total_days',
             'label' => 'Số buổi thực tế đăng ký',
             'type' => 'handle',
             'suffix' => 'buổi',
@@ -511,7 +511,7 @@ class CardController extends Controller
         ]);
 
         $crudBag->addFields([
-            'name' => false,
+            'name' => 'promotion_percent',
             'label' => '% Ưu đãi',
             'type' => 'handle',
             'class' => 'col-2 mb-2',
@@ -531,7 +531,7 @@ class CardController extends Controller
         ]);
 
         $crudBag->addFields([
-            'name' => false,
+            'name' => 'total_fee',
             'label' => 'Học phí thực tế cần đóng',
             'type' => 'handle',
             'attributes' => [
@@ -542,7 +542,7 @@ class CardController extends Controller
         ]);
 
         $crudBag->addFields([
-            'name' => false,
+            'name' => 'daily_fee',
             'label' => 'Đơn giá buổi học',
             'type' => 'handle',
             'attributes' => [

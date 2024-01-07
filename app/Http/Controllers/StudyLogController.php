@@ -199,7 +199,9 @@ class StudyLogController extends Controller
         $weekDay = Carbon::parse($request->get('studylog_day'))->weekday();
 
         $weekDay == 0 ? $weekDay = 8 : $weekDay += 1;
-
+        /**
+         * @var Classroom $classroom
+         */
         $classroom = Classroom::query()->where('id', $request->get('classroom_id'))->first();
 
         $listSchedule = $classroom->Schedules()->where('week_day', $weekDay)->get()->mapWithKeys(function (ClassroomSchedule $schedule) {
@@ -272,7 +274,8 @@ class StudyLogController extends Controller
                     'supporter_note' => '',
                 ];
             });
-            $crudBag->setParam('cardsTemplate', $cardsTemplate);
+
+            $crudBag->setParam('cardsTemplates', $cardsTemplate);
 
             $listCardLogStatus = [
                 0 => 'Đi học, đúng giờ',
