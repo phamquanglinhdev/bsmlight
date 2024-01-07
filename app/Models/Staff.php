@@ -28,4 +28,18 @@ class Staff extends User
     {
         return $this->hasOne(StaffProfile::class, "user_id", "id");
     }
+
+    public function getCustomField(mixed $name)
+    {
+        $extraInformation = $this->profile?->extra_information;
+
+        if (!$extraInformation) {
+            return null;
+        }
+
+
+        $extraInformation = json_decode($extraInformation, true);
+
+        return $extraInformation[$name] ?? null;
+    }
 }

@@ -162,9 +162,10 @@ class Student extends User
         return $this->profile?->user_ref;
     }
 
-    public function getExtraInformationAttribute($value)
+    public function getExtraInformationAttribute($key)
     {
-        return $this->profile?->extra_information;
+        $extraInformation = json_decode($this->profile?->extra_information, true);
+        return $extraInformation[$key] ?? null;
     }
 
     public function getBirthdayAttribute()
@@ -192,5 +193,18 @@ class Student extends User
     public function getPrivateChatAttribute(): string
     {
         return "";
+    }
+
+    public function getCustomField(string $name)
+    {
+        $extraInformation = $this->profile?->extra_information;
+
+        if(! $extraInformation){
+            return null;
+        }
+
+        $extraInformation = json_decode($extraInformation, true);
+
+        return $extraInformation[$name] ?? null;
     }
 }

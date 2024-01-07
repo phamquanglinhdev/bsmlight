@@ -32,4 +32,17 @@ class Supporter extends Model
     {
         return $this->hasOne(SupporterProfile::class, "user_id", "id");
     }
+
+    public function getCustomField(string $name)
+    {
+
+        $extraInformation = $this->profile?->extra_information;
+
+        if (!$extraInformation) {
+            return null;
+        }
+        $extraInformation = json_decode($extraInformation, true);
+
+        return $extraInformation[$name] ?? null;
+    }
 }

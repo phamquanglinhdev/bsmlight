@@ -5,6 +5,7 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CardController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\CustomFieldController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StaffController;
@@ -82,6 +83,15 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [StaffController::class, "edit", "id"])->name('staff.edit');
             Route::post('/update/{id}', [StaffController::class, "update", "id"])->name('staff.update');
             Route::get('/delete/{id}', [StaffController::class, "delete", "id"])->name('staff.delete');
+        });
+
+        Route::prefix('custom_field')->group(function () {
+            Route::get('/create', [CustomFieldController::class, "create"])->name('custom_field.create');
+            Route::post('/store', [CustomFieldController::class, "store"])->name('custom_field.store');
+            Route::get('/list', [CustomFieldController::class, "list"])->name('custom_field.list');
+            Route::get('/edit/{id}', [CustomFieldController::class, "edit", "id"])->name('custom_field.edit');
+            Route::post('/update/{id}', [CustomFieldController::class, "update", "id"])->name('custom_field.update');
+            Route::get('/delete/{id}', [CustomFieldController::class, "delete", "id"])->name('custom_field.delete');
         });
 
         Route::prefix('card')->group(function () {

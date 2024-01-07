@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helper\CrudBag;
 use App\Helper\ListViewModel;
+use App\Models\CustomFields;
 use App\Models\Student;
 use App\Models\Staff;
 use App\Models\StaffProfile;
@@ -99,6 +100,31 @@ class StaffController extends Controller
             'type' => 'phone',
             'label' => 'Số điện thoại nhân viên'
         ]);
+        /**
+         * @var CustomFields[] $customFields
+         */
+        $customFields = CustomFields::query()->where('branch', Auth::user()->{'branch'})->where('entity_type', CustomFields::ENTITY_STAFF)->get();
+
+        foreach ($customFields as $customField) {
+            $data = [
+                'name' => 'custom_field[' . $customField->name . ']',
+                'label' => $customField->label,
+                'type' => CustomFields::convertedType()[$customField->type],
+                'required' => $customField->required,
+            ];
+
+            if ($customField->type == CustomFields::SELECT_TYPE) {
+                $data['options'] = $customField->convertInitValue();
+            }
+
+            if ($customField->required == 0) {
+                $data['nullable'] = 1;
+            }
+
+
+            $crudBag->addFields($data);
+        }
+
         return \view('create', [
             'crudBag' => $crudBag
         ]);
@@ -131,12 +157,16 @@ class StaffController extends Controller
             'avatar' => $request->get('avatar') ?? 'https://png.pngtree.com/png-clipart/20190117/ourlarge/pngtree-teachers-day-teacher-portrait-teachers-day-png-image_428203.jpg',
         ];
 
-        DB::transaction(function () use ($dataToCreateStaff) {
+        $customFields = $request->get('custom_field') ?? [];
+
+        DB::transaction(function () use ($dataToCreateStaff, $customFields) {
             $staff = Staff::query()->create($dataToCreateStaff);
 
             StaffProfile::query()->create([
                 'user_id' => $staff['id'],
             ]);
+
+            $this->saveCustomFields($customFields, $staff['id']);
         });
 
         return redirect()->to('/staff/list')->with('success', 'Thêm nhân viên thành công');
@@ -162,6 +192,9 @@ class StaffController extends Controller
 
     public function edit(int $id): View
     {
+        /**
+         * @var Staff $staff
+         */
         $staff = Staff::query()->where('id', $id)->firstOrFail();
 
         $crudBag = new CrudBag();
@@ -206,6 +239,32 @@ class StaffController extends Controller
             'value' => $staff['phone'],
         ]);
 
+        /**
+         * @var CustomFields[] $customFields
+         */
+        $customFields = CustomFields::query()->where('branch', Auth::user()->{'branch'})->where('entity_type', CustomFields::ENTITY_STAFF)->get();
+
+        foreach ($customFields as $customField) {
+            $data = [
+                'name' => 'custom_field[' . $customField->name . ']',
+                'label' => $customField->label,
+                'type' => CustomFields::convertedType()[$customField->type],
+                'required' => $customField->required,
+                'value' => $staff->getCustomField($customField->name),
+            ];
+
+            if ($customField->type == CustomFields::SELECT_TYPE) {
+                $data['options'] = $customField->convertInitValue();
+            }
+
+            if ($customField->required == 0) {
+                $data['nullable'] = 1;
+            }
+
+
+            $crudBag->addFields($data);
+        }
+
         return \view('create', ['crudBag' => $crudBag]);
     }
 
@@ -217,7 +276,7 @@ class StaffController extends Controller
      * @return RedirectResponse
      * @throws ValidationException
      */
-    public function update(Request $request, $id): RedirectResponse
+    public function update(Request $request, int $id): RedirectResponse
     {
         $this->validate($request, [
             'name' => 'required|string',
@@ -235,8 +294,11 @@ class StaffController extends Controller
             'avatar'
         ]);
 
-        DB::transaction(function () use ($dataUpdate, $staff) {
+        $customFields = $request->get('custom_field') ?? [];
+
+        DB::transaction(function () use ($customFields, $dataUpdate, $staff) {
             $staff->update($dataUpdate);
+            $this->saveCustomFields($customFields, $staff['id']);
         });
 
         return redirect()->to('/staff/list')->with('success', 'Cập nhật thành công');
@@ -317,5 +379,26 @@ class StaffController extends Controller
     private function handleBuilder(Builder $builder, CrudBag $crudBag)
     {
         $builder->orderBy('created_at', 'desc');
+    }
+
+    private function saveCustomFields(array $customFields, int $id)
+    {
+        $data = [];
+        foreach ($customFields as $name => $customField) {
+            if (!$customField) {
+                continue;
+            }
+            $customFieldRecord = CustomFields::query()->where('name', $name)->where('branch', Auth::user()->{'branch'})->exists();
+
+            if (!$customFieldRecord) {
+                continue;
+            }
+
+            $data[$name] = $customField;
+        }
+
+        StaffProfile::query()->where('user_id', $id)->update([
+            'extra_information' => json_encode($data)
+        ]);
     }
 }

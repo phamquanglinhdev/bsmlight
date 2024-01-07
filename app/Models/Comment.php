@@ -18,6 +18,7 @@ class Comment extends Model
     const ATTACHMENT_TYPE = 2;
     const STUDY_LOG_COMMENT = "studylog";
     const CARD_COMMENT = "card";
+    const LOG_TYPE = 2;
 
     protected $table = 'comments';
     protected $guarded = ['id'];

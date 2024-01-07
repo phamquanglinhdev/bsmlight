@@ -129,7 +129,7 @@ class StudyLogShowViewModel
             photo : $studyLog->photo ?? '',
             video : $studyLog->video ?? '',
             studylog_image : $studyLog->studylog_image ?? '',
-            notes : $studyLog->notes ?? ''
+            notes : $studyLog->content ?? ''
         );
     }
 }

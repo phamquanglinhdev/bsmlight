@@ -21,6 +21,7 @@ function defineScope(): array
             'transaction',
             'inventory',
             'studylog',
+            'custom_field',
         ],
         User::STUDENT_ROLE => [
 

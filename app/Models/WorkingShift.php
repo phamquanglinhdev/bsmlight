@@ -12,6 +12,7 @@ class WorkingShift extends Model
     use HasFactory;
 
     public const TEMPLATE = [
+        'duration' => 0,
         'teacher_id' => '',
         'supporter_id' => '',
         'start_time' => '',

@@ -51,4 +51,14 @@ class Teacher extends Model
 
         return $profile->teacher_source ?? Teacher::INTERNAL_SOURCE;
     }
+
+    public function getCustomField(string $name)
+    {
+        $extraInformation = $this->profile?->extra_information;
+        if (!$extraInformation) {
+            return null;
+        }
+        $extraInformation = json_decode($extraInformation, true);
+        return $extraInformation[$name] ?? null;
+    }
 }

@@ -7,7 +7,9 @@
 <div class="form-floating form-floating-outline mb-4">
     <select name="{{$field->getName()}}" id="{{$field->getName()}}" class="selectpicker w-100 small"
             data-style="btn-default"
-            data-live-search="true">
+            data-live-search="true"
+        {{$field->isRequired() ? 'required' : ''}}
+    >
         @if($field->isNullable() == 1)
             <option value="">Chọn</option>
         @endif

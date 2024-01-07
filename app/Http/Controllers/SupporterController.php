@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helper\CrudBag;
 use App\Helper\ListViewModel;
+use App\Models\CustomFields;
 use App\Models\Student;
 use App\Models\Supporter;
 use App\Models\SupporterProfile;
@@ -99,6 +100,27 @@ class SupporterController extends Controller
             'type' => 'phone',
             'label' => 'Số điện thoại trợ giảng'
         ]);
+        /**
+         * @var CustomFields[] $customFields
+         */
+        $customFields = CustomFields::query()->where('branch', Auth::user()->{'branch'})->where('entity_type', CustomFields::ENTITY_SUPPORTER)->get();
+
+        foreach ($customFields as $customField) {
+            $data = [
+                'name' => 'custom_field[' . $customField->name . ']',
+                'type' => CustomFields::convertedType()[$customField->type],
+                'label' => $customField->label,
+                'required' => $customField->required
+            ];
+
+            if ($customField->type == CustomFields::SELECT_TYPE) {
+                $data['options'] = $customField->convertInitValue();
+                if ($data['required'] == 0) {
+                    $data['nullable'] = 1;
+                }
+            }
+            $crudBag->addFields($data);
+        }
         return \view('create', [
             'crudBag' => $crudBag
         ]);
@@ -130,13 +152,16 @@ class SupporterController extends Controller
             'role' => User::SUPPORTER_ROLE,
             'avatar' => $request->get('avatar') ?? 'https://png.pngtree.com/png-clipart/20190117/ourlarge/pngtree-teachers-day-teacher-portrait-teachers-day-png-image_428203.jpg',
         ];
+        $customFields = $request->get('custom_field') ?? [];
 
-        DB::transaction(function () use ($dataToCreateSupporter) {
+        DB::transaction(function () use ($dataToCreateSupporter, $customFields) {
             $supporter = Supporter::query()->create($dataToCreateSupporter);
 
             SupporterProfile::query()->create([
                 'user_id' => $supporter['id'],
             ]);
+
+            $this->saveCustomFields($customFields, $supporter['id']);
         });
 
         return redirect()->to('/supporter/list')->with('success', 'Thêm trợ giảng thành công');
@@ -162,6 +187,9 @@ class SupporterController extends Controller
 
     public function edit(int $id): View
     {
+        /**
+         * @var Supporter $supporter
+         */
         $supporter = Supporter::query()->where('id', $id)->firstOrFail();
 
         $crudBag = new CrudBag();
@@ -206,6 +234,29 @@ class SupporterController extends Controller
             'value' => $supporter['phone'],
         ]);
 
+        /**
+         * @var CustomFields[] $customFields
+         */
+        $customFields = CustomFields::query()->where('branch', Auth::user()->{'branch'})->where('entity_type', CustomFields::ENTITY_SUPPORTER)->get();
+
+        foreach ($customFields as $customField) {
+            $data = [
+                'name' => 'custom_field[' . $customField->name . ']',
+                'type' => CustomFields::convertedType()[$customField->type],
+                'label' => $customField->label,
+                'required' => $customField->required,
+                'value' => $supporter->getCustomField($customField->name),
+            ];
+
+            if ($customField->type == CustomFields::SELECT_TYPE) {
+                $data['options'] = $customField->convertInitValue();
+                if ($data['required'] == 0) {
+                    $data['nullable'] = 1;
+                }
+            }
+            $crudBag->addFields($data);
+        }
+
         return \view('create', ['crudBag' => $crudBag]);
     }
 
@@ -234,9 +285,11 @@ class SupporterController extends Controller
             'email',
             'avatar'
         ]);
+        $customFields = $request->get('custom_field') ?? [];
 
-        DB::transaction(function () use ($dataUpdate, $supporter) {
+        DB::transaction(function () use ($dataUpdate, $supporter, $customFields) {
             $supporter->update($dataUpdate);
+            $this->saveCustomFields($customFields, $supporter['id']);
         });
 
         return redirect()->to('/supporter/list')->with('success', 'Cập nhật thành công');
@@ -317,5 +370,28 @@ class SupporterController extends Controller
     private function handleBuilder(Builder $builder, CrudBag $crudBag)
     {
         $builder->orderBy('created_at', 'desc');
+    }
+
+    private function saveCustomFields(array $customFields, int $id): void
+    {
+        $data = [];
+
+        foreach ($customFields as $name => $customField) {
+            if (!$customField) {
+                continue;
+            }
+
+            $customFieldRecord = CustomFields::query()->where('name', $name)->where('branch', Auth::user()->{'branch'})->exists();
+
+            if (!$customFieldRecord) {
+                continue;
+            }
+
+            $data[$name] = $customField;
+        }
+
+        SupporterProfile::query()->where('user_id', $id)->update([
+            'extra_information' => json_encode($data)
+        ]);
     }
 }

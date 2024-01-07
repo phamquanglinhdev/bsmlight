@@ -85,6 +85,14 @@
                 </a>
             </li>
         @endif
+        @if(check_permission('list custom_field'))
+            <li class="menu-item {{is_module('branch') ? ' active' :''}}">
+                <a href="{{url("/custom_field/list")}}" class="menu-link">
+                    <i class="menu-icon tf-icons mdi mdi-audio-input-rca"></i>
+                    <div>Trường tự định nghĩa</div>
+                </a>
+            </li>
+        @endif
 
 
         {{--        <li class="menu-item ">--}}

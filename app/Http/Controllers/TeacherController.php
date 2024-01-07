@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helper\CrudBag;
 use App\Helper\ListViewModel;
+use App\Models\CustomFields;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\TeacherProfile;
@@ -109,6 +110,29 @@ class TeacherController extends Controller
             'value' => Teacher::INTERNAL_SOURCE
         ]);
 
+        /**
+         * @var CustomFields[] $customFields
+         */
+        $customFields = CustomFields::query()->where('entity_type', CustomFields::ENTITY_TEACHER)->where('branch', Auth::user()->{'branch'})->get();
+
+        foreach ($customFields as $customField) {
+            $fieldData = [
+                'name' => 'custom_fields[' . $customField->name . ']',
+                'label' => $customField->label,
+                'type' => CustomFields::convertedType()[$customField->type],
+                'required' => $customField->required
+            ];
+
+            if ($customField->type == CustomFields::SELECT_TYPE) {
+                $fieldData['options'] = $customField->convertInitValue();
+                if ($customField->required == 0) {
+                    $fieldData['nullable'] = 1;
+                }
+            }
+
+            $crudBag->addFields($fieldData);
+        }
+
         return \view('create', [
             'crudBag' => $crudBag
         ]);
@@ -145,13 +169,16 @@ class TeacherController extends Controller
             'teacher_source' => $request->get('teacher_source'),
         ];
 
-        DB::transaction(function () use ($dataToCreateTeacher, $dataToCreateTeacherProfile) {
+        $customFields = $request->get('custom_fields') ?? [];
+        DB::transaction(function () use ($dataToCreateTeacher, $dataToCreateTeacherProfile, $customFields) {
             $teacher = Teacher::query()->create($dataToCreateTeacher);
 
             TeacherProfile::query()->create([
                 'user_id' => $teacher['id'],
                 'teacher_source' => $dataToCreateTeacherProfile['teacher_source']
             ]);
+
+            $this->saveCustomFields($customFields, $teacher->id);
         });
 
         return redirect()->to('/teacher/list')->with('success', 'Thêm giáo viên');
@@ -177,7 +204,10 @@ class TeacherController extends Controller
 
     public function edit(int $id): View
     {
-        $student = Teacher::query()->where('id', $id)->firstOrFail();
+        /**
+         * @var Teacher $teacher
+         */
+        $teacher = Teacher::query()->where('id', $id)->firstOrFail();
 
         $crudBag = new CrudBag();
 
@@ -198,28 +228,52 @@ class TeacherController extends Controller
                 5 => 'https://i.pinimg.com/originals/4a/5f/a7/4a5fa77ce26719459ecaab07353ef645.png',
                 6 => 'https://static-cdn.jtvnw.net/jtv_user_pictures/f275797c-e631-4a89-b7d2-952c3a79c789-profile_image-300x300.png',
             ],
-            'value' => $student['avatar'],
+            'value' => $teacher['avatar'],
             'class' => 'col-10 mb-3'
         ]);
         $crudBag->addFields([
             'name' => 'name',
             'label' => 'Tên giáo viên',
-            'value' => $student['name'],
+            'value' => $teacher['name'],
             'required' => true,
         ]);
 
         $crudBag->addFields([
             'name' => 'email',
             'label' => 'Email của giáo viên',
-            'value' => $student['email'],
+            'value' => $teacher['email'],
         ]);
 
         $crudBag->addFields([
             'name' => 'phone',
             'type' => 'phone',
             'label' => 'Số điện thoại giáo viên',
-            'value' => $student['phone'],
+            'value' => $teacher['phone'],
         ]);
+
+        /**
+         * @var CustomFields[] $customFields
+         */
+        $customFields = CustomFields::query()->where('entity_type', CustomFields::ENTITY_TEACHER)->where('branch', Auth::user()->{'branch'})->get();
+
+        foreach ($customFields as $customField) {
+            $fieldData = [
+                'name' => 'custom_fields[' . $customField->name . ']',
+                'label' => $customField->label,
+                'type' => CustomFields::convertedType()[$customField->type],
+                'required' => $customField->required,
+                'value' => $teacher->getCustomField($customField->name),
+            ];
+
+            if ($customField->type == CustomFields::SELECT_TYPE) {
+                $fieldData['options'] = $customField->convertInitValue();
+                if ($customField->required == 0) {
+                    $fieldData['nullable'] = 1;
+                }
+            }
+
+            $crudBag->addFields($fieldData);
+        }
 
         return \view('create', ['crudBag' => $crudBag]);
     }
@@ -250,8 +304,11 @@ class TeacherController extends Controller
             'avatar'
         ]);
 
-        DB::transaction(function () use ($dataUpdate, $teacher) {
+        $customFields = $request->get('custom_fields') ?? [];
+
+        DB::transaction(function () use ($dataUpdate, $teacher, $id, $customFields) {
             $teacher->update($dataUpdate);
+            $this->saveCustomFields($customFields, $id);
         });
 
         return redirect()->to('/teacher/list')->with('success', 'Cập nhật thành công');
@@ -347,5 +404,25 @@ class TeacherController extends Controller
     private function handleBuilder(Builder $builder, CrudBag $crudBag)
     {
         $builder->orderBy('created_at', 'desc');
+    }
+
+    private function saveCustomFields(array $customFields, int $id): void
+    {
+        $data = [];
+        foreach ($customFields as $name => $customField) {
+            if (! $customField) {
+                continue;
+            }
+            $customFieldRecord = CustomFields::query()->where('name', $name)->where('branch', Auth::user()->{'branch'})->first();
+            if (!$customFieldRecord) {
+                continue;
+            }
+
+            $data[$name] = $customField;
+        }
+
+        TeacherProfile::query()->where('user_id', $id)->update([
+            'extra_information' => json_encode($data)
+        ]);
     }
 }

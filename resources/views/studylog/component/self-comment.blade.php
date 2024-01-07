@@ -10,9 +10,18 @@
             <div class="text-end text-muted mt-1">
                 <small>{{$comment->getUserName()}}</small>
             </div>
-            <div class="chat-message-text">
-                <p class="mb-0">{{$comment->getContent()}}</p>
-            </div>
+            @switch($comment->getType())
+                @case(\App\Models\Comment::TEXT_TYPE)
+                    <div class="chat-message-text">
+                        <p class="mb-0">{{$comment->getContent()}}</p>
+                    </div>
+                    @break
+                @case(\App\Models\Comment::LOG_TYPE)
+                    <div class="badge bg-label-success">
+                        {{$comment->getContent()}}
+                    </div>
+                    @break
+            @endswitch
             <div class="text-end text-muted mt-1">
                 <small>{{$comment->getCommentTime()}}</small>
             </div>

@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Helper\CrudBag;
+use App\Helper\CustomFieldBag;
+use App\Helper\Fields;
 use App\Helper\ListViewModel;
+use App\Models\CustomFields;
 use App\Models\Student;
 use App\Models\StudentProfile;
 use App\Models\User;
@@ -29,7 +32,7 @@ class StudentController extends Controller
 
     public function create(): View
     {
-        if (! check_permission('create student')) {
+        if (!check_permission('create student')) {
             abort(403);
         }
 
@@ -50,7 +53,7 @@ class StudentController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        if (! check_permission('create student')) {
+        if (!check_permission('create student')) {
             abort(403);
         }
 
@@ -85,15 +88,18 @@ class StudentController extends Controller
             'birthday'
         ]);
 
+        $customFields = $request->get('custom_field') ?? [];
+
         $dataToCreateStudent['uuid'] = User::newUuid(Auth::user()->{"branch"}, "HS");
         $dataToCreateStudent['password'] = Hash::make('bsm123456@');
         $dataToCreateStudent['branch'] = $request->user()->branch;
         $dataToCreateStudent['role'] = User::STUDENT_ROLE;
 
-        DB::transaction(function () use ($dataToCreateStudent, $dataToCreateProfile) {
+        DB::transaction(function () use ($dataToCreateStudent, $dataToCreateProfile, $customFields) {
             $user = User::query()->create($dataToCreateStudent);
             $dataToCreateProfile['user_id'] = $user['id'];
             StudentProfile::query()->create($dataToCreateProfile);
+            $this->saveCustomFields($customFields, $user->id);
         });
 
         return redirect('student/list')->with('success', 'Thêm mới thành công');
@@ -101,7 +107,7 @@ class StudentController extends Controller
 
     public function list(Request $request): View
     {
-        if (! check_permission('list student')) {
+        if (!check_permission('list student')) {
             abort(403);
         }
         $perPage = $request->get('perPage') ?? 10;
@@ -130,7 +136,7 @@ class StudentController extends Controller
 
     public function edit(int $id): View
     {
-        if (! check_permission('edit student')) {
+        if (!check_permission('edit student')) {
             abort(403);
         }
         $this->crudBag->setEntity('student');
@@ -152,7 +158,7 @@ class StudentController extends Controller
 
     public function update(int $id, Request $request): RedirectResponse
     {
-        if (! check_permission('edit student')) {
+        if (!check_permission('edit student')) {
             abort(403);
         }
 
@@ -186,11 +192,12 @@ class StudentController extends Controller
             'address',
             'birthday'
         ]);
-
-        DB::transaction(function () use ($dataToCreateStudent, $dataToCreateProfile, $id) {
+        $customFields = $request->get('custom_field') ?? [];
+        DB::transaction(function () use ($dataToCreateStudent, $dataToCreateProfile, $id, $customFields) {
             User::query()->where('id', $id)->update($dataToCreateStudent);
 
             StudentProfile::query()->where('user_id', $id)->update($dataToCreateProfile);
+            $this->saveCustomFields($customFields, $id);
         });
 
         return redirect()->to('student/list')->with('success', 'Chỉnh sửa thành công');
@@ -198,7 +205,7 @@ class StudentController extends Controller
 
     public function delete(int $id): RedirectResponse
     {
-        if (! check_permission('delete student')) {
+        if (!check_permission('delete student')) {
             abort(403);
         }
         $student = Student::query()->where('id', $id)->firstOrFail();
@@ -610,7 +617,7 @@ class StudentController extends Controller
 
         $crudBag->addFields([
             'name' => 'birthday',
-            'value' => $student['birthday'] != "" ? Carbon::parse($student['birthday'])->toDateString() : null,
+            'value' => isset($student['birthday']) && $student['birthday'] != null ? Carbon::parse($student['birthday'])->toDateString() : null,
             'type' => 'date',
             'required' => false,
             'label' => 'Ngày sinh',
@@ -666,6 +673,52 @@ class StudentController extends Controller
             'nullable' => true
         ]);
 
+        /**
+         * @var CustomFields[] $customFields
+         */
+        $customFields = CustomFields::query()->where('entity_type', CustomFields::ENTITY_STUDENT)->where('branch', Auth::user()->{'branch'})->get();
+
+        foreach ($customFields as $customField) {
+            $fieldData = [
+                'name' => 'custom_field[' . $customField->name . ']',
+                'type' => CustomFields::convertedType()[$customField->type],
+                'label' => $customField->label,
+                'required' => $customField->required,
+                'value' => $student?->getCustomField($customField->name) ?? null
+            ];
+
+            if ($customField->type === CustomFields::SELECT_TYPE) {
+                $fieldData['options'] = $customField->convertInitValue();
+                if ($customField->required == 0) {
+                    $fieldData['nullable'] = 1;
+                }
+            }
+
+            $crudBag->addFields($fieldData);
+        }
+
         return $crudBag;
+    }
+
+    private function saveCustomFields(array $customFields, int $studentId): void
+    {
+        $customFieldsData = [];
+
+        foreach ($customFields as $name => $customField) {
+            if (!$customField) {
+                continue;
+            }
+
+            $customFieldRecord = CustomFields::query()->where('name', $name)->where('branch', Auth::user()->{'branch'})->first();
+            if (!$customFieldRecord) {
+                continue;
+            }
+
+            $customFieldsData[$name] = $customField;
+        }
+
+        StudentProfile::query()->where('user_id', $studentId)->update([
+            'extra_information' => json_encode($customFieldsData)
+        ]);
     }
 }

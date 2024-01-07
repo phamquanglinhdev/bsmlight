@@ -109,6 +109,7 @@
                            name="shifts[{{$shiftKey}}][teacher_timestamp]"
                            value="{{old('shifts.'.$shiftKey.'.teacher_timestamp')??$shiftTemplate['teacher_timestamp']}}"
                            placeholder="">
+                    <input type="hidden" name="shifts[{{$shiftKey}}][alt_teacher_timestamp]" value="{{$shiftTemplate['teacher_timestamp']}}">
                     <label for="shifts[{{$shiftKey}}][teacher_timestamp]">Ảnh điểm danh giáo
                         viên *</label>
                     @error('shifts.'.$shiftKey.'.teacher_timestamp')
@@ -124,8 +125,9 @@
                            class="form-control selectpicker"
                            id="shifts[{{$shiftKey}}][supporter_timestamp]"
                            name="shifts[{{$shiftKey}}][supporter_timestamp]"
-                           value="{{old('shifts.'.$shiftKey.'.supporter_timestamp')??$shiftTemplate['supporter_timestamp']}}"
+                           value="{{old('shifts.'.$shiftKey.'.supporter_timestamp') ?? $shiftTemplate['supporter_timestamp']}}"
                            placeholder="">
+                    <input type="hidden" name="shifts[{{$shiftKey}}][alt_supporter_timestamp]" value="{{$shiftTemplate['supporter_timestamp']}}">
                     <label for="shifts[{{$shiftKey}}][supporter_timestamp]">Ảnh điểm danh
                         trợ giảng *</label>
                     @error('shifts.'.$shiftKey.'.supporter_timestamp')
@@ -142,7 +144,7 @@
                                                     id="shifts[{{$shiftKey}}][teacher_comment]"
                                                     name="shifts[{{$shiftKey}}][teacher_comment]"
                                                     placeholder="Ghi chú của giáo viên"
-                                                    rows="5"></textarea>
+                                                    rows="5">{{ old('shifts.'.$shiftKey.'.teacher_comment') ?? $shiftTemplate['teacher_comment'] }}</textarea>
                     <label for="shifts[{{$shiftKey}}][teacher_comment]">Báo cáo của giáo viên cho Admin</label>
                 </div>
             </div>
@@ -153,7 +155,7 @@
                                                     id="shifts[{{$shiftKey}}][supporter_comment]"
                                                     name="shifts[{{$shiftKey}}][supporter_comment]"
                                                     placeholder="Ghi chú của trợ giảng"
-                                                    rows="5"></textarea>
+                                                    rows="5">{{ old('shifts.'.$shiftKey.'.supporter_comment') ?? $shiftTemplate['supporter_comment'] }}</textarea>
                     <label for="shifts[{{$shiftKey}}][supporter_comment]">Báo cáo của trợ giảng cho Admin</label>
                 </div>
             </div>

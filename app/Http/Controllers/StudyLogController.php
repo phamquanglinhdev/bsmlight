@@ -23,6 +23,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -112,7 +113,7 @@ class StudyLogController extends Controller
 
     private function selectStudyLogDay(Request $request, CrudBag $crudBag): View
     {
-        if (! $request->get('classroom_id')) {
+        if (!$request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
@@ -135,11 +136,11 @@ class StudyLogController extends Controller
 
     private function selectSchedule(Request $request, CrudBag $crudBag): View
     {
-        if (! $request->get('classroom_id')) {
+        if (!$request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
-        if (! $request->get('studylog_day')) {
+        if (!$request->get('studylog_day')) {
             return $this->selectStudyLogDay($request, $crudBag);
         }
 
@@ -175,15 +176,15 @@ class StudyLogController extends Controller
 
     private function startCreate(Request $request, CrudBag $crudBag)
     {
-        if (! $request->get('classroom_id')) {
+        if (!$request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
-        if (! $request->get('studylog_day')) {
+        if (!$request->get('studylog_day')) {
             return $this->selectStudyLogDay($request, $crudBag);
         }
 
-        if (! $request->get('classroom_schedule_id')) {
+        if (!$request->get('classroom_schedule_id')) {
             return $this->selectSchedule($request, $crudBag);
         }
 
@@ -223,7 +224,7 @@ class StudyLogController extends Controller
              * @var ClassroomSchedule $schedule
              */
             $schedule = ClassroomSchedule::query()->where('id', $request->get('classroom_schedule_id'))->where('classroom_id', $request->get('classroom_id') ?? '')->first();
-            if (! $schedule) {
+            if (!$schedule) {
                 $shiftTemplates = [
                     [
                         'teacher_id' => '',
@@ -315,7 +316,7 @@ class StudyLogController extends Controller
 
         foreach ($request->get('shifts') as $key => $shift) {
             $files = $request->file('shifts')[$key] ?? [];
-            if (! empty($files)) {
+            if (!empty($files)) {
                 $request->merge([
                     "shifts" => [
                         $key => array_merge($shift, [
@@ -461,7 +462,7 @@ class StudyLogController extends Controller
                 if (Auth::user()->role == User::HOST_ROLE) {
                     $validByClassroom = $studyLog->Classroom()->where('branch', Auth::user()->{'branch'})->exists();
 
-                    if (! $validByClassroom) {
+                    if (!$validByClassroom) {
                         abort(403);
                     }
                     break;
@@ -474,7 +475,7 @@ class StudyLogController extends Controller
 
                 $existStudent = CardLog::query()->where('studylog_id', $id)->where('student_id', Auth::id())->exists();
 
-                if (! $isAuthor && ! $existWorkingShift && ! $existStudent) {
+                if (!$isAuthor && !$existWorkingShift && !$existStudent) {
                     abort(403);
                 }
                 break;
@@ -489,11 +490,11 @@ class StudyLogController extends Controller
             ->orderBy('created_at', 'DESC')->get();
 
         $studyLogShowViewModel = new StudyLogShowViewModel(
-            studyLog : $studyLog,
-            cardLogs : $cardLogs,
-            workingShifts : WorkingShift::query()->where('studylog_id', $id)->get(),
-            comments : $comments,
-            studyLogAcceptedUsers : $relationUsers
+            studyLog: $studyLog,
+            cardLogs: $cardLogs,
+            workingShifts: WorkingShift::query()->where('studylog_id', $id)->get(),
+            comments: $comments,
+            studyLogAcceptedUsers: $relationUsers
         );
 
         return \view('studylog.show', [
@@ -566,7 +567,7 @@ class StudyLogController extends Controller
             return $user->getUserId();
         }, $studyLog->getAcceptedUsers());
 
-        if (! in_array(Auth::id(), $relationUsers)) {
+        if (!in_array(Auth::id(), $relationUsers)) {
             abort(403);
         }
 
@@ -590,7 +591,7 @@ class StudyLogController extends Controller
         $relationUsers = $studyLog->getAcceptedUsers();
 
         foreach ($relationUsers as $relationUser) {
-            if (! $relationUser->isAccepted()) {
+            if (!$relationUser->isAccepted()) {
                 return;
             }
         }
@@ -638,5 +639,293 @@ class StudyLogController extends Controller
         ]);
 
         return true;
+    }
+
+    public function edit(int $id): View
+    {
+        $crudBag = new CrudBag();
+
+        $listTeacher = Teacher::query()->get(['id', 'name', 'uuid'])->mapWithKeys(function ($teacher) {
+            return [$teacher->id => $teacher->uuid . ' - ' . $teacher->name];
+        });
+
+        $crudBag->setParam('listTeacher', $listTeacher);
+
+        $listSupporter = Supporter::query()->get(['id', 'name', 'uuid'])->mapWithKeys(function ($supporter) {
+            return [$supporter->id => $supporter->uuid . ' - ' . $supporter->name];
+        });
+
+        $crudBag->setParam('listSupporter', $listSupporter);
+
+        /**
+         * @var StudyLog $studyLog
+         */
+        $studyLog = StudyLog::query()->where('id', $id)->firstOrFail();
+
+        $listClassrooms = Classroom::query()->get()->mapWithKeys(function (Classroom $classroom) {
+            return [$classroom['id'] => $classroom['uuid'] . ' - ' . $classroom['name']];
+        })->toArray();
+        $crudBag->setParam('listClassroom', $listClassrooms);
+
+        $crudBag->setParam('classroom_id', $studyLog->getAttributeValue('classroom_id'));
+
+        $crudBag->setParam('studylog_day', $studyLog->getAttributeValue('studylog_day'));
+
+        $listSchedule = ClassroomSchedule::query()->where('classroom_id', $studyLog->getAttributeValue('classroom_id'))->get()->mapWithKeys(
+            function (ClassroomSchedule $item) {
+                return [$item->id => $item->getWeekStringAttribute() . ": " . $item->start_time . " - " . $item->end_time];
+            }
+        )->toArray();
+
+        $crudBag->setParam('listSchedule', $listSchedule);
+
+        $crudBag->setParam('classroom_schedule_id', $studyLog->getAttributeValue('classroom_schedule_id'));
+
+
+        $shiftsTemplates = $studyLog->WorkingShifts()->get()->map(function (WorkingShift $workingShift) {
+            return [
+                'teacher_id' => $workingShift->getAttributeValue('teacher_id'),
+                'supporter_id' => $workingShift->getAttributeValue('supporter_id'),
+                'start_time' => $workingShift->getAttributeValue('start_time'),
+                'end_time' => $workingShift->getAttributeValue('end_time'),
+                'duration' => Carbon::parse($workingShift->start_time)->diffInMinutes($workingShift->end_time),
+                'room' => $workingShift->getAttributeValue('room'),
+                'teacher_timestamp' => $workingShift->getAttributeValue('teacher_timestamp'),
+                'supporter_timestamp' => $workingShift->getAttributeValue('supporter_timestamp'),
+                'teacher_comment' => $workingShift->getAttributeValue('teacher_comment'),
+                'supporter_comment' => $workingShift->getAttributeValue('supporter_comment'),
+            ];
+        })->toArray();
+
+        $crudBag->setParam('shiftTemplates', $shiftsTemplates);
+
+        $listCardLogStatus = [
+            0 => 'Đi học, đúng giờ',
+            1 => 'Đi học, muộn',
+            2 => 'Đi học, sớm',
+            3 => 'Vắng, có phép',
+            4 => 'Vắng, không phép',
+            5 => 'Không điểm danh',
+        ];
+
+        $crudBag->setParam('listCardLogStatus', $listCardLogStatus);
+
+        $cardsTemplate = $studyLog->CardLogs()?->get()->map(function (CardLog $cardLog) {
+            return [
+                'card_id' => $cardLog->card_id,
+                'card_uuid' => $cardLog->Card()->first()->uuid,
+                'student_id' => $cardLog->Card()->first()->Student()->first()->id,
+                'student_uuid' => $cardLog->Card()->first()->Student()->first()->uuid,
+                'student_name' => $cardLog->Card()->first()->Student()->first()->name,
+                'student_avatar' => $cardLog->Card()->first()->Student()->first()->avatar,
+                'attended_days' => $cardLog->Card()->first()->attended_days + $cardLog->Card()->first()->van,
+                'can_use_day' => $cardLog->Card()->first()->can_use_day,
+                'day' => $cardLog->day,
+                'status' => $cardLog->status,
+                'reason' => '',
+                'teacher_note' => $cardLog->teacher_note,
+                'supporter_note' => $cardLog->supporter_note,
+            ];
+        });
+
+        $newCardTemplate = Card::query()->where('classroom_id', $studyLog->classroom_id)->get()->map(function (Card $card) {
+            return [
+                'card_id' => $card->id,
+                'card_uuid' => $card->uuid,
+                'student_id' => $card->Student()->first()->id,
+                'student_uuid' => $card->Student()->first()->uuid,
+                'student_name' => $card->Student()->first()->name,
+                'student_avatar' => $card->Student()->first()->avatar,
+                'attended_days' => $card->attended_days + $card->van,
+                'can_use_day' => $card->can_use_day,
+                'day' => 1,
+                'status' => 0,
+                'reason' => '',
+                'teacher_note' => '',
+                'supporter_note' => '',
+            ];
+        });
+
+        $collection1 = new Collection($cardsTemplate);
+        $collection2 = new Collection($newCardTemplate);
+        $result = $collection1->concat($collection2)->groupBy('card_id')->map(function ($group) {
+            return $group->first(); // Chọn phần tử đầu tiên của mỗi nhóm
+        })->values()->all();
+
+        $crudBag->setParam('studylog_id', $studyLog->id);
+        $crudBag->setParam('video', $studyLog->video);
+        $crudBag->setParam('audio', $studyLog->audio);
+        $crudBag->setParam('file', $studyLog->file);
+        $crudBag->setParam('link', $studyLog->link);
+        $crudBag->setParam('notes', $studyLog->notes);
+        $crudBag->setParam('title', $studyLog->title);
+        $crudBag->setParam('content', $studyLog->content);
+
+
+        $crudBag->setParam('cardsTemplates', $result);
+
+        return view('studylog.edit', [
+            'crudBag' => $crudBag,
+        ]);
+    }
+
+    public function update(Request $request, int $id): RedirectResponse|View
+    {
+        $crudBag = new CrudBag();
+
+        $listCardLogStatus = [
+            0 => 'Đi học, đúng giờ',
+            1 => 'Đi học, muộn',
+            2 => 'Đi học, sớm',
+            3 => 'Vắng, có phép',
+            4 => 'Vắng, không phép',
+            5 => 'Không điểm danh',
+        ];
+
+        $crudBag->setParam('step', 4);
+
+        $cardsTemplates = [];
+        $shiftTemplates = [];
+
+        $shifts = [];
+        foreach ($request->get('shifts') as $key => $shift) {
+            $files = $request->file('shifts')[$key] ?? [];
+            if (!empty($files)) {
+                $shifts[$key] = array_merge($shift, [
+                    'teacher_timestamp' => uploads($files['teacher_timestamp']),
+                    'supporter_timestamp' => uploads($files['supporter_timestamp']),
+                ]);
+            } else {
+                $shifts[$key] = array_merge($shift, [
+                    'teacher_timestamp' => $shift['alt_teacher_timestamp'],
+                    'supporter_timestamp' => $shift['alt_supporter_timestamp'],
+                ]);
+            }
+        }
+
+        $request->merge([
+            'shifts' => $shifts
+        ]);
+
+        foreach ($request->get('shifts') as $key => $shift) {
+            $dataShift = json_decode($shift['template'], true);
+            $shiftTemplates[$key] = array_replace($dataShift, $shift);
+        }
+
+        foreach ($request->get('cardlogs') as $key => $cardlog) {
+            $dataCard = json_decode($cardlog['template'], true);
+            $cardsTemplates[$key] = array_replace($dataCard, $cardlog);
+        }
+
+        $crudBag->setParam('cardsTemplates', $cardsTemplates);
+        $crudBag->setParam('shiftTemplates', $shiftTemplates);
+        $crudBag->setParam('listCardLogStatus', $listCardLogStatus);
+        $crudBag->setParam('classroom_id', $request->get('classroom_id'));
+        $crudBag->setParam('classroom_schedule_id', $request->get('classroom_schedule_id'));
+        $crudBag->setParam('studylog_day', $request->get('studylog_day'));
+
+
+        request()->session()->flash('shiftTemplates', $shiftTemplates);
+
+        /**
+         * @var StudyLog $studyLog
+         */
+        $studyLog = StudyLog::where('id', $id)->firstOrFail();
+
+        $validate = Validator::make($request->all(), [
+            'classroom_id' => 'required|exists:classrooms,id',
+            'studylog_day' => 'required',
+            'classroom_schedule_id' => 'required|exists:classroom_schedules,id',
+            'shifts' => 'array|required',
+            'shifts.*.start_time' => 'required',
+            'shifts.*.end_time' => 'required',
+            'shifts.*.room' => 'string|nullable',
+            'shifts.*.teacher_id' => 'required|exists:users,id',
+            'shifts.*.supporter_id' => 'required|exists:users,id',
+            'shifts.*.teacher_comment' => 'string|nullable',
+            'shifts.*.supporter_comment' => 'string|nullable',
+            'shifts.*.supporter_timestamp' => 'required',
+            'shifts.*.teacher_timestamp' => 'required',
+            'cardlogs' => 'array|required',
+            'cardlogs.*.student_id' => 'required|exists:users,id',
+            'cardlogs.*.card_id' => 'required|integer',
+            'cardlogs.*.day' => 'string',
+            'cardlogs.*.status' => 'integer|in:0,1,2,3,4,5',
+            'cardlogs.*.teacher_note' => 'string|nullable',
+            'cardlogs.*.supporter_note' => 'string|nullable',
+        ]);
+
+        if ($validate->fails()) {
+            return redirect()->back()->withErrors($validate);
+        }
+
+        $dataToUpdateStudyLog = [
+            'title' => $request->get('title') ?? 'Buổi học ngày ' . Carbon::parse($request->get('studylog_day'))->isoFormat('DD/MM/YYYY'),
+            'content' => $request->get('content') ?? '',
+            'image' => $request->get('image'),
+            'video' => $request->get('video'),
+            'file' => $request->get('file'),
+            'link' => $request->get('link'),
+            'notes' => $request->get('notes'),
+        ];
+
+        DB::transaction(function () use ($studyLog, $cardsTemplates, $dataToUpdateStudyLog, $request, $shiftTemplates) {
+            $studyLog->update($dataToUpdateStudyLog);
+
+            $studyLog->CardLogs()->delete();
+
+            foreach ($cardsTemplates as $cardLog) {
+                /**
+                 * @var Card $card
+                 */
+                $card = Card::query()->find($cardLog['card_id']);
+
+                $dataToCreateCardLog = [
+                    'card_id' => $cardLog['card_id'],
+                    'student_id' => $cardLog['student_id'],
+                    'studylog_id' => $studyLog['id'],
+                    'day' => $cardLog['day'] == 'on' ? 1 : 0,
+                    'fee' => $cardLog['day'] == 'on' ? $card->getDailyFeeAttribute() : 0,
+                    'active' => CardLog::UNVERIFIED,
+                    'status' => $cardLog['status'],
+                    'reason' => '',
+                    'teacher_note' => $cardLog['teacher_note'] ?? '',
+                    'supporter_note' => $cardLog['supporter_note'] ?? '',
+                ];
+
+                CardLog::query()->create($dataToCreateCardLog);
+            }
+
+            $studyLog->WorkingShifts()->delete();
+
+            foreach ($shiftTemplates as $shiftTemplate) {
+                $dataToCreateWorkingShift = [
+                    'staff_id' => Auth::id(),
+                    'teacher_id' => $shiftTemplate['teacher_id'],
+                    'supporter_id' => $shiftTemplate['supporter_id'],
+                    'room' => $shiftTemplate['room'] ?? '',
+                    'teacher_timestamp' => $shiftTemplate['teacher_timestamp'],
+                    'supporter_timestamp' => $shiftTemplate['supporter_timestamp'],
+                    'start_time' => $shiftTemplate['start_time'],
+                    'end_time' => $shiftTemplate['end_time'],
+                    'studylog_id' => $studyLog['id'],
+                    'status' => WorkingShift::UNVERIFIED,
+                    'teacher_comment' => $shiftTemplate['teacher_comment'],
+                    'supporter_comment' => $shiftTemplate['supporter_comment'],
+                ];
+
+                WorkingShift::query()->create($dataToCreateWorkingShift);
+            }
+
+            Comment::query()->create([
+                'user_id' => Auth::id(),
+                'object_type' => Comment::STUDY_LOG_COMMENT,
+                'object_id' => $studyLog->id,
+                'content' => 'Chỉnh sửa thông tin buổi học',
+                'type' => Comment::LOG_TYPE
+            ]);
+        });
+
+        return redirect()->to('studylog/show/' . $studyLog->id)->with('success', "Cập nhật thành công");
     }
 }
