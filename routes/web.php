@@ -6,6 +6,7 @@ use App\Http\Controllers\CardController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CustomFieldController;
+use App\Http\Controllers\ImportController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StaffController;
@@ -122,14 +123,12 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/update/{id}', [StudyLogController::class, "update", "id"])->name('studylog.update');
             Route::get('/delete/{id}', [StudyLogController::class, "delete", "id"])->name('studylog.delete');
 
-
             Route::get('/submit/{id}', [StudyLogController::class, "submit", "id"])->name('studylog.submit');
             Route::get('/cancel/{id}', [StudyLogController::class, "cancel", "id"])->name('studylog.cancel');
             Route::get('/recover/{id}', [StudyLogController::class, "recover", "id"])->name('studylog.recover');
             Route::get('/confirm/{id}', [StudyLogController::class, "confirm", "id"])->name('studylog.confirm');
             Route::get('/accept/{id}', [StudyLogController::class, "accept", "id"])->name('studylog.accept');
             Route::get('/reject/{id}', [StudyLogController::class, "reject", "id"])->name('studylog.reject');
-
         });
 
         Route::prefix('branch')->withoutMiddleware(['host'])->group(function () {
@@ -143,13 +142,21 @@ Route::middleware(['auth'])->group(function () {
         });
         //
         Route::prefix('transaction')->group(function () {
-            Route::get('/create/card', [TransactionController::class, "createCardTransaction"])->name('transaction.create.card');
-            Route::post('/create/card', [TransactionController::class, "storeCardTransaction"])->name('transaction.store.card');
+            Route::get('/create/card', [
+                TransactionController::class,
+                "createCardTransaction"
+            ])->name('transaction.create.card');
+            Route::post('/create/card', [
+                TransactionController::class,
+                "storeCardTransaction"
+            ])->name('transaction.store.card');
             Route::get('/accept/{id}', [TransactionController::class, "accept"])->name('transaction.accept');
             Route::get('/deny/{id}', [TransactionController::class, "deny"])->name('transaction.deny');
         });
 
-
+        Route::prefix('import')->group(function () {
+            Route::get('/template/{entity}', [ImportController::class, 'downloadTemplate','entity']);
+        });
     });
     Route::prefix('comment')->group(function () {
         Route::post('/store', [CommentController::class, "store"]);

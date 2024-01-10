@@ -15,11 +15,26 @@
         </h4>
         @include("components.statistics",['statistics'=>$crudBag->getStatistics()])
         <div class="d-flex justify-content-between mt-4">
-            @if(check_permission("create ".$crudBag->getEntity()))
-                <a href="{{url($crudBag->getEntity()."/create")}}"
-                   class="btn btn-primary waves-effect waves-light mb-2">
-                    Thêm mới {{$crudBag->getLabel()}}</a>
-            @endif
+            <div>
+                @if(check_permission("create ".$crudBag->getEntity()))
+                    <a href="{{url($crudBag->getEntity()."/create")}}"
+                       class="btn btn-primary waves-effect waves-light mb-2">
+                        <span class="mdi mdi-plus me-2"></span>
+                        Thêm mới {{$crudBag->getLabel()}}</a>
+                @endif
+                @if(check_permission("import " . $crudBag->getEntity()))
+                    <a
+                        class="text-white btn btn-primary waves-effect waves-light mb-2">
+                        <span class="mdi mdi-cloud-upload me-2"></span>
+                        Import {{$crudBag->getLabel()}}</a>
+                        <a
+                            href="{{asset('/import/template/'.$crudBag->getEntity())}}"
+                            class="text-white btn btn-primary waves-effect waves-light mb-2">
+                            <span class="mdi mdi-cloud-download me-2"></span>
+                            Tải mẫu</a>
+                @endif
+            </div>
+
             <div class="col-md-3">
                 <form class="form replace_form" id="search_form">
                     <input name="search" value="{{old('search') ?? $crudBag->getSearchValue()}}" type="search"
