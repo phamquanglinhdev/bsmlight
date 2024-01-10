@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helper\CrudBag;
 use App\Helper\ListViewModel;
+use App\Jobs\ProcessWhenNewBranchCreated;
 use App\Models\Branch;
 use App\Models\Host;
 use App\Models\User;
@@ -129,7 +130,11 @@ class BranchController extends Controller
             'logo' => $logo ?? 'https://brocanvas.com/wp-content/uploads/2022/06/Hinh-nen-Bearbrick-danh-cho-dien-thoai-iphone-dep.jpg'
         ];
 
-        DB::transaction(fn() => Branch::query()->create($dataForCreateBranch));
+        DB::transaction(function () use ($dataForCreateBranch){
+            $branch = Branch::query()->create($dataForCreateBranch);
+
+            $this->dispatch(new ProcessWhenNewBranchCreated($branch['uuid'],Auth::user()->{'id'}));
+        });
 
         return redirect()->back()->with('success', "Thêm mới thành công");
     }

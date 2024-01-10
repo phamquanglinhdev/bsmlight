@@ -623,7 +623,6 @@ class StudentController extends Controller
             'label' => 'Ngày sinh',
         ]);
 
-
         $crudBag->addFields([
             'name' => 'phone',
             'value' => $student ? $student['phone'] : null,
@@ -686,6 +685,10 @@ class StudentController extends Controller
                 'required' => $customField->required,
                 'value' => $student?->getCustomField($customField->name) ?? null
             ];
+
+            if($customField->type === CustomFields::TEXTAREA_TYPE) {
+                $fieldData['class'] = 'col-md-10 mb-3';
+            }
 
             if ($customField->type === CustomFields::SELECT_TYPE) {
                 $fieldData['options'] = $customField->convertInitValue();

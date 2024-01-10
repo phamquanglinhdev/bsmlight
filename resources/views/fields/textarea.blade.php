@@ -8,10 +8,11 @@
     <textarea
         class="form-control h-px-100"
         name="{{$field->getName()}}"
+        id="{{$field->getName()}}"
         {{$field->isRequired()?"required":""}}
         placeholder="Nhập {{$field->getLabel()}}"
     >{{old($field->getName()) ?? $field->getValue()}}</textarea>
-    <label for="basic-default-name">{{$field->getLabel()}}</label>
+    <label for="{{$field->getName()}}">{{$field->getLabel()}}</label>
     @error($field->getName())
     <p style="color: red;">{{ $message }}</p>
     @enderror

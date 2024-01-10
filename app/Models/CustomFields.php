@@ -15,7 +15,6 @@ class CustomFields extends Model
 {
     use HasFactory;
 
-
     protected $table = 'custom_fields';
     protected $guarded = ['id'];
 
@@ -31,6 +30,12 @@ class CustomFields extends Model
 
     public const SELECT_TYPE = 5;
 
+    public const EMAIL_TYPE = 6;
+
+    public const TIME_TYPE = 7;
+
+    public const TEXTAREA_TYPE = 8;
+
     public static function backgroundType()
     {
         return [
@@ -39,6 +44,9 @@ class CustomFields extends Model
             self::DATE_TYPE => 'bg-info',
             self::DATETIME_TYPE => 'bg-warning',
             self::SELECT_TYPE => 'bg-danger',
+            self::EMAIL_TYPE => 'bg-orange',
+            self::TIME_TYPE => 'bg-warning',
+            self::TEXTAREA_TYPE => 'bg-secondary'
         ];
     }
 
@@ -50,13 +58,15 @@ class CustomFields extends Model
             self::DATE_TYPE => 'date',
             self::DATETIME_TYPE => 'datetime',
             self::SELECT_TYPE => 'select',
+            self::EMAIL_TYPE => 'email',
+            self::TIME_TYPE => 'time',
+            self::TEXTAREA_TYPE => 'textarea',
         ];
     }
 
-
     public function convertInitValue(): mixed
     {
-        if (!$this->initValue) {
+        if (! $this->initValue) {
             return null;
         }
 
@@ -117,6 +127,9 @@ class CustomFields extends Model
             self::DATE_TYPE => 'Dạng ngày',
             self::DATETIME_TYPE => 'Dạng ngày giờ',
             self::SELECT_TYPE => 'Dạng danh sách chọn',
+            self::EMAIL_TYPE => 'Dạng email',
+            self::TIME_TYPE => 'Dạng giờ phút',
+            self::TEXTAREA_TYPE => 'Dạng đoạn văn bản',
         ];
     }
 
@@ -132,7 +145,6 @@ class CustomFields extends Model
 
     public static function backgroundEntityType(): array
     {
-
         return [
             self::ENTITY_STUDENT => 'bg-success',
             self::ENTITY_TEACHER => 'bg-primary',
