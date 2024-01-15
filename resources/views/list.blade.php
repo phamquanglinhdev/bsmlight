@@ -24,14 +24,16 @@
                 @endif
                 @if(check_permission("import " . $crudBag->getEntity()))
                     <a
+                        href="{{asset('/import/make/'.$crudBag->getEntity())}}"
                         class="text-white btn btn-primary waves-effect waves-light mb-2">
                         <span class="mdi mdi-cloud-upload me-2"></span>
-                        Import {{$crudBag->getLabel()}}</a>
-                        <a
-                            href="{{asset('/import/template/'.$crudBag->getEntity())}}"
-                            class="text-white btn btn-primary waves-effect waves-light mb-2">
-                            <span class="mdi mdi-cloud-download me-2"></span>
-                            Tải mẫu</a>
+                        Import {{$crudBag->getLabel()}}
+                    </a>
+                    <a
+                        href="{{asset('/import/template/'.$crudBag->getEntity())}}"
+                        class="text-white btn btn-primary waves-effect waves-light mb-2">
+                        <span class="mdi mdi-cloud-download me-2"></span>
+                        Tải mẫu</a>
                 @endif
             </div>
 

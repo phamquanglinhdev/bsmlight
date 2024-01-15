@@ -156,6 +156,8 @@ Route::middleware(['auth'])->group(function () {
 
         Route::prefix('import')->group(function () {
             Route::get('/template/{entity}', [ImportController::class, 'downloadTemplate','entity']);
+            Route::get('make/{entity}', [ImportController::class, 'importView','entity']);
+            Route::post('store/{entity}', [ImportController::class, 'import','entity']);
         });
     });
     Route::prefix('comment')->group(function () {

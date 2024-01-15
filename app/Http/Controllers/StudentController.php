@@ -717,6 +717,10 @@ class StudentController extends Controller
                 continue;
             }
 
+            if ($import) {
+
+            }
+
             $customFieldsData[$name] = $customField;
         }
 

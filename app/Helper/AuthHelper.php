@@ -2,6 +2,7 @@
 
 use App\Models\Permission;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
@@ -162,6 +163,18 @@ if (!function_exists('is_module')) {
         $currentUrl = Route::current()->uri();
 
         return str_contains($currentUrl, $module);
+    }
+}
+
+if (!function_exists('excel_date')) {
+    function excel_date($excelDate): string
+    {
+        // Chuyển đổi ngày từ định dạng Excel sang Unix timestamp
+        $timestamp = ($excelDate - 25569) * 86400; // 25569 là sự chênh lệch giữa ngày 1/1/1900 (định dạng Excel) và ngày Unix 1/1/1970
+        // Tạo đối tượng Carbon từ timestamp
+        $laravelDate = Carbon::createFromTimestamp($timestamp)->format('Y-m-d');
+
+        return $laravelDate;
     }
 }
 
