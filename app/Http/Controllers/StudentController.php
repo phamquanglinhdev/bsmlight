@@ -6,11 +6,15 @@ use App\Helper\CrudBag;
 use App\Helper\CustomFieldBag;
 use App\Helper\Fields;
 use App\Helper\ListViewModel;
+use App\Helper\Object\CustomFieldShow;
+use App\Helper\Object\UserProfileObject;
+use App\Helper\ProfileBag;
 use App\Models\CustomFields;
 use App\Models\Student;
 use App\Models\StudentProfile;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -385,7 +389,12 @@ class StudentController extends Controller
             'name' => 'uuid',
             'type' => 'text',
             'label' => 'Mã học sinh',
-            'fixed' => 'first'
+            'fixed' => 'first',
+            'attributes' => [
+                'entity' => 'student',
+                'edit' => true,
+                'show' => true
+            ]
         ]);
         $crudBag->addColumn([
             'name' => 'name',
@@ -686,7 +695,7 @@ class StudentController extends Controller
                 'value' => $student?->getCustomField($customField->name) ?? null
             ];
 
-            if($customField->type === CustomFields::TEXTAREA_TYPE) {
+            if ($customField->type === CustomFields::TEXTAREA_TYPE) {
                 $fieldData['class'] = 'col-md-10 mb-3';
             }
 
@@ -717,15 +726,52 @@ class StudentController extends Controller
                 continue;
             }
 
-            if ($import) {
-
-            }
-
             $customFieldsData[$name] = $customField;
         }
 
         StudentProfile::query()->where('user_id', $studentId)->update([
             'extra_information' => json_encode($customFieldsData)
+        ]);
+    }
+
+    /**
+     * @param int $id
+     * @return Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
+    public function show(int $id): View
+    {
+        /**
+         * @var Student $student
+         */
+        $student = Student::query()->where('id', $id)->where('branch', Auth::user()->{'branch'})->firstOrFail();
+
+        $profileBag = new ProfileBag();
+        $profileBag->setEntity('student');
+        $profileBag->setUserProfileObject(new UserProfileObject([
+            'uuid' => $student['uuid'],
+            'id' => $student['id'],
+            'name' => $student['name'],
+            'avatar' => $student['avatar'],
+            'branch' => $student['branch'],
+            'email' => $student['email'] ?? "",
+            'phone' => $student['phone'] ?? "",
+            'role' => $student['role'] ?? "",
+        ]));
+
+        $customFields = CustomFields::query()->where('entity_type', CustomFields::ENTITY_STUDENT)->where('branch', Auth::user()->{'branch'})->get();
+
+        foreach ($customFields as $customField) {
+            $extraData = $student->getExtraInformationAttribute($customField['name']);
+            if ($extraData) {
+                $profileBag->addCustomField(new CustomFieldShow([
+                    'label' => $customField['label'],
+                    'value' => $extraData
+                ]));
+            }
+        }
+
+        return \view('profile', [
+            'profileBag' => $profileBag
         ]);
     }
 }

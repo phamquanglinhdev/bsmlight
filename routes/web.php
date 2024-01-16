@@ -57,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/edit/{id}', [StudentController::class, "edit", "id"])->name('student.edit');
             Route::post('/update/{id}', [StudentController::class, "update", "id"])->name('student.update');
             Route::get('/delete/{id}', [StudentController::class, "delete", "id"])->name('student.delete');
+            Route::get('/show/{id}', [StudentController::class, "show", "id"])->name('student.show');
         });
 
         Route::prefix('teacher')->group(function () {
