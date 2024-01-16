@@ -61,16 +61,7 @@ class Student extends User
 
     public function getSiblingAttribute(): array
     {
-        return [
-            [
-                'id' => 1,
-                'uuid' => 'BSM-CN.0001-NguyenThiA'
-            ],
-            [
-                'id' => 2,
-                'uuid' => 'BSM-CN.0002-NguyenThiB'
-            ],
-        ];
+        return [];
     }
 
     public function getAgeAttribute(): int
@@ -178,16 +169,22 @@ class Student extends User
 
     public function getCardsAttribute(): array
     {
-        return [
-            [
-                'id' => 1,
-                'uuid' => 'BSM-B.000-StudyCard.0001'
-            ],
-            [
-                'id' => 2,
-                'uuid' => 'BSM-B.000-StudyCard.0001'
-            ]
-        ];
+        return $this->hasMany(Card::class, "student_id", 'id')->get()->map(function (Card $card) {
+            return [
+                'id' => $card['id'],
+                'uuid' => $card['uuid']
+            ];
+        })->toArray();
+//        return [
+//            [
+//                'id' => 1,
+//                'uuid' => 'BSM-B.000-StudyCard.0001'
+//            ],
+//            [
+//                'id' => 2,
+//                'uuid' => 'BSM-B.000-StudyCard.0001'
+//            ]
+//        ];
     }
 
     public function getPrivateChatAttribute(): string
@@ -199,7 +196,7 @@ class Student extends User
     {
         $extraInformation = $this->profile?->extra_information;
 
-        if(! $extraInformation){
+        if (!$extraInformation) {
             return null;
         }
 

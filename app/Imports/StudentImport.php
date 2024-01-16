@@ -65,7 +65,6 @@ class StudentImport implements ToCollection
 
         foreach ($collection as $index => $row) {
             $dataToCreate = [];
-            $dataToCreateCustomFields = [];
             $dataToCreateCard = [];
             if ($index > 1) {
                 foreach ($row as $indexCell => $cell) {
@@ -106,7 +105,7 @@ class StudentImport implements ToCollection
                             'facebook' => $dataToCreate['facebook'] ?? '',
                             'address' => $dataToCreate['address'] ?? '',
                             'school' => $dataToCreate['school'] ?? '',
-//                            'birthday' => $dataToCreate['birthday'] ? excel_date($dataToCreate['birthday']) : null,
+                            'birthday' => $dataToCreate['birthday'] ? Carbon::createFromFormat("d/m/Y", $dataToCreate['birthday']) : null,
                         ];
 
                         $currentStudentId = DB::transaction(function () use ($dataToCreate, $createUser, $createProfile) {
@@ -125,13 +124,7 @@ class StudentImport implements ToCollection
                     $dataToCreateCard['van'] = $dataToCreateCard['van'] ?? 0;
                     $dataToCreateCard['uuid'] = Card::generateUUID(Auth::user()->{'branch'});
                     $dataToCreateCard['branch'] = Auth::user()->{'branch'};
-//                    if (is_numeric($dataToCreateCard['van_date'])) {
-//                        $dataToCreateCard['van_date'] = excel_date($dataToCreateCard['van_date']);
-//                    } else {
-//                        $dataToCreateCard['van_date'] = Carbon::createFromFormat('d/m/Y', $dataToCreateCard['van_date'])->isoFormat('Y-m-d');
-//                    }
-
-                    unset($dataToCreateCard['van_date']);
+                    $dataToCreateCard['van_date'] = Carbon::createFromFormat("d/m/Y", $dataToCreateCard['van_date']);
 
                     Card::query()->create($dataToCreateCard);
                 });
@@ -154,9 +147,7 @@ class StudentImport implements ToCollection
             }
 
             if ($customFieldRecord['type'] == CustomFields::DATE_TYPE) {
-                if (is_numeric($customField)) {
-                    $customField = excel_date($customField);
-                }
+                $customField = Carbon::createFromFormat("d/m/Y", $customField);
             }
 
             $customFieldsData[$name] = $customField;

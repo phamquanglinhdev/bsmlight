@@ -169,9 +169,8 @@ if (!function_exists('is_module')) {
 if (!function_exists('excel_date')) {
     function excel_date($excelDate): string
     {
-        // Chuyển đổi ngày từ định dạng Excel sang Unix timestamp
-        $timestamp = ($excelDate - 25569) * 86400; // 25569 là sự chênh lệch giữa ngày 1/1/1900 (định dạng Excel) và ngày Unix 1/1/1970
-        // Tạo đối tượng Carbon từ timestamp
+        $timestamp = ($excelDate - 25569) * 86400;
+
         $laravelDate = Carbon::createFromTimestamp($timestamp)->format('Y-m-d');
 
         return $laravelDate;
