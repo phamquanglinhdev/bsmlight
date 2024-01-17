@@ -65,6 +65,7 @@ class StudentImport implements ToCollection
         $currentStudentId = 0;
 
         foreach ($collection as $index => $row) {
+
             $dataToCreate = [];
             $dataToCreateCard = [];
             if ($index > 1) {
@@ -106,7 +107,8 @@ class StudentImport implements ToCollection
                             'facebook' => $dataToCreate['facebook'] ?? '',
                             'address' => $dataToCreate['address'] ?? '',
                             'school' => $dataToCreate['school'] ?? '',
-                            'birthday' => $dataToCreate['birthday'] ? Carbon::createFromFormat("d/m/Y", $dataToCreate['birthday']) : null,
+//                            'birthday' => $dataToCreate['birthday'] ? Carbon::createFromFormat("d/m/Y", $dataToCreate['birthday']) : null,
+                            'birthday' => $dataToCreate['birthday'] ? excel_date($dataToCreate['birthday']) : null,
                         ];
 
                         $currentStudentId = DB::transaction(function () use ($dataToCreate, $createUser, $createProfile) {
@@ -125,7 +127,8 @@ class StudentImport implements ToCollection
                     $dataToCreateCard['van'] = $dataToCreateCard['van'] ?? 0;
                     $dataToCreateCard['uuid'] = Card::generateUUID(Auth::user()->{'branch'});
                     $dataToCreateCard['branch'] = Auth::user()->{'branch'};
-                    $dataToCreateCard['van_date'] = Carbon::createFromFormat("d/m/Y", $dataToCreateCard['van_date']);
+//                    $dataToCreateCard['van_date'] = Carbon::createFromFormat("d/m/Y", $dataToCreateCard['van_date']);
+                    $dataToCreateCard['van_date'] =excel_date($dataToCreateCard['van_date']);
 
                     Card::query()->create($dataToCreateCard);
                 });

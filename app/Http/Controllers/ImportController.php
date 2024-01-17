@@ -61,7 +61,7 @@ class ImportController extends Controller
             'Số tiền thực tế đã thanh toán'
         ];
 
-        return Excel::download(new StudentTemplate($studentColumn, $cardFields), Str::random(4) . '-student-template.xlsx');
+        return Excel::download(new StudentTemplate($studentColumn, $cardFields), Auth::user()->{'branch'}.' - import học sinh và thẻ học.xlsx');
     }
 
     public function importView(string $entity): View|RedirectResponse

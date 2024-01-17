@@ -45,6 +45,7 @@ class StudentTemplate implements FromCollection, WithHeadings, ShouldAutoSize, W
     public function headings(): array
     {
         $totalStudent = count($this->studentColumns);
+
         $totalCard = count($this->cardColumns);
 
         $firstHeading[] = 'Học sinh';
@@ -106,7 +107,6 @@ class StudentTemplate implements FromCollection, WithHeadings, ShouldAutoSize, W
                         'borderStyle' => Border::BORDER_DASHDOT,
                     ]]],
             2 => ['font' => ['bold' => true]],
-
         ];
     }
 }
