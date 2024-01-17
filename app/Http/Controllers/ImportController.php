@@ -57,7 +57,8 @@ class ImportController extends Controller
             'Học phí gốc',
             'Học phí ưu đãi',
             'Lý do ưu đãi',
-            'Kế hoạch thanh toán'
+            'Kế hoạch thanh toán',
+            'Số tiền thực tế đã thanh toán'
         ];
 
         return Excel::download(new StudentTemplate($studentColumn, $cardFields), Str::random(4) . '-student-template.xlsx');

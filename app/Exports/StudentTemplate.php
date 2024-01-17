@@ -69,12 +69,13 @@ class StudentTemplate implements FromCollection, WithHeadings, ShouldAutoSize, W
                 $sheet = $event->sheet;
 
                 $sheet->mergeCells('A1:' . $this->convertToExcelColumn($totalStudentCol) . '1');
-                $sheet->setCellValue('A1', "Học sinh");
+                $sheet->setCellValue('A1', "Thông tin học sinh");
 
                 $sheet->mergeCells(($this->convertToExcelColumn($totalStudentCol + 1)) . "1:" . $this->convertToExcelColumn($totalCol) . "1");
                 $sheet->setCellValue('C1', "Thẻ học");
                 $workSheet = $event->sheet->getDelegate();
-                $workSheet->freezePane('B1');
+//                $workSheet->freezePane('B1');
+                $workSheet->freezePane('B2');
                 $cellRange = 'A1:' . $this->convertToExcelColumn($totalCol) . "1";
 
 //                $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray($styleArray);

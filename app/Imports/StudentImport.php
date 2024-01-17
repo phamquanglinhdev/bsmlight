@@ -58,7 +58,8 @@ class StudentImport implements ToCollection
             'original_fee' => 'Học phí gốc',
             'promotion_fee' => 'Học phí ưu đãi',
             'fee_reason' => 'Lý do ưu đãi',
-            'payment_plant' => 'Kế hoạch thanh toán'
+            'payment_plant' => 'Kế hoạch thanh toán',
+            'paid_fee' => 'Số tiền thực tế đã thanh toán'
         ];
 
         $currentStudentId = 0;
