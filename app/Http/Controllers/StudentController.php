@@ -700,7 +700,9 @@ class StudentController extends Controller
             }
 
             if ($customField->type === CustomFields::DATE_TYPE) {
-                $fieldData['value'] = Carbon::parse($fieldData['value'])->toDateString();
+                if($fieldData['value']) {
+                    $fieldData['value'] = Carbon::parse($fieldData['value'])->toDateString();
+                }
                 $fieldData['class'] = 'col-md-10 mb-3';
             }
 
