@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * @author Phạm Quang Linh <linhpq@getflycrm.com>
@@ -249,5 +251,11 @@ class Card extends Model
      * Trạng thái tiến độ sale $sale_status
      * Ngày tháng năm cập nhật sale  $sale_updated_at
      */
-
+    public static function boot()
+    {
+        parent::boot();
+        static::addGlobalScope('branch',function (Builder $builder) {
+            $builder->where('branch',Auth::user()->{'branch'});
+        });
+    }
 }

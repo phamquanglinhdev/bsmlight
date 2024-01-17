@@ -10,7 +10,7 @@ class ProfileBag
     private UserProfileObject $userProfileObject;
     private string $entity;
 
-    private array $customFields;
+    private array $customFields = [];
 
     /**
      * @return CustomFieldShow[]

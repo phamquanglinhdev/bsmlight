@@ -9,7 +9,7 @@
         class="form-control h-px-100"
         name="{{$field->getName()}}"
         id="{{$field->getName()}}"
-        {{$field->isRequired()?"required":""}}
+{{--        {{$field->isRequired()?"required":""}}--}}
         placeholder="Nhập {{$field->getLabel()}}"
     >{{old($field->getName()) ?? $field->getValue()}}</textarea>
     <label for="{{$field->getName()}}">{{$field->getLabel()}}</label>

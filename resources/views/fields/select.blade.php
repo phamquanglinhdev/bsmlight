@@ -8,7 +8,7 @@
     <select name="{{$field->getName()}}" id="{{$field->getName()}}" class="selectpicker w-100 small"
             data-style="btn-default"
             data-live-search="true"
-        {{$field->isRequired() ? 'required' : ''}}
+{{--        {{$field->isRequired() ? 'required' : ''}}--}}
     >
         @if($field->isNullable() == 1)
             <option value="">Chọn</option>
@@ -20,6 +20,9 @@
                 @if((old($field->getName()) == $field->getValue() && $field->getValue()!=null) || $key == $field->getValue()) selected @endif>{{$value}}</option>
         @endforeach
     </select>
+    @error($field->getName())
+    <p style="color: red;">{{ $message }}</p>
+    @enderror
     <label for="{{$field->getName()}}">{{$field->getLabel()}}</label>
 </div>
 <style>

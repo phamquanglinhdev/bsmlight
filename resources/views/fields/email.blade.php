@@ -8,7 +8,7 @@
     <input type="email" class="form-control"
            name="{{$field->getName()}}"
            value="{{old($field->getName()) ?? $field->getValue()}}"
-           {{$field->isRequired()?"required":""}}
+{{--           {{$field->isRequired()?"required":""}}--}}
            placeholder="name@example.com">
     <label for="exampleFormControlInput1">{{$field->getLabel()}}</label>
     @error($field->getName())

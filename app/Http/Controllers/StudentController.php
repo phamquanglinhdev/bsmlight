@@ -751,7 +751,7 @@ class StudentController extends Controller
             'uuid' => $student['uuid'],
             'id' => $student['id'],
             'name' => $student['name'],
-            'avatar' => $student['avatar'],
+            'avatar' => $student['avatar'] ?? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS0Oi53Y0SYUnNZ6FDFALWjbzr2siFFZqRAI_ygcnbVunsa0Ywsn1u1xGx7FisdgzGdcQ&usqp=CAU",
             'branch' => $student['branch'],
             'email' => $student['email'] ?? "",
             'phone' => $student['phone'] ?? "",

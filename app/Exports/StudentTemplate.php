@@ -19,11 +19,11 @@ class StudentTemplate implements FromCollection, WithHeadings, ShouldAutoSize, W
     /**
      * @var array
      */
-    private $studentColumns;
+    private array $studentColumns;
     /**
      * @var array
      */
-    private $cardColumns;
+    private array $cardColumns;
 
     public function __construct(
         array $studentColumns,
@@ -73,13 +73,8 @@ class StudentTemplate implements FromCollection, WithHeadings, ShouldAutoSize, W
 
                 $sheet->mergeCells(($this->convertToExcelColumn($totalStudentCol + 1)) . "1:" . $this->convertToExcelColumn($totalCol) . "1");
                 $sheet->setCellValue('C1', "Thẻ học");
-
-//                $styleArray = [
-//                    'alignment' => [
-//                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-//                    ],
-//                ];
-
+                $workSheet = $event->sheet->getDelegate();
+                $workSheet->freezePane('B1');
                 $cellRange = 'A1:' . $this->convertToExcelColumn($totalCol) . "1";
 
 //                $event->sheet->getDelegate()->getStyle($cellRange)->applyFromArray($styleArray);

@@ -9,7 +9,7 @@
         name="{{$field->getName()}}"
         value="{{old($field->getName()) ?? $field->getValue()}}"
         class="form-control" type="date"
-        {{$field->isRequired()?"required":""}}
+{{--        {{$field->isRequired()?"required":""}}--}}
     >
     <label for="html5-date-input">{{$field->getLabel()}}</label>
     @error($field->getName())

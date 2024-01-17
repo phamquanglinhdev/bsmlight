@@ -146,10 +146,12 @@ class CardController extends Controller
     public function show(int $id)
     {
         $card = Card::query()->where('id', $id)->firstOrFail();
+
         $commentRecords = Comment::query()
             ->where('object_id', $id)
             ->where('object_type', Comment::CARD_COMMENT)
             ->orderBy('created_at', 'desc')->get();
+
         $comments = $commentRecords->map(function (Comment $comment) {
             return new CommentObject(
                 user_id : $comment['user_id'],
