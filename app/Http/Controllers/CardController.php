@@ -200,7 +200,9 @@ class CardController extends Controller
         ]);
     }
 
-    private function handleQuery(Request $request, Builder $query) {}
+    private function handleQuery(Request $request, Builder $query) {
+        $query->orderBy("created_at",'DESC');
+    }
 
     private function handleColumn(Request $request, CrudBag $crudBag, Card $card = null): CrudBag
     {
@@ -307,6 +309,12 @@ class CardController extends Controller
         ]);
 
         $crudBag->addColumn([
+            'name' => 'van_date',
+            'label' => 'Ngày chốt điểm danh ở hệ thống cũ',
+            'type' => 'date'
+        ]);
+
+        $crudBag->addColumn([
             'name' => 'can_use_day',
             'label' => 'Số buổi còn lại có thể sử dụng',
             'type' => 'number'
@@ -408,8 +416,9 @@ class CardController extends Controller
             'name' => 'van_date',
             'label' => 'Ngày chốt điểm danh ở hệ thống cũ (VAN)',
             'type' => 'date',
-            'value' => $card['date'] ?? null
+            'value' => $card['van_date'] ?? null
         ]);
+
 
         $studentSelects = Student::query()->get(['name', 'id', 'uuid'])->mapWithKeys(function ($student) {
             return [$student->id => $student->uuid . "-" . $student->name];

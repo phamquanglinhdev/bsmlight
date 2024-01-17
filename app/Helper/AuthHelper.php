@@ -169,9 +169,17 @@ if (!function_exists('is_module')) {
 if (!function_exists('excel_date')) {
     function excel_date($excelDate): Carbon
     {
-        $timestamp = ($excelDate - 25569) * 86400;
+        try {
+            $timestamp = ($excelDate - 25569) * 86400;
 
-        return Carbon::createFromTimestamp($timestamp);
+            return Carbon::createFromTimestamp($timestamp);
+        }catch (Exception $exception) {
+            try {
+                return Carbon::createFromFormat("d/m/Y", $excelDate);
+            }catch (Exception $exception) {
+                return Carbon::now();
+            }
+        }
     }
 }
 

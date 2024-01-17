@@ -122,6 +122,7 @@ class StudentImport implements ToCollection
                     }
                 }
 
+
                 DB::transaction(function () use ($currentStudentId, $dataToCreateCard) {
                     $dataToCreateCard['student_id'] = $currentStudentId;
                     $dataToCreateCard['van'] = $dataToCreateCard['van'] ?? 0;
@@ -151,7 +152,7 @@ class StudentImport implements ToCollection
             }
 
             if ($customFieldRecord['type'] == CustomFields::DATE_TYPE) {
-                $customField = Carbon::createFromFormat("d/m/Y", $customField);
+                $customField = excel_date($customField);
             }
 
             $customFieldsData[$name] = $customField;

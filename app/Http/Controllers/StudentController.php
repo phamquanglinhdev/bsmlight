@@ -699,6 +699,11 @@ class StudentController extends Controller
                 $fieldData['class'] = 'col-md-10 mb-3';
             }
 
+            if ($customField->type === CustomFields::DATE_TYPE) {
+                $fieldData['value'] = Carbon::parse($fieldData['value'])->toDateString();
+                $fieldData['class'] = 'col-md-10 mb-3';
+            }
+
             if ($customField->type === CustomFields::SELECT_TYPE) {
                 $fieldData['options'] = $customField->convertInitValue();
                 if ($customField->required == 0) {
@@ -724,6 +729,10 @@ class StudentController extends Controller
             $customFieldRecord = CustomFields::query()->where('name', $name)->where('branch', Auth::user()->{'branch'})->first();
             if (!$customFieldRecord) {
                 continue;
+            }
+
+            if ($customFieldRecord['type'] == CustomFields::DATE_TYPE) {
+                $customField = Carbon::parse($customField)->toDateString();
             }
 
             $customFieldsData[$name] = $customField;
