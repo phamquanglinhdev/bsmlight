@@ -188,7 +188,7 @@ class Card extends Model
 
     public function getCanUseDayByPaidAttribute(): float|int
     {
-        return $this->paid_fee / ($this->total_fee * $this->total_days) != 0 ? ($this->total_fee * $this->total_days) : 1;
+        return $this->paid_fee /( ($this->total_fee * $this->total_days) !== 0 ? ($this->total_fee * $this->total_days) : 1);
     }
 
     public function getUnpaidFeeAttribute()
