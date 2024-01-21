@@ -126,10 +126,21 @@ class StudentImport implements ToCollection
                 DB::transaction(function () use ($currentStudentId, $dataToCreateCard) {
                     $dataToCreateCard['student_id'] = $currentStudentId;
                     $dataToCreateCard['van'] = $dataToCreateCard['van'] ?? 0;
+                    $dataToCreateCard['drive_link'] = $dataToCreateCard['drive_link'] ?? '';
+                    $dataToCreateCard['commitment'] = $dataToCreateCard['commitment'] ?? '';
+                    $dataToCreateCard['original_days'] = $dataToCreateCard['original_days'] ?? 0;
+                    $dataToCreateCard['bonus_days'] = $dataToCreateCard['bonus_days'] ?? 0;
+                    $dataToCreateCard['bonus_reason'] = $dataToCreateCard['bonus_reason'] ?? '';
+                    $dataToCreateCard['original_fee'] = $dataToCreateCard['original_fee'] ?? 0;
+                    $dataToCreateCard['promotion_fee'] = $dataToCreateCard['promotion_fee'] ?? 0;
+                    $dataToCreateCard['fee_reason'] = $dataToCreateCard['fee_reason'] ?? '';
+                    $dataToCreateCard['payment_plant'] = $dataToCreateCard['payment_plant'] ?? '';
+                    $dataToCreateCard['paid_fee'] = $dataToCreateCard['paid_fee'] ?? 0;
+                    $dataToCreateCard['van'] = $dataToCreateCard['van'] ?? 0;
                     $dataToCreateCard['uuid'] = Card::generateUUID(Auth::user()->{'branch'});
                     $dataToCreateCard['branch'] = Auth::user()->{'branch'};
 //                    $dataToCreateCard['van_date'] = Carbon::createFromFormat("d/m/Y", $dataToCreateCard['van_date']);
-                    $dataToCreateCard['van_date'] =excel_date($dataToCreateCard['van_date']);
+                    $dataToCreateCard['van_date'] = isset($dataToCreateCard['van_date']) ? excel_date($dataToCreateCard['van_date']) : null;
 
                     Card::query()->create($dataToCreateCard);
                 });
