@@ -183,7 +183,7 @@ class Card extends Model
 
     public function getDailyFeeAttribute(): float|int
     {
-        return $this->total_fee / $this->total_days;
+        return $this->total_fee / ($this->total_days!=0 ? $this->total_days : 1);
     }
 
     public function getCanUseDayByPaidAttribute(): float|int
