@@ -46,6 +46,9 @@ function defineScope(): array
 function definePermission(): array
 {
     return [
+        User::HOST_ROLE => [
+
+        ],
         User::TEACHER_ROLE => [
             'create studylog',
             'list student',
@@ -76,7 +79,9 @@ function definePermission(): array
             'list classroom',
             'show classroom'
         ],
+        User::STAFF_ROLE => [
 
+        ]
     ];
 }
 
