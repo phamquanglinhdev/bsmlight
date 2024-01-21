@@ -36,6 +36,7 @@ function defineScope(): array
             'supporter',
             'studylog',
             'transaction',
+            'classroom',
         ],
         User::SUPPORTER_ROLE => [
 
