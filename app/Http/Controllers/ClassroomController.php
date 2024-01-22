@@ -351,7 +351,8 @@ class ClassroomController extends Controller
         $dataToCreateClassroom = [
             'name' => $request->get('name'),
             'avatar' => $request->get('avatar'),
-            'book' => 'template'
+            'book' => 'template',
+            'staff_id' => $request->get('staff_id') ?? null,
         ];
 
         $schedules = $request->get('schedules');
