@@ -274,7 +274,8 @@ class CrudBag
         if(Auth::user()->{'role'} == User::HOST_ROLE) {
             $query->whereHas('classroom', function (Builder $builder){
                 $builder->where('branch', Auth::user()->{'branch'});
-            })->where('status', '!=', StudyLog::DRAFT_STATUS)
+            })
+//                ->where('status', '!=', StudyLog::DRAFT_STATUS)
                 ->where('status', '!=', StudyLog::CANCELLED_STATUS);
 
             return $query;
