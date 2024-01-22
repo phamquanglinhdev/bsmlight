@@ -4,6 +4,7 @@ namespace App\Helper;
 
 use App\Models\CardLog;
 use App\Models\StudyLog;
+use App\Models\User;
 use App\Models\WorkingShift;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -270,6 +271,13 @@ class CrudBag
 
     public function handleQuery(Request $request, Builder $query): Builder
     {
+        if(Auth::user()->{'role'} == User::HOST_ROLE) {
+            $query->where('branch', Auth::user()->{'branch'})->where('status', '!=', StudyLog::DRAFT_STATUS)
+                ->where('status', '!=', StudyLog::CANCELLED_STATUS);
+
+            return $query;
+        }
+
         $query->where(function (Builder $query) {
             $query->where('status', '!=', StudyLog::DRAFT_STATUS)
                 ->where('status', '!=', StudyLog::CANCELLED_STATUS)
