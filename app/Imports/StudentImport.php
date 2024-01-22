@@ -16,7 +16,9 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\ToCollection;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 
 class StudentImport implements ToCollection
 {
@@ -25,6 +27,8 @@ class StudentImport implements ToCollection
      */
     public function collection(Collection $collection)
     {
+        $insertIds = [];
+
         $defaultHeading = [
             'name' => 'Tên học sinh',
             'english_name' => 'Tên tiếng Anh',
@@ -65,7 +69,6 @@ class StudentImport implements ToCollection
         $currentStudentId = 0;
 
         foreach ($collection as $index => $row) {
-
             $dataToCreate = [];
             $dataToCreateCard = [];
             if ($index > 1) {
@@ -88,7 +91,7 @@ class StudentImport implements ToCollection
                         }
                     }
                 }
-                if (!empty($dataToCreate)) {
+                if (! empty($dataToCreate)) {
                     if ($dataToCreate['name'] !== null) {
                         $createUser = [
                             'name' => $dataToCreate['name'],
@@ -111,39 +114,80 @@ class StudentImport implements ToCollection
                             'birthday' => $dataToCreate['birthday'] ? excel_date($dataToCreate['birthday']) : null,
                         ];
 
-                        $currentStudentId = DB::transaction(function () use ($dataToCreate, $createUser, $createProfile) {
+                        try {
                             $student = Student::query()->create($createUser);
-                            $createProfile['user_id'] = $student['id'];
+                        } catch (\Exception $exception) {
+                            $this->cancelUpload($insertIds);
+                            throw new BadRequestException('Dòng ' . $index . ':' . $exception->getMessage());
+                        }
+
+                        $createProfile['user_id'] = $student['id'];
+
+                        try {
                             StudentProfile::query()->create($createProfile);
                             $this->saveCustomFields($dataToCreate['custom_field'], $student['id']);
+                        } catch (\Exception $exception) {
+                            $this->cancelUpload($insertIds);
+                            throw new BadRequestException('Dòng ' . $index . ':' . $exception->getMessage());
+                        }
 
-                            return $student['id'];
-                        });
+                        $insertIds[] = $student['id'];
+                        $currentStudentId = $student['id'];
                     }
                 }
 
+                $dataToCreateCard['student_id'] = $currentStudentId;
+                $dataToCreateCard['van'] = $dataToCreateCard['van'] ?? 0;
+                $dataToCreateCard['drive_link'] = $dataToCreateCard['drive_link'] ?? '';
+                $dataToCreateCard['commitment'] = $dataToCreateCard['commitment'] ?? '';
+                $dataToCreateCard['original_days'] = $dataToCreateCard['original_days'] ?? 0;
+                $dataToCreateCard['bonus_days'] = $dataToCreateCard['bonus_days'] ?? 0;
+                $dataToCreateCard['bonus_reason'] = $dataToCreateCard['bonus_reason'] ?? '';
+                $dataToCreateCard['original_fee'] = $dataToCreateCard['original_fee'] ?? 0;
+                $dataToCreateCard['promotion_fee'] = $dataToCreateCard['promotion_fee'] ?? 0;
+                $dataToCreateCard['fee_reason'] = $dataToCreateCard['fee_reason'] ?? '';
+                $dataToCreateCard['payment_plant'] = $dataToCreateCard['payment_plant'] ?? '';
+                $dataToCreateCard['paid_fee'] = $dataToCreateCard['paid_fee'] ?? 0;
+                $dataToCreateCard['van'] = $dataToCreateCard['van'] ?? 0;
+                $dataToCreateCard['uuid'] = Card::generateUUID(Auth::user()->{'branch'});
+                $dataToCreateCard['branch'] = Auth::user()->{'branch'};
+                $dataToCreateCard['van_date'] = isset($dataToCreateCard['van_date']) ? excel_date($dataToCreateCard['van_date']) : null;
 
-                DB::transaction(function () use ($currentStudentId, $dataToCreateCard) {
-                    $dataToCreateCard['student_id'] = $currentStudentId;
-                    $dataToCreateCard['van'] = $dataToCreateCard['van'] ?? 0;
-                    $dataToCreateCard['drive_link'] = $dataToCreateCard['drive_link'] ?? '';
-                    $dataToCreateCard['commitment'] = $dataToCreateCard['commitment'] ?? '';
-                    $dataToCreateCard['original_days'] = $dataToCreateCard['original_days'] ?? 0;
-                    $dataToCreateCard['bonus_days'] = $dataToCreateCard['bonus_days'] ?? 0;
-                    $dataToCreateCard['bonus_reason'] = $dataToCreateCard['bonus_reason'] ?? '';
-                    $dataToCreateCard['original_fee'] = $dataToCreateCard['original_fee'] ?? 0;
-                    $dataToCreateCard['promotion_fee'] = $dataToCreateCard['promotion_fee'] ?? 0;
-                    $dataToCreateCard['fee_reason'] = $dataToCreateCard['fee_reason'] ?? '';
-                    $dataToCreateCard['payment_plant'] = $dataToCreateCard['payment_plant'] ?? '';
-                    $dataToCreateCard['paid_fee'] = $dataToCreateCard['paid_fee'] ?? 0;
-                    $dataToCreateCard['van'] = $dataToCreateCard['van'] ?? 0;
-                    $dataToCreateCard['uuid'] = Card::generateUUID(Auth::user()->{'branch'});
-                    $dataToCreateCard['branch'] = Auth::user()->{'branch'};
-//                    $dataToCreateCard['van_date'] = Carbon::createFromFormat("d/m/Y", $dataToCreateCard['van_date']);
-                    $dataToCreateCard['van_date'] = isset($dataToCreateCard['van_date']) ? excel_date($dataToCreateCard['van_date']) : null;
+                $notification = Validator::make($dataToCreateCard, [
+                    'student_id' => 'integer|required',
+                    'van' => 'integer|nullable',
+                    'drive_link' => 'string|nullable',
+                    'commitment' => 'string|nullable',
+                    'original_days' => 'integer|min:0|required',
+                    'bonus_days' => 'integer|min:0|nullable',
+                    'bonus_reason' => 'string|nullable',
+                    'original_fee' => 'integer|min:0|required',
+                    'promotion_fee' => 'integer|min:0|nullable',
+                    'fee_reason' => 'string|nullable',
+                    'payment_plant' => 'string|nullable',
+                    'paid_fee' => 'integer|min:0|nullable',
+                    'van_date' => 'date|nullable',
+                    'branch' => 'string|required',
+//                        'uuid' => 'string|required|unique:cards,uuid',
+                ]);
 
+                if ($notification->fails()) {
+                    $this->cancelUpload($insertIds);
+                    throw new BadRequestException('Dòng ' . $index . ':' . $notification->errors()->first());
+                }
+
+                if ($dataToCreateCard['original_fee'] - $dataToCreateCard['promotion_fee'] < $dataToCreateCard['paid_fee']) {
+//                        $dataToCreateCard['paid_fee'] = $dataToCreateCard['original_fee'] - $dataToCreateCard['promotion_fee'];
+                    $this->cancelUpload($insertIds);
+                    throw new BadRequestException('Dòng ' . $index . ' Số tiền đã đóng nhiều hơn số tiền phải đóng');
+                }
+
+                try {
                     Card::query()->create($dataToCreateCard);
-                });
+                } catch (\Exception $exception) {
+                    $this->cancelUpload($insertIds);
+                    throw new BadRequestException('Dòng ' . $index . ':' . $exception->getMessage());
+                }
             }
         }
     }
@@ -153,12 +197,12 @@ class StudentImport implements ToCollection
         $customFieldsData = [];
 
         foreach ($customFields as $name => $customField) {
-            if (!$customField) {
+            if (! $customField) {
                 continue;
             }
 
             $customFieldRecord = CustomFields::query()->where('name', $name)->where('branch', Auth::user()->{'branch'})->first();
-            if (!$customFieldRecord) {
+            if (! $customFieldRecord) {
                 continue;
             }
 
@@ -172,5 +216,22 @@ class StudentImport implements ToCollection
         StudentProfile::query()->where('user_id', $studentId)->update([
             'extra_information' => json_encode($customFieldsData)
         ]);
+    }
+
+    /**
+     * @param $insertIds
+     * @return void
+     * @author Phạm Quang Linh <linhpq@getflycrm.com>
+     * @since 22/01/2024 10:03 am
+     */
+    private function cancelUpload($insertIds): void
+    {
+        if (! empty($insertIds)) {
+            Student::query()->whereIn('id', $insertIds)->delete();
+
+            StudentProfile::query()->whereIn('user_id', $insertIds)->delete();
+
+            Card::query()->whereIn('student_id', $insertIds)->delete();
+        }
     }
 }

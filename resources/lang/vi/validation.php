@@ -185,5 +185,17 @@ return [
         'shifts.*.end_time' => 'Thời gian kết thúc ',
         'shifts.*.teacher_id' => 'Giáo viên',
         'shifts.*.supporter_id' => 'Trợ giảng',
+        'van' => 'Số buổi trước khi sử dụng BSM',
+        'van_date' => 'Ngày chốt điểm danh ở hệ thống cũ',
+        'drive_link' => 'Link PDF đơn đăng ký',
+        'commitment' => 'Cam kết đầu ra',
+        'original_days' => 'Số buổi đăng ký gốc',
+        'bonus_days' => 'Số buổi tặng thêm',
+        'bonus_reason' => 'Lý do tặng',
+        'original_fee' => 'Học phí gốc',
+        'promotion_fee' => 'Học phí ưu đãi',
+        'fee_reason' => 'Lý do ưu đãi',
+        'payment_plant' => 'Kế hoạch thanh toán',
+        'paid_fee' => 'Số tiền thực tế đã thanh toán'
     ],
 ];

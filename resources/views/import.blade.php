@@ -22,6 +22,9 @@
                     @foreach($errors->all() as $error)
                         <div class="text-danger small mt-3">{{ $error }}</div>
                     @endforeach
+                    @if(session('import-error'))
+                        <div class="text-danger small mt-3">{{ session('import-error') }}</div>
+                    @endif
                     <button class="btn btn-primary mt-3">Bắt đầu tải lên</button>
                 </form>
 

@@ -98,7 +98,14 @@ class ImportController extends Controller
 
     private function importStudent(UploadedFile $file): RedirectResponse
     {
-        Excel::import(new StudentImport(), $file);
+
+        try {
+            Excel::import(new StudentImport(), $file);
+
+        } catch (\Exception $exception) {
+
+            return redirect()->back()->with('import-error', $exception->getMessage());
+        }
 
         return redirect('/student/list')->with('success', 'Import thành công');
     }

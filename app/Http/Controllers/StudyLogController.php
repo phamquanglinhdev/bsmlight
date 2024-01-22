@@ -40,6 +40,7 @@ class StudyLogController extends Controller
         $crudBag->setSearchValue($request->get('search'));
         $crudBag = $crudBag->handleColumns($request, $crudBag);
         $query = StudyLog::query();
+
         $query = $crudBag->handleQuery($request, $query);
 
         $listViewModel = new ListViewModel($query->paginate($request->get('perPage') ?? 10));
@@ -379,7 +380,7 @@ class StudyLogController extends Controller
             'classroom_id' => $request->get('classroom_id'),
             'classroom_schedule_id' => $request->get('classroom_schedule_id'),
             'shifts' => $shiftTemplates,
-            'studylog_day' => Carbon::parse($request->get('studylog_day'))->isoFormat('DD/MM/YYYY'),
+            'studylog_day' => Carbon::parse($request->get('studylog_day'))->toDateString(),
             'title' => $request->get('title') ?? 'Buổi học ngày ' . Carbon::parse($request->get('studylog_day'))->isoFormat('DD/MM/YYYY'),
             'content' => $request->get('content') ?? '',
             'image' => $request->get('image'),
