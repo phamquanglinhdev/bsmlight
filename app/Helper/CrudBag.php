@@ -271,8 +271,8 @@ class CrudBag
 
     public function handleQuery(Request $request, Builder $query): Builder
     {
-        if(Auth::user()->{'role'} == User::HOST_ROLE) {
-            $query->whereHas('classroom', function (Builder $builder){
+        if (Auth::user()->{'role'} == User::HOST_ROLE) {
+            $query->whereHas('classroom', function (Builder $builder) {
                 $builder->where('branch', Auth::user()->{'branch'});
             })
 //                ->where('status', '!=', StudyLog::DRAFT_STATUS)
@@ -290,10 +290,12 @@ class CrudBag
                                 $query->where('student_id', Auth::user()->id);
                             })->orWhereHas('WorkingShifts', function (Builder $query) {
                                 $query->where('teacher_id', Auth::user()->id)->orWhere('supporter_id', Auth::user()->id)
-                                    ->orWhere('staff_id',Auth::user()->id);
+                                    ->orWhere('staff_id', Auth::user()->id);
                             });
-                        })->orWhere('Classroom', function (Builder $classroom) {
-                            $classroom->where('staff_id', Auth::id());
+                        })->orWhere(function (Builder $builder) {
+                            $builder->whereHas('Classroom', function (Builder $classroom) {
+                                $classroom->where('staff_id', Auth::id());
+                            });
                         });
                 });
         });

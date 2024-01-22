@@ -79,12 +79,12 @@
             <div class="col-md-12 col-12 mb-3">
                 <div class="form-floating form-floating-outline">
                     <select
-                        class="selectpicker w-100"
+                        class="selectpicker w-100 small"
                         name="shifts[{{$shiftKey}}][supporter_id]"
                         id="shifts[{{$shiftKey}}][supporter_id]">
                         @foreach( $listSupporter as $key => $value)
                             <option
-                                value=" {{$key}}" {{old('shifts.'.$shiftKey.'.supporter_id')==$key?'selected':''}}>{{$value}}</option>
+                                value=" {{$key}}" {{old('shifts.'.$shiftKey.'.supporter_id') == $key ? 'selected' : '' }}>{{$value}}</option>
                         @endforeach
                     </select>
                     <label for="shifts[{{$shiftKey}}][supporter_id]">Trợ giảng</label>

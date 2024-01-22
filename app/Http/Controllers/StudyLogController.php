@@ -587,9 +587,35 @@ class StudyLogController extends Controller
         return redirect()->back()->with('success', "Đã xác nhận");
     }
 
-    public function confirmUser(int $id, int $forUser)
+    public function confirmUser(int $id, int $forUser): RedirectResponse
     {
+        /**
+         * @var StudyLog $studyLog
+         */
+        $studyLog = StudyLog::query()->where('id', $id)->first();
 
+        $relationUsers = array_map(function ($user) {
+            return $user->getUserId();
+        }, $studyLog->getAcceptedUsers());
+
+        if (! in_array($forUser, $relationUsers)) {
+            abort(403);
+        }
+
+        StudyLogAccept::query()->updateOrCreate([
+            'studylog_id' => $id,
+            'user_id' => $forUser
+        ], [
+            'studylog_id' => $id,
+            'user_id' => $forUser,
+            'accepted_time' => Carbon::now(),
+            'accepted_by_system' => 0,
+            'accepted_by' => Auth::user()->{'uuid'}."-".Auth::user()->{'name'}
+        ]);
+
+        $this->handleSwitchToCommitted($studyLog);
+
+        return redirect()->back()->with('success', "Đã xác nhận");
     }
     private function handleSwitchToCommitted(StudyLog $studyLog): void
     {

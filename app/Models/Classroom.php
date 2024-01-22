@@ -179,9 +179,11 @@ class Classroom extends Model
     public function getExternalSalaryAttribute(): int
     {
         #TODO Bổ sung thẻ lương giáo viên
-        $totalStudyLog = $this->StudyLogs()->get()->map(function (StudyLog $studyLog) {
-            return $studyLog->WorkingShifts()->get()->Teachers();
-        });
+
+//        $totalStudyLog = $this->StudyLogs()->get()->map(function (StudyLog $studyLog) {
+//            return $studyLog->WorkingShifts()->first()->Teachers();
+//        });
+
         return 0;
     }
 

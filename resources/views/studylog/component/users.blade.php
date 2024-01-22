@@ -20,8 +20,14 @@
                 <div>{{$user->getName()}}</div>
                 @if($user->isAccepted())
                     <div class="text-success small ms-2">Đã xác nhận bởi {{$user->getAcceptedBySystem()?"Hệ Thống":"Người dùng"}}
+                        {{ $user->getAcceptedBy() != "0" ? "[".$user->getAcceptedBy()."]" : ""}}
                         lúc {{$user->getAcceptedTime()}}</div>
+                @else
+                    @if(\Illuminate\Support\Facades\Auth::user()->{'role'} <= \App\Models\User::STAFF_ROLE)
+                        <a href="{{url('studylog/confirm/log/'.$user->getStudylogId().'/alt/'.$user->getUserId())}}" class="text-white bg-success p-1 small border-none rounded ms-3">Xác nhận thay</a>
+                    @endif
                 @endif
+
             </div>
         @endforeach
     </div>

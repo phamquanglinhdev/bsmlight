@@ -11,9 +11,15 @@ class StudyLogAcceptedObject
         private readonly int    $studylog_id,
         private readonly bool   $accepted,
         private readonly string $accepted_time,
-        private readonly int    $accepted_by_system
+        private readonly int    $accepted_by_system,
+        private readonly string    $accepted_by,
     )
     {
+    }
+
+    public function getAcceptedBy(): string
+    {
+        return $this->accepted_by;
     }
 
     public function getName(): string

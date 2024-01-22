@@ -143,7 +143,8 @@ class StudyLog extends Model
                     studylog_id: $this->id ?? '',
                     accepted: true,
                     accepted_time: $studyLogAccepts->accepted_time,
-                    accepted_by_system: $studyLogAccepts->accepted_by_system
+                    accepted_by_system: $studyLogAccepts->accepted_by_system,
+                    accepted_by: $studyLogAccepts->accepted_by
                 );
             }
 
@@ -154,7 +155,7 @@ class StudyLog extends Model
                 studylog_id: $this->id,
                 accepted: false,
                 accepted_time: '',
-                accepted_by_system: 0
+                accepted_by_system: 0,accepted_by: '0'
             );
         })->toArray();
     }

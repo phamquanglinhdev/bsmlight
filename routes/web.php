@@ -128,7 +128,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/cancel/{id}', [StudyLogController::class, "cancel", "id"])->name('studylog.cancel');
             Route::get('/recover/{id}', [StudyLogController::class, "recover", "id"])->name('studylog.recover');
             Route::get('/confirm/{id}', [StudyLogController::class, "confirm", "id"])->name('studylog.confirm');
-            Route::get('/confirm/{id}/{user_id}', [StudyLogController::class, "confirmUser", "id"])->name('studylog.confirm_user');
+            Route::get('/confirm/log/{id}/alt/{user_id}', [StudyLogController::class, "confirmUser", "id"])->name('studylog.confirm_user');
             Route::get('/accept/{id}', [StudyLogController::class, "accept", "id"])->name('studylog.accept');
             Route::get('/reject/{id}', [StudyLogController::class, "reject", "id"])->name('studylog.reject');
         });
