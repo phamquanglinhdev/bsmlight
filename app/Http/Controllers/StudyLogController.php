@@ -420,7 +420,7 @@ class StudyLogController extends Controller
 
             foreach ($shiftTemplates as $shiftTemplate) {
                 $dataToCreateWorkingShift = [
-                    'staff_id' => Auth::id(),
+                    'staff_id' => $shiftTemplate['staff_id'] ?? Auth::user()->id,
                     'teacher_id' => $shiftTemplate['teacher_id'],
                     'supporter_id' => $shiftTemplate['supporter_id'],
                     'room' => $shiftTemplate['room'] ?? '',
