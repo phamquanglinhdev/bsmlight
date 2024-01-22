@@ -133,7 +133,6 @@ class StudyLog extends Model
 
         $relationUsers = $relationUsers->filter(fn($item) => $item != null);
 
-
         return $relationUsers->map(function ($user) {
             $studyLogAccepts = StudyLogAccept::query()->where('studylog_id', $this->id)->where('user_id', $user->id)->first();
             if ($studyLogAccepts) {
