@@ -264,19 +264,25 @@ class CrudBag
             'type' => 'array',
             'label' => 'Trợ giảng'
         ]);
+
         return $crudBag;
     }
 
     public function handleQuery(Request $request, Builder $query): Builder
     {
         $query->where(function (Builder $query) {
-            $query->where('status', '!=', StudyLog::DRAFT_STATUS)->where('status', '!=', StudyLog::CANCELLED_STATUS)
-                ->orWhere('created_by', Auth::user()->id)->orWhere(function (Builder $query) {
-                    $query->whereHas('CardLogs', function (Builder $query) {
-                        $query->where('student_id', Auth::user()->id);
-                    })->orWhereHas('WorkingShifts', function (Builder $query) {
-                        $query->where('teacher_id', Auth::user()->id)->orWhere('supporter_id', Auth::user()->id);
-                    });
+            $query->where('status', '!=', StudyLog::DRAFT_STATUS)
+                ->where('status', '!=', StudyLog::CANCELLED_STATUS)
+                ->where(function (Builder $builder) {
+                    $builder->where('created_by', Auth::user()->id)
+                        ->orWhere(function (Builder $query) {
+                            $query->whereHas('CardLogs', function (Builder $query) {
+                                $query->where('student_id', Auth::user()->id);
+                            })->orWhereHas('WorkingShifts', function (Builder $query) {
+                                $query->where('teacher_id', Auth::user()->id)->orWhere('supporter_id', Auth::user()->id)
+                                    ->orWhere('staff_id',Auth::user()->id);
+                            });
+                        });
                 });
         });
 
