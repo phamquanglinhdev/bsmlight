@@ -292,6 +292,8 @@ class CrudBag
                                 $query->where('teacher_id', Auth::user()->id)->orWhere('supporter_id', Auth::user()->id)
                                     ->orWhere('staff_id',Auth::user()->id);
                             });
+                        })->orWhere('Classroom', function (Builder $classroom) {
+                            $classroom->where('staff_id', Auth::id());
                         });
                 });
         });
