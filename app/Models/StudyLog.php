@@ -55,14 +55,14 @@ class StudyLog extends Model
     public function getTeachersAttribute(): array
     {
         return $this->WorkingShifts()->get()->mapWithKeys(function (WorkingShift $item) {
-            return [$item->teacher_id => $item?->teacher->name . "-" . $item->teacher?->uuid];
+            return [$item->teacher_id => $item?->teacher?->name . "-" . $item->teacher?->uuid];
         })->toArray();
     }
 
     public function getSupportersAttribute(): array
     {
         return $this->WorkingShifts()->get()->mapWithKeys(function (WorkingShift $item) {
-            return [$item->supporter_id => $item?->supporter->name . "-" . $item->supporter?->uuid];
+            return [$item->supporter_id => $item?->supporter?->name . "-" . $item->supporter?->uuid];
         })->toArray();
     }
 
