@@ -281,8 +281,7 @@ class CrudBag
         }
 
         $query->where(function (Builder $query) {
-            $query->where('status', '!=', StudyLog::DRAFT_STATUS)
-                ->where('status', '!=', StudyLog::CANCELLED_STATUS)
+            $query->where('status', '!=', StudyLog::CANCELLED_STATUS)
                 ->where(function (Builder $builder) {
                     $builder->where('created_by', Auth::user()->id)
                         ->orWhere(function (Builder $query) {

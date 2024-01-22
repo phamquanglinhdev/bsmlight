@@ -103,11 +103,12 @@ class TeacherController extends Controller
             'name' => 'teacher_source',
             'type' => 'select',
             'label' => 'Phân loại giáo viên',
+            'required' => true,
             'options' => [
                 Teacher::INTERNAL_SOURCE => 'Giáo viên Việt Nam',
                 Teacher::EXTERNAL_SOURCE => 'Giáo viên nước ngoài',
             ],
-            'value' => Teacher::INTERNAL_SOURCE
+//            'value' => Teacher::INTERNAL_SOURCE
         ]);
 
         /**

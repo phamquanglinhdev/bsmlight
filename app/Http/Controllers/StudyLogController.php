@@ -587,6 +587,10 @@ class StudyLogController extends Controller
         return redirect()->back()->with('success', "Đã xác nhận");
     }
 
+    public function confirmUser(int $id, int $forUser)
+    {
+
+    }
     private function handleSwitchToCommitted(StudyLog $studyLog): void
     {
         $relationUsers = $studyLog->getAcceptedUsers();
