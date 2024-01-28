@@ -18,17 +18,16 @@ class StudyLog extends Model
 {
     use HasFactory;
 
-    const DRAFT_STATUS = 0;
-    # Đang nháp chưa public => CANCEL_STATUS || PROCESS_STATUS
-    const PROCESS_STATUS = 1;
-    # Gửi lên => những người liên quan nhận noti, vào comment, những người có quyền xác nhận vào xác nhận ()
-    # => CANCEL_STATUS || Không được sửa || COMMITTED_STATUS
-    const COMMITTED_STATUS = 2;
-    # Đã xác nhận xong, chờ duyệt || Không một ai có quyền sửa || CANCEL_STATUS || Người có quyền chấp nhận , duyệt buổi học => ACCEPTED_STATUS || REFUSE_STATUS
-    const ACCEPTED_STATUS = 3;
-    # Đã duyệt xong || trừ host, không một ai có quyền tác động || Host tác động => noti cho tất cả người liên quan;
-    const CANCELLED_STATUS = 4;
-    const REJECTED_STATUS = 5;
+    const DRAFT_STATUS = 0; # Nháp
+    const WAITING_CONFIRM = 1;
+
+    const WAITING_ACCEPT = 2;
+
+    const CANCELED = 3;
+
+    const REFUSED = 4;
+
+    const ACCEPTED = 5;
 
     protected $table = 'studylogs';
     protected $guarded = ['id'];
@@ -155,7 +154,7 @@ class StudyLog extends Model
                 studylog_id: $this->id,
                 accepted: false,
                 accepted_time: '',
-                accepted_by_system: 0,accepted_by: '0'
+                accepted_by_system: 0, accepted_by: '0'
             );
         })->toArray();
     }
@@ -165,11 +164,23 @@ class StudyLog extends Model
     {
         return [
             self::DRAFT_STATUS => 'Bản nháp, chưa gửi lên',
-            self::ACCEPTED_STATUS => 'Đã duyệt',
-            self::CANCELLED_STATUS => 'Đã huỷ',
-            self::REJECTED_STATUS => 'Đã bị từ chối',
-            self::PROCESS_STATUS => 'Đã gửi, chờ các bên xác nhận',
-            self::COMMITTED_STATUS => 'Đã xác nhận xong, chờ duyệt'
+            self::WAITING_CONFIRM => 'Chờ giáo GV, TG xác nhận',
+            self::WAITING_ACCEPT => 'Đang chờ nhân viên duyệt',
+            self::REFUSED => 'Đã bị từ chối',
+            self::ACCEPTED => 'Đã duyệt',
+            self::CANCELED => 'Đã hủy'
+        ];
+    }
+
+    public static function statusListOptions(): array
+    {
+        return [
+            self::DRAFT_STATUS => 'Bản nháp, chưa gửi lên',
+            self::WAITING_CONFIRM => 'Chờ giáo GV, TG xác nhận',
+            self::WAITING_ACCEPT => 'Đang chờ nhân viên duyệt',
+            self::REFUSED => 'Đã bị từ chối',
+            self::ACCEPTED => 'Đã duyệt',
+            self::CANCELED => 'Đã hủy'
         ];
     }
 
@@ -177,11 +188,23 @@ class StudyLog extends Model
     {
         return [
             self::DRAFT_STATUS => 'bg-primary',
-            self::ACCEPTED_STATUS => 'bg-success',
-            self::CANCELLED_STATUS => 'bg-dark',
-            self::REJECTED_STATUS => 'bg-danger',
-            self::PROCESS_STATUS => 'bg-warning',
-            self::COMMITTED_STATUS => 'bg-primary'
+            self::WAITING_CONFIRM => 'bg-warning',
+            self::WAITING_ACCEPT => 'bg-orange',
+            self::CANCELED => 'bg-dark',
+            self::REFUSED => 'bg-danger',
+            self::ACCEPTED => 'bg-success',
+        ];
+    }
+
+    public static function statusBackgroundOptions(): array
+    {
+        return [
+            self::DRAFT_STATUS => 'bg-primary',
+            self::WAITING_CONFIRM => 'bg-warning',
+            self::WAITING_ACCEPT => 'bg-orange',
+            self::CANCELED => 'bg-dark',
+            self::REFUSED => 'bg-danger',
+            self::ACCEPTED => 'bg-success',
         ];
     }
 }

@@ -21,6 +21,9 @@
                         {{$comment->getContent()}}
                     </div>
                     @break
+                @case(\App\Models\Comment::ATTRIBUTES_MODIFY_TYPE)
+                    @include('studylog.component.modify_attribute',['attributes' => json_decode($comment->getContent(),1)])
+                    @break
             @endswitch
             <div class="text-end text-muted mt-1">
                 <small>{{$comment->getCommentTime()}}</small>
@@ -29,7 +32,7 @@
         <div class="user-avatar flex-shrink-0 ms-3">
             <div class="avatar avatar-sm">
                 <img
-                    src="{{$comment->getUserAvatar()}}"
+                        src="{{$comment->getUserAvatar()}}"
                     alt="Avatar" class="rounded-circle">
             </div>
         </div>

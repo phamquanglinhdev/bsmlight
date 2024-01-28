@@ -344,6 +344,6 @@ class Classroom extends Model
 
     public function StudyLogs(): HasMany
     {
-        return $this->hasMany(StudyLog::class, 'classroom_id', 'id')->where('status', StudyLog::ACCEPTED_STATUS);
+        return $this->hasMany(StudyLog::class, 'classroom_id', 'id')->where('status', StudyLog::ACCEPTED);
     }
 }

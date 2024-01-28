@@ -186,22 +186,8 @@ class CrudBag
             'label' => 'Trạng thái',
             'type' => 'select',
             'attributes' => [
-                'options' => [
-                    StudyLog::DRAFT_STATUS => 'Chưa nộp, đang nháp',
-                    StudyLog::PROCESS_STATUS => 'Đã gửi, chờ xác nhận',
-                    StudyLog::COMMITTED_STATUS => 'Đã xác nhận xong, chờ duyệt',
-                    StudyLog::ACCEPTED_STATUS => 'Đã duyệt',
-                    StudyLog::CANCELLED_STATUS => 'Đã tự hủy',
-                    StudyLog::REJECTED_STATUS => 'Từ chối duyệt',
-                ],
-                'bg' => [
-                    StudyLog::DRAFT_STATUS => 'bg-primary',
-                    StudyLog::PROCESS_STATUS => 'bg-orange',
-                    StudyLog::COMMITTED_STATUS => 'bg-warning',
-                    StudyLog::ACCEPTED_STATUS => 'bg-success',
-                    StudyLog::CANCELLED_STATUS => 'bg-dark',
-                    StudyLog::REJECTED_STATUS => 'bg-danger',
-                ]
+                'options' => StudyLog::statusListOptions(),
+                'bg' => StudyLog::statusBackgroundOptions()
             ]
         ]);
         $crudBag->addColumn([
@@ -275,14 +261,13 @@ class CrudBag
             $query->whereHas('classroom', function (Builder $builder) {
                 $builder->where('branch', Auth::user()->{'branch'});
             })
-//                ->where('status', '!=', StudyLog::DRAFT_STATUS)
-                ->where('status', '!=', StudyLog::CANCELLED_STATUS);
+                ->where('status', '!=', StudyLog::CANCELED);
 
             return $query;
         }
 
         $query->where(function (Builder $query) {
-            $query->where('status', '!=', StudyLog::CANCELLED_STATUS)
+            $query->where('status', '!=', StudyLog::CANCELED)
                 ->where(function (Builder $builder) {
                     $builder->where('created_by', Auth::user()->id)
                         ->orWhere(function (Builder $query) {

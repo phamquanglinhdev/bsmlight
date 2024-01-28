@@ -20,6 +20,8 @@ class Comment extends Model
     const CARD_COMMENT = "card";
     const LOG_TYPE = 2;
 
+    const ATTRIBUTES_MODIFY_TYPE = 3;
+
     protected $table = 'comments';
     protected $guarded = ['id'];
 

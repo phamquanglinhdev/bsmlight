@@ -18,7 +18,21 @@
                 <small>{{$comment->getUserName()}}</small>
             </div>
             <div class="chat-message-text">
-                <p class="mb-0">{{$comment->getContent()}}</p>
+                @switch($comment->getType())
+                    @case(\App\Models\Comment::TEXT_TYPE)
+                        <div class="chat-message-text">
+                            <p class="mb-0">{{$comment->getContent()}}</p>
+                        </div>
+                        @break
+                    @case(\App\Models\Comment::LOG_TYPE)
+                        <div class="badge bg-label-success">
+                            {{$comment->getContent()}}
+                        </div>
+                        @break
+                    @case(\App\Models\Comment::ATTRIBUTES_MODIFY_TYPE)
+                        @include('studylog.component.modify_attribute',['attributes' => json_decode($comment->getContent(),1)])
+                        @break
+                @endswitch
             </div>
             <div class="text-muted mt-1">
                 <small>{{$comment->getCommentTime()}}</small>

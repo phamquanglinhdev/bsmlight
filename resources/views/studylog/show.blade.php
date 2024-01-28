@@ -21,42 +21,44 @@
                     class="badge {{$studyLog->getStatusBackground()}} small rounded">{{$studyLog->getStatusText()}}</div>
             </div>
             <div>
-                @if(! in_array($studyLog->getStatus(),[StudyLog::DRAFT_STATUS, StudyLog::CANCELLED_STATUS, StudyLog::REJECTED_STATUS, StudyLog::ACCEPTED_STATUS]))
+                @if(! in_array($studyLog->getStatus(),[StudyLog::DRAFT_STATUS, StudyLog::CANCELED, StudyLog::REFUSED, StudyLog::ACCEPTED]))
                     <a href="{{url('/studylog/confirm/'.$studyLog->getId())}}" class="btn btn-success small me-1">
                         <span class="mdi mdi-check-circle me-1"></span>
                         <span class="small">Xác nhận buổi học chính xác</span>
                     </a>
                 @endif
 
-                @if($studyLog->getStatus() == StudyLog::COMMITTED_STATUS && force_permission('studyLog accept'))
+                @if($studyLog->getStatus() == StudyLog::WAITING_ACCEPT && force_permission('studyLog accept'))
                     <a href="{{url('/studylog/accept/'.$studyLog->getId())}}" class="btn btn-success small me-1">
                         <span class="mdi mdi-check-circle me-1"></span>
                         <span class="small">Duyệt buổi học</span>
                     </a>
-                        <a href="{{url('/studylog/reject/'.$studyLog->getId())}}" class="btn btn-danger small me-1">
-                            <span class="mdi mdi-cancel me-1"></span>
-                            <span class="small">Từ chối duyệt buổi học</span>
-                        </a>
+                    <a href="{{url('/studylog/reject/'.$studyLog->getId())}}" class="btn btn-danger small me-1">
+                        <span class="mdi mdi-cancel me-1"></span>
+                        <span class="small">Từ chối duyệt buổi học</span>
+                    </a>
                 @endif
 
-                @if(in_array($studyLog->getStatus(),[StudyLog::PROCESS_STATUS,StudyLog::DRAFT_STATUS]))
+                @if(in_array($studyLog->getStatus(),[StudyLog::WAITING_ACCEPT,StudyLog::DRAFT_STATUS]))
                     <a href="{{url('/studylog/cancel/'.$studyLog->getId())}}" class="btn btn-danger small me-1">
                         <span class="mdi mdi-cancel me-1"></span>
                         <span class="small">Hủy buổi học</span>
                     </a>
                 @endif
-                @if($studyLog->getStatus() == StudyLog::CANCELLED_STATUS)
+                @if($studyLog->getStatus() == StudyLog::CANCELED)
                     <a href="{{url('/studylog/recover/'.$studyLog->getId())}}" class="btn btn-primary small me-1">
                         <span class="mdi mdi-history me-1"></span>
                         <span class="small">Khôi phục buổi học</span>
                     </a>
                 @endif
-                @if($studyLog->getStatus() == 0)
+                @if($studyLog->getStatus() == StudyLog::DRAFT_STATUS || $studyLog->getStatus() == StudyLog::WAITING_CONFIRM)
                     <a href="{{url('/studylog/edit/'.$studyLog->getId())}}" id="edit_action"
                        class="btn btn-primary small me-1">
                         <span class="mdi mdi-file-edit me-1"></span>
                         <span class="small">Chỉnh sửa</span>
                     </a>
+                @endif
+                @if($studyLog->getStatus() == StudyLog::DRAFT_STATUS)
                     <a href="{{url('/studylog/submit/'.$studyLog->getId())}}" id="submit_action"
                        class="btn btn-primary small">
                         <span class="mdi mdi-upload me-1"></span>
