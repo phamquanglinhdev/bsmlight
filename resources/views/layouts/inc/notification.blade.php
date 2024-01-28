@@ -15,6 +15,11 @@
                 enable: true,
             },
         })
+
+        OneSignal.getUserId().then((r) => {
+            console.log("aaa",r)
+        })
+
         OneSignal.User.PushSubscription.addEventListener("change", function (event) {
             axios.post(
                 '{{url('notification/save-token')}}',
