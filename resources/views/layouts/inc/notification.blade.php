@@ -14,10 +14,7 @@
             notifyButton: {
                 enable: true,
             },
-        })
-
-        OneSignal.getUserId().then((r) => {
-            console.log("aaa",r)
+            autoResubscribe:true
         })
 
         OneSignal.User.PushSubscription.addEventListener("change", function (event) {
