@@ -704,7 +704,7 @@ class StudyLogController extends Controller
          */
         $studyLog = StudyLog::query()->where('id', $id)->firstOrFail();
 
-        $listClassrooms = Classroom::query()->get()->mapWithKeys(function (Classroom $classroom) {
+        $listClassrooms = Classroom::query()->withoutGlobalScopes(['relation'])->get()->mapWithKeys(function (Classroom $classroom) {
             return [$classroom['id'] => $classroom['uuid'] . ' - ' . $classroom['name']];
         })->toArray();
         $crudBag->setParam('listClassroom', $listClassrooms);
