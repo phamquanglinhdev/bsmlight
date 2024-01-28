@@ -41,7 +41,12 @@
                 @endforeach
             @break
             @default
-            <div>{{$attribute['name']}}: {{$attribute['old']}} => {{$attribute['new']}}</div>
+                <div class="my-2">
+                    <span class="bg-primary text-white p-1 small rounded">{{$attribute['name']}}</span>:
+                    <span class="bg-secondary text-white p-1 small rounded">{{$attribute['old']}}</span>
+                    =>
+                    <span class="bg-primary text-white p-1 small rounded">{{$attribute['new']}}</span>
+                </div>
         @endswitch
     @endforeach
 </div>
