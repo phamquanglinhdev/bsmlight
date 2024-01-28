@@ -7,6 +7,7 @@ use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CustomFieldController;
 use App\Http\Controllers\ImportController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\StaffController;
@@ -165,6 +166,10 @@ Route::middleware(['auth'])->group(function () {
     Route::prefix('comment')->group(function () {
         Route::post('/store', [CommentController::class, "store"]);
     });
+
+    Route::post('notification/save-token',[NotificationController::class,'saveDesktopFcmTokenAction'])->name('notification.save-token');
+    Route::get('notification/create',[NotificationController::class,'createNotificationView'])->name('notification.create');
+    Route::post('notification/store',[NotificationController::class,'storeNotification'])->name('notification.store');
 });
 
 Route::prefix('static')->group(function () {
