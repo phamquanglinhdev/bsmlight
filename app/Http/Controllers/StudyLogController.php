@@ -1012,7 +1012,7 @@ class StudyLogController extends Controller
 
         $collectedWorkingShiftUser = array_merge($collectedWorkingShiftUser, $staff);
 
-        $collectedWorkingShiftUser[] = Branch::query()->where('branch', Auth::user()->{'branch'})->first()->host_id;
+        $collectedWorkingShiftUser[] = Branch::query()->where('uuid', Auth::user()->{'branch'})->first()->host_id;
 
         DesktopNotification::sendNotification(new NotificationObject(
             title: Auth::user()->{'name'} . ' đã cập nhật thông tin buổi học',
