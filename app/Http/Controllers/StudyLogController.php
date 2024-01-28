@@ -7,12 +7,15 @@ use App\Helper\DesktopNotification;
 use App\Helper\ListViewModel;
 use App\Helper\Object\NotificationObject;
 use App\Helper\StudyLogShowViewModel;
+use App\Models\Branch;
 use App\Models\Card;
 use App\Models\CardLog;
 use App\Models\Classroom;
 use App\Models\ClassroomSchedule;
 use App\Models\ClassroomShift;
 use App\Models\Comment;
+use App\Models\Host;
+use App\Models\Staff;
 use App\Models\StudyLog;
 use App\Models\StudyLogAccept;
 use App\Models\Supporter;
@@ -1003,9 +1006,17 @@ class StudyLogController extends Controller
 
         $collectedWorkingShiftUser = $this->collectWorkingShiftUser($shiftTemplates);
 
+        $collectedWorkingShiftUser[] = $studyLog['created_by'];
+
+        $staff = Staff::query()->where('branch', Auth::user()->{'branch'})->pluck('id')->toArray();
+
+        $collectedWorkingShiftUser = array_merge($collectedWorkingShiftUser, $staff);
+
+        $collectedWorkingShiftUser[] = Branch::query()->where('branch', Auth::user()->{'branch'})->first()->host_id;
+
         DesktopNotification::sendNotification(new NotificationObject(
-            title: Auth::user()->{'name'}. ' đã cập nhật thông tin buổi học',
-            body: Auth::user()->{'name'}. ' đã cập nhật thông tin buổi học ' .$studyLog->getSupportIdAttribute(),
+            title: Auth::user()->{'name'} . ' đã cập nhật thông tin buổi học',
+            body: Auth::user()->{'name'} . ' đã cập nhật thông tin buổi học ' . $studyLog->getSupportIdAttribute(),
             user_ids: $collectedWorkingShiftUser,
             thumbnail: '',
             ref: url('studylog/show/' . $studyLog->id),
