@@ -285,6 +285,6 @@ class CrudBag
                 });
         });
 
-        return $query;
+        return $query->orderBy('created_at','DESC');
     }
 }
