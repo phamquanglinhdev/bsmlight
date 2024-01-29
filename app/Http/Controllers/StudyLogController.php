@@ -184,6 +184,11 @@ class StudyLogController extends Controller
 
     private function startCreate(Request $request, CrudBag $crudBag)
     {
+        $validateImg = $this->validate($request,[
+            'shifts.*.teacher_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+            'shifts.*.supporter_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
         if (!$request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
@@ -365,8 +370,6 @@ class StudyLogController extends Controller
             'shifts.*.supporter_id' => 'required|exists:users,id',
             'shifts.*.teacher_comment' => 'string|nullable',
             'shifts.*.supporter_comment' => 'string|nullable',
-            'shifts.*.teacher_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-            'shifts.*.supporter_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
             'cardlogs' => 'array|required',
             'cardlogs.*.student_id' => 'required|exists:users,id',
             'cardlogs.*.card_id' => 'required|integer',
