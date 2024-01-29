@@ -1,6 +1,6 @@
 @php
     use App\Helper\StudyLogShowViewModel;
-    use App\Models\StudyLog;
+    use App\Models\StudyLog;use App\Models\User;use Illuminate\Support\Facades\Auth;
         /**
          * @var StudyLogShowViewModel $studyLogShowViewModel
          */
@@ -28,7 +28,7 @@
                     </a>
                 @endif
 
-                @if($studyLog->getStatus() == StudyLog::WAITING_ACCEPT && force_permission('studyLog accept'))
+                @if($studyLog->getStatus() == StudyLog::WAITING_ACCEPT && (force_permission('studyLog accept')||Auth::user()->{'role'} <= User::STAFF_ROLE))
                     <a href="{{url('/studylog/accept/'.$studyLog->getId())}}" class="btn btn-success small me-1">
                         <span class="mdi mdi-check-circle me-1"></span>
                         <span class="small">Duyệt buổi học</span>
