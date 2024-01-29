@@ -528,6 +528,14 @@ class StudyLogController extends Controller
             'status' => StudyLog::WAITING_CONFIRM
         ]);
 
+        StudyLogAccept::query()->create([
+            'user_id' => Auth::id(),
+            'studylog_id' => $id,
+            'accepted_time' => Carbon::now(),
+            'accepted_by_system' => 0,
+            'accepted_by' => 0,
+        ]);
+
         return redirect()->back()->with('success', "Gửi lên thành công");
     }
 
