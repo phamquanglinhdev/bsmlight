@@ -308,17 +308,6 @@ class StudyLogController extends Controller
 
     private function finalStore(Request $request, CrudBag $crudBag): RedirectResponse|View
     {
-        $validate = Validator::make($request->all(), [
-            'shifts.*.teacher_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-            'shifts.*.supporter_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-        ]);
-
-        if ($validate->fails()) {
-            return \view('studylog.create', [
-                'crudBag' => $crudBag,
-            ])->withErrors($validate);
-        }
-
         $listCardLogStatus = [
             0 => 'Đi học, đúng giờ',
             1 => 'Đi học, muộn',
@@ -335,12 +324,12 @@ class StudyLogController extends Controller
 
         foreach ($request->get('shifts') as $key => $shift) {
             $files = $request->file('shifts')[$key] ?? [];
-            if (!empty($files)) {
+            if (! empty($files)) {
                 $request->merge([
                     "shifts" => [
                         $key => array_merge($shift, [
-                            'teacher_timestamp' => uploads($files['teacher_timestamp']),
-                            'supporter_timestamp' => uploads($files['supporter_timestamp']),
+                            'teacher_timestamp' => uploads($files['teacher_timestamp'] ?? null),
+                            'supporter_timestamp' => uploads($files['supporter_timestamp'] ?? null),
                         ])
                     ]
                 ]);
@@ -363,6 +352,17 @@ class StudyLogController extends Controller
         $crudBag->setParam('classroom_id', $request->get('classroom_id'));
         $crudBag->setParam('classroom_schedule_id', $request->get('classroom_schedule_id'));
         $crudBag->setParam('studylog_day', $request->get('studylog_day'));
+
+        $validate = Validator::make($request->all(), [
+            'shifts.*.teacher_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+            'shifts.*.supporter_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($validate->fails()) {
+            return \view('studylog.create', [
+                'crudBag' => $crudBag,
+            ])->withErrors($validate);
+        }
 
         $validate = Validator::make($request->all(), [
             'classroom_id' => 'required|exists:classrooms,id',
