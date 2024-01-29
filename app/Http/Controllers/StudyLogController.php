@@ -184,11 +184,6 @@ class StudyLogController extends Controller
 
     private function startCreate(Request $request, CrudBag $crudBag)
     {
-        $validateImg = $this->validate($request,[
-            'shifts.*.teacher_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-            'shifts.*.supporter_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-        ]);
-
         if (!$request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
@@ -313,6 +308,17 @@ class StudyLogController extends Controller
 
     private function finalStore(Request $request, CrudBag $crudBag): RedirectResponse|View
     {
+        $validate = Validator::make($request->all(), [
+            'shifts.*.teacher_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+            'shifts.*.supporter_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($validate->fails()) {
+            return \view('studylog.create', [
+                'crudBag' => $crudBag,
+            ])->withErrors($validate);
+        }
+
         $listCardLogStatus = [
             0 => 'Đi học, đúng giờ',
             1 => 'Đi học, muộn',
@@ -827,6 +833,8 @@ class StudyLogController extends Controller
      */
     public function update(Request $request, int $id): RedirectResponse|View
     {
+
+
         $modifyAttributes = [];
 
         $crudBag = new CrudBag();
@@ -840,6 +848,7 @@ class StudyLogController extends Controller
             5 => 'Không điểm danh',
         ];
 
+
         $crudBag->setParam('step', 4);
 
         $cardsTemplates = [];
@@ -847,19 +856,35 @@ class StudyLogController extends Controller
 
         $shifts = [];
 
+        $validate = Validator::make($request->all(), [
+            'shifts.*.teacher_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+            'shifts.*.supporter_timestamp' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        if ($validate->fails()) {
+            return redirect()->back()->withErrors($validate);
+        }
+
         foreach ($request->get('shifts') as $key => $shift) {
             $files = $request->file('shifts')[$key] ?? [];
-            if (!empty($files)) {
-                $shifts[$key] = array_merge($shift, [
-                    'teacher_timestamp' => uploads($files['teacher_timestamp']),
-                    'supporter_timestamp' => uploads($files['supporter_timestamp']),
-                ]);
-            } else {
-                $shifts[$key] = array_merge($shift, [
-                    'teacher_timestamp' => $shift['alt_teacher_timestamp'],
-                    'supporter_timestamp' => $shift['alt_supporter_timestamp'],
-                ]);
+
+            if (isset($files['teacher_timestamp'])) {
+                $teacherTimestamp = uploads($files['teacher_timestamp']);
+            }else {
+                $teacherTimestamp = $shift['alt_teacher_timestamp'];
             }
+
+            if (isset($files['supporter_timestamp'])) {
+                $supporterTimestamp = uploads($files['supporter_timestamp']);
+            }else {
+                $supporterTimestamp = $shift['alt_supporter_timestamp'];
+            }
+
+
+            $shifts[$key] = array_merge($shift, [
+                'teacher_timestamp' => $teacherTimestamp,
+                'supporter_timestamp' => $supporterTimestamp,
+            ]);
         }
 
         $request->merge([

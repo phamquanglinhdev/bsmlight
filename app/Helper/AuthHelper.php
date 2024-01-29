@@ -156,8 +156,11 @@ if (!function_exists('force_permission')) {
 }
 
 if (!function_exists('uploads')) {
-    function uploads(\Illuminate\Http\UploadedFile $file): string
+    function uploads(\Illuminate\Http\UploadedFile $file = null): ?string
     {
+        if(! $file) {
+            return null;
+        }
         $fileName = Str::random(10) . "_" . $file->getClientOriginalName();
 
         return "uploads/" . $file->storeAs('', $fileName, 'upload');
