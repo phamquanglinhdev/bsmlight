@@ -647,6 +647,10 @@ class StudyLogController extends Controller
 
     private function handleSwitchToWaitingAccept(StudyLog $studyLog): void
     {
+        if ($studyLog->status === StudyLog::ACCEPTED || $studyLog->status === StudyLog::REFUSED || $studyLog->status === StudyLog::CANCELED) {
+            return;
+        }
+
         $relationUsers = $studyLog->getAcceptedUsers();
 
         foreach ($relationUsers as $relationUser) {
