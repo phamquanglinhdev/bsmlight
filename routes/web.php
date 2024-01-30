@@ -181,3 +181,7 @@ Route::prefix('static')->group(function () {
     ])->name('shiftTemplate.static.add');
     Route::post('cardTemplate', [ScheduleController::class, "staticAddCardTemplate"])->name('cardTemplate.static.add');
 });
+
+Route::get('test', function () {
+    return view('test');
+})->name('test');

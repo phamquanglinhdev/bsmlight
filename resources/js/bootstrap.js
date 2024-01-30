@@ -55,46 +55,46 @@ console.log("firebaseConfig:", firebaseConfig);
 // Khởi tạo ứng dụng Firebase
 const firebaseApp = initializeApp(firebaseConfig);
 
-const getFCMToken = async () => {
-    try {
-        const messaging = getMessaging(firebaseApp);
+firebase.initializeApp(firebaseConfig);
 
-        console.log("messaging:", messaging)
+const messaging = firebase.messaging();
 
-        const currentToken = await getToken(messaging, {vapidKey: 'AIzaSyAfKNUuDB61qCLLlN-y68uTPKA9tNtbTkw'});
-        //
-        console.log("currentToken:", currentToken)
-        // if (currentToken) {
-        //     console.log('FCM Token:', currentToken);
-        //     // Gửi token này lên máy chủ Laravel
-        //     axios.post('/save-fcm-token', {fcm_token: currentToken})
-        //         .then(response => {
-        //             console.log(response.data.message);
-        //         })
-        //         .catch(error => {
-        //             console.error('Error saving FCM token:', error);
-        //         });
-        // } else {
-        //     console.log('No registration token available. Request permission to generate one.');
-        // }
-    } catch (error) {
-        console.error('An error occurred while retrieving token:', error);
-    }
-};
-
-getFCMToken().then();
-
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/firebase-messaging-sw.js',{
-            scope: '/'
+function startFCM() {
+    messaging
+        .requestPermission()
+        .then(function () {
+            return messaging.getToken()
         })
-            .then((registration) => {
-                console.log('Firebase Messaging ServiceWorker registered with scope:', registration.scope);
-            })
-            .catch((error) => {
-                console.error('Firebase Messaging ServiceWorker registration failed:', error);
+        .then(function (response) {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
             });
+            $.ajax({
+                url: '{{ route("store.token") }}',
+                type: 'POST',
+                data: {
+                    token: response
+                },
+                dataType: 'JSON',
+                success: function (response) {
+                    alert('Token stored.');
+                },
+                error: function (error) {
+                    alert(error);
+                },
+            });
+        }).catch(function (error) {
+        alert(error);
     });
 }
+messaging.onMessage(function (payload) {
+    const title = payload.notification.title;
+    const options = {
+        body: payload.notification.body,
+        icon: payload.notification.icon,
+    };
+    new Notification(title, options);
+});
 
