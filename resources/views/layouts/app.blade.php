@@ -8,8 +8,8 @@
 @include("layouts.inc.header")
 
 <body>
-<div class="layout-wrapper layout-content-navbar ">
-    <div class="layout-container">s
+<div class="layout-wrapper layout-content-navbar">
+    <div class="layout-container">
         @include("components.menu")
         <!-- Layout page -->
         <div class="layout-page">
@@ -41,7 +41,7 @@
             closeButton: true,
             progressBar: true,
             positionClass: 'toast-top-right',
-            timeOut: 2000 // Thời gian hiển thị thông báo (5 giây)
+            timeOut: 2000
         };
         toastr.success('{{session('success')}}', 'Thành công');
     </script>

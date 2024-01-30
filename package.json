@@ -16,6 +16,6 @@
         "postcss": "^8.1.14"
     },
     "dependencies": {
-        "firebase": "^10.7.2"
+        "firebase": "^9.6.8"
     }
 }

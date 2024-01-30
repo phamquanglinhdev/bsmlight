@@ -1,5 +1,3 @@
-const {initializeApp} = require("firebase/app");
-const {getMessaging} = require("firebase/messaging");
 window._ = require('lodash');
 
 /**
@@ -29,50 +27,74 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     forceTLS: true
 // });
 
+import {initializeApp} from 'firebase/app';
+import {getMessaging, getToken} from "firebase/messaging";
+import axios from 'axios';
+
+// Thông tin cấu hình Firebase của bạn
+// const firebaseConfig = {
+//     apiKey: process.env.FIREBASE_API_KEY,
+//     authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+//     projectId: process.env.FIREBASE_PROJECT_ID,
+//     storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+//     messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+//     appId: process.env.FIREBASE_APP_ID
+// };
+
 const firebaseConfig = {
-    apiKey: "AIzaSyAfKNUuDB61qCLLlN-y68uTPKA9tNtbTkw",
-    authDomain: "bsm-light-vn.firebaseapp.com",
-    databaseURL: "https://bsm-light-vn-default-rtdb.asia-southeast1.firebasedatabase.app",
-    projectId: "bsm-light-vn",
-    storageBucket: "bsm-light-vn.appspot.com",
-    messagingSenderId: "572902198465",
-    appId: "1:572902198465:web:9b95e480902d03f521d840",
-    measurementId: "G-283HH5Q1Q1"
+    apiKey: 'AIzaSyAfKNUuDB61qCLLlN-y68uTPKA9tNtbTkw',
+    authDomain: 'bsm-light-vn.firebaseapp.com',
+    projectId: 'bsm-light-vn',
+    storageBucket: 'bsm-light-vn.appspot.com',
+    messagingSenderId: '572902198465',
+    appId: '1:572902198465:web:9b95e480902d03f521d840'
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+console.log("firebaseConfig:", firebaseConfig);
 
+// Khởi tạo ứng dụng Firebase
+const firebaseApp = initializeApp(firebaseConfig);
 
-// Initialize Firebase Cloud Messaging and get a reference to the service
-const messaging = getMessaging(app);
+const getFCMToken = async () => {
+    try {
+        const messaging = getMessaging(firebaseApp);
 
-function requestPermission() {
-    console.log('Requesting permission...');
-    Notification.requestPermission().then((permission) => {
-        if (permission === 'granted') {
-            console.log('Notification permission granted.');
-        }
+        console.log("messaging:", messaging)
+
+        const currentToken = await getToken(messaging, {vapidKey: 'AIzaSyAfKNUuDB61qCLLlN-y68uTPKA9tNtbTkw'});
+        //
+        console.log("currentToken:", currentToken)
+        // if (currentToken) {
+        //     console.log('FCM Token:', currentToken);
+        //     // Gửi token này lên máy chủ Laravel
+        //     axios.post('/save-fcm-token', {fcm_token: currentToken})
+        //         .then(response => {
+        //             console.log(response.data.message);
+        //         })
+        //         .catch(error => {
+        //             console.error('Error saving FCM token:', error);
+        //         });
+        // } else {
+        //     console.log('No registration token available. Request permission to generate one.');
+        // }
+    } catch (error) {
+        console.error('An error occurred while retrieving token:', error);
+    }
+};
+
+getFCMToken().then();
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js',{
+            scope: '/'
+        })
+            .then((registration) => {
+                console.log('Firebase Messaging ServiceWorker registered with scope:', registration.scope);
+            })
+            .catch((error) => {
+                console.error('Firebase Messaging ServiceWorker registration failed:', error);
+            });
     });
 }
-
-requestPermission()
-
-console.log(messaging,app)
-
-import { getToken } from "firebase/messaging";
-
-const validKey = 'BPqkXeNNBl4HDSourWAYvF48UzB8KiCB2Dc7mDSoV-x5lOi9P4j6YbTtZluTCJmtAgQ3sP34nSkDq2aR5Huui_I';
-getToken(messaging, { vapidKey: validKey }).then((currentToken) => {
-    if (currentToken) {
-        console.log(currentToken)
-    } else {
-        console.log('No registration token available. Request permission to generate one.');
-    }
-}).catch((err) => {
-    console.log('An error occurred while retrieving token. ', err);
-});
-
-
-
 
