@@ -1,5 +1,3 @@
-{{--<script src="{{asset('js/app.js')}}"></script>--}}
-{{--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>--}}
 <script src="https://www.gstatic.com/firebasejs/8.3.2/firebase.js"></script>
 <script>
     const firebaseConfig = {
@@ -13,9 +11,7 @@
         measurementId: "G-283HH5Q1Q1"
     };
 
-
     firebase.initializeApp(firebaseConfig);
-
 
     const messaging = firebase.messaging();
 
@@ -40,10 +36,10 @@
                     },
                     dataType: 'JSON',
                     success: function (response) {
-                        alert('Token stored.');
+
                     },
                     error: function (error) {
-                        alert(error);
+
                     },
                 });
             }).catch(function (error) {

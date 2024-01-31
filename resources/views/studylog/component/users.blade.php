@@ -12,6 +12,9 @@
         </a>
     </p>
     <div class="collapse" id="collapseUser">
+        <div class="my-2">
+            <a href="{{url('studylog/confirm/logs/'.$users[0]->getStudylogId())}}" class="text-white bg-success p-1 small border-none rounded">Xác nhận thay toàn bộ</a>
+        </div>
         @foreach($users as $user)
             <div class="mb-3 d-flex align-items-center border bg-label-github p-2 rounded">
                 <img
