@@ -3,17 +3,21 @@
 namespace App\Helper;
 
 use App\Helper\Object\NotificationObject;
+use App\Models\User;
 use App\Models\UserFcm;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use Illuminate\Support\Facades\Log;
 
 class DesktopNotification
 {
     /**
      * @throws GuzzleException
      */
-    public static function sendNotification(NotificationObject $notificationObject): void
+    public static function sendNotificationForAll(NotificationObject $notificationObject): void
     {
+        $serverKey = 'AAAAhWOhzME:APA91bHgH4Wwvvb06YFqsbEx9WP2ZgVIiYzVovzs57xTfSNhYtqRJk7K7cW2yNeg9smUdyO1VcMSJy8S7sFfv2V66Ew-Wi2L2_pBmFj39ygHqTuVbqnppvuK9ZVYrVblGnLVuqjCU7sB';
+
         $tokens = UserFcm::query()->whereIn('user_id', $notificationObject->getUserIds())->get();
 
         $includePlayers = [];
@@ -28,22 +32,43 @@ class DesktopNotification
 
         $client = new Client();
 
-        $client->post('https://onesignal.com/api/v1/notifications', [
-            'headers' => [
-                'Authorization' => 'Basic YjU4ZjFjNzItOGZiYy00N2Q3LWEyZGUtYjBkMTJhZmVjN2M0',
-                "Content-Type" => "application/json",
-            ],
-            'body' => json_encode([
-                'app_id' => '7a6addcb-f707-4a8a-bf3a-296924818284',
-                'include_player_ids' => $includePlayers,
-                'headings' => [
-                    'en' => $notificationObject->getTitle()
+        try {
+           $client->post('https://fcm.googleapis.com/fcm/send', [
+                'headers' => [
+                    'Authorization' => 'key=' . $serverKey,
+                    'Content-Type' => 'application/json',
                 ],
-                'contents' => [
-                    'en' => $notificationObject->getBody()
+                'json' => [
+                    'registration_ids' => $includePlayers,
+                    'notification' => [
+                        'title' => $notificationObject->getTitle(),
+                        'body' => $notificationObject->getBody(),
+                        'sound' => 'default',
+                    ],
+                    'data' => [
+                        'click_action' => $notificationObject->getRef()
+                    ],
                 ],
-                'url' => $notificationObject->getRef()
-            ])
-        ]);
+            ]);
+        }catch (\Exception $exception) {
+            Log::error('Lỗi GUZZTE:', $exception->getTrace());
+        }
+    }
+
+    /**
+     * @throws GuzzleException
+     */
+    public static function sendNotificationForSingleUser(NotificationObject $notificationObject)
+    {
+        $users = User::query()->whereIn('id', $notificationObject->getUserIds())->get();
+
+        foreach ($users as $user) {
+            DesktopNotification::sendNotificationForAll(new NotificationObject(
+                 $notificationObject->getTitle(),
+                $user['name'] . ' ơi, ' .$notificationObject->getBody(),
+                [$user['id']],
+                $notificationObject->getThumbnail(), $notificationObject->getRef(), []
+            ));
+        }
     }
 }

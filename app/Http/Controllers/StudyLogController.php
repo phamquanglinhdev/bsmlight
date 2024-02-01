@@ -122,7 +122,7 @@ class StudyLogController extends Controller
 
     private function selectStudyLogDay(Request $request, CrudBag $crudBag): View
     {
-        if (! $request->get('classroom_id')) {
+        if (!$request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
@@ -145,11 +145,11 @@ class StudyLogController extends Controller
 
     private function selectSchedule(Request $request, CrudBag $crudBag): View
     {
-        if (! $request->get('classroom_id')) {
+        if (!$request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
-        if (! $request->get('studylog_day')) {
+        if (!$request->get('studylog_day')) {
             return $this->selectStudyLogDay($request, $crudBag);
         }
 
@@ -185,15 +185,15 @@ class StudyLogController extends Controller
 
     private function startCreate(Request $request, CrudBag $crudBag)
     {
-        if (! $request->get('classroom_id')) {
+        if (!$request->get('classroom_id')) {
             return $this->selectClassroom($request, $crudBag);
         }
 
-        if (! $request->get('studylog_day')) {
+        if (!$request->get('studylog_day')) {
             return $this->selectStudyLogDay($request, $crudBag);
         }
 
-        if (! $request->get('classroom_schedule_id')) {
+        if (!$request->get('classroom_schedule_id')) {
             return $this->selectSchedule($request, $crudBag);
         }
 
@@ -233,7 +233,7 @@ class StudyLogController extends Controller
              * @var ClassroomSchedule $schedule
              */
             $schedule = ClassroomSchedule::query()->where('id', $request->get('classroom_schedule_id'))->where('classroom_id', $request->get('classroom_id') ?? '')->first();
-            if (! $schedule) {
+            if (!$schedule) {
                 $shiftTemplates = [
                     [
                         'teacher_id' => '',
@@ -325,7 +325,7 @@ class StudyLogController extends Controller
 
         foreach ($request->get('shifts') as $key => $shift) {
             $files = $request->file('shifts')[$key] ?? [];
-            if (! empty($files)) {
+            if (!empty($files)) {
                 $request->merge([
                     "shifts" => [
                         $key => array_merge($shift, [
@@ -468,7 +468,7 @@ class StudyLogController extends Controller
 
         switch ($studyLog['status']) {
             case StudyLog::CANCELED :
-                if (! $studyLog['created_by'] == Auth::id()) {
+                if (!$studyLog['created_by'] == Auth::id()) {
                     abort(403);
                 }
                 break;
@@ -511,11 +511,11 @@ class StudyLogController extends Controller
             ->orderBy('created_at', 'DESC')->get();
 
         $studyLogShowViewModel = new StudyLogShowViewModel(
-            studyLog : $studyLog,
-            cardLogs : $cardLogs,
-            workingShifts : WorkingShift::query()->where('studylog_id', $id)->get(),
-            comments : $comments,
-            studyLogAcceptedUsers : $relationUsers
+            studyLog: $studyLog,
+            cardLogs: $cardLogs,
+            workingShifts: WorkingShift::query()->where('studylog_id', $id)->get(),
+            comments: $comments,
+            studyLogAcceptedUsers: $relationUsers
         );
 
         return \view('studylog.show', [
@@ -596,7 +596,7 @@ class StudyLogController extends Controller
             return $user->getUserId();
         }, $studyLog->getAcceptedUsers());
 
-        if (! in_array(Auth::id(), $relationUsers)) {
+        if (!in_array(Auth::id(), $relationUsers)) {
             abort(403);
         }
 
@@ -626,7 +626,7 @@ class StudyLogController extends Controller
             return $user->getUserId();
         }, $studyLog->getAcceptedUsers());
 
-        if (! in_array($forUser, $relationUsers)) {
+        if (!in_array($forUser, $relationUsers)) {
             abort(403);
         }
 
@@ -666,9 +666,12 @@ class StudyLogController extends Controller
         return redirect()->back()->with('success', "Đã xác nhận");
     }
 
+    /**
+     * @throws GuzzleException
+     */
     private function handleSwitchToWaitingAccept(StudyLog $studyLog): void
     {
-        if ($studyLog->status === StudyLog::ACCEPTED || $studyLog->status === StudyLog::REFUSED || $studyLog->status === StudyLog::CANCELED) {
+        if ($studyLog->status === StudyLog::ACCEPTED || $studyLog->status === StudyLog::WAITING_ACCEPT || $studyLog->status === StudyLog::REFUSED || $studyLog->status === StudyLog::CANCELED) {
             return;
         }
 
@@ -683,6 +686,29 @@ class StudyLogController extends Controller
         StudyLog::query()->where('id', $studyLog['id'])->update([
             'status' => StudyLog::WAITING_ACCEPT
         ]);
+
+        $collectStaffs = [];
+
+        foreach ($studyLog->WorkingShifts()->get() as $workingShift) {
+            /**
+             * @var WorkingShift $workingShift
+             */
+
+            $collectStaffs[] = $workingShift['staff_id'];
+        };
+
+        $collectStaffs[] = $studyLog['created_by'];
+
+        DesktopNotification::sendNotificationForAll(
+            new NotificationObject(
+                title: 'Buổi học #' . $studyLog->getSupportIdAttribute() . ' có thể duyệt',
+                body: 'Buổi học đã được xác nhận bởi tất cả giáo viên và trợ giảng',
+                user_ids: $collectStaffs,
+                thumbnail: '',
+                ref: url('studylog/show/' . $studyLog->id),
+                attributes: []
+            )
+        );
     }
 
     public function accept(int $id): RedirectResponse
@@ -699,6 +725,19 @@ class StudyLogController extends Controller
 
             $this->handleActiveStudyLog($studyLog)
         ]);
+
+        $collectStudents = $studyLog->CardLogs()->get()->pluck('student_id')->toArray();
+
+        DesktopNotification::sendNotificationForSingleUser(
+            new NotificationObject(
+                title: 'Buổi học #' . $studyLog->getSupportIdAttribute(),
+                body: 'Buổi học đã được duyệt bởi '.Auth::user()->{'name'}.', hãy vào kiểm tra nhé !',
+                user_ids: $collectStudents,
+                thumbnail: '',
+                ref: url('studylog/show/' . $studyLog->id),
+                attributes: []
+            )
+        );
 
         return redirect()->back()->with('success', "Đã xác nhận");
     }
@@ -1068,14 +1107,14 @@ class StudyLogController extends Controller
 
         $collectedWorkingShiftUser[] = Branch::query()->where('uuid', Auth::user()->{'branch'})->first()->host_id;
 
-        DesktopNotification::sendNotification(
+        DesktopNotification::sendNotificationForAll(
             new NotificationObject(
-                title : Auth::user()->{'name'} . ' đã cập nhật thông tin buổi học',
-                body : Auth::user()->{'name'} . ' đã cập nhật thông tin buổi học ' . $studyLog->getSupportIdAttribute(),
-                user_ids : $collectedWorkingShiftUser,
-                thumbnail : '',
-                ref : url('studylog/show/' . $studyLog->id),
-                attributes : []
+                title: Auth::user()->{'name'} . ' đã cập nhật thông tin buổi học',
+                body: Auth::user()->{'name'} . ' đã cập nhật thông tin buổi học ' . $studyLog->getSupportIdAttribute(),
+                user_ids: $collectedWorkingShiftUser,
+                thumbnail: '',
+                ref: url('studylog/show/' . $studyLog->id),
+                attributes: []
             )
         );
 

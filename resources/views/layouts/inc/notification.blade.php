@@ -47,14 +47,6 @@
         });
     }
 
-    messaging.onMessage(function (payload) {
-        const title = payload.notification.title;
-        const options = {
-            body: payload.notification.body,
-            icon: payload.notification.icon,
-        };
-        new Notification(title, options);
-    });
-
     startFCM();
+
 </script>

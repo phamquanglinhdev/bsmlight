@@ -119,7 +119,7 @@ class NotificationController extends Controller
         );
 
         try {
-            DesktopNotification::sendNotification($notificationObject);
+            DesktopNotification::sendNotificationForAll($notificationObject);
         } catch (\Exception $exception) {
 
         }

@@ -18,15 +18,28 @@ firebase.initializeApp({
 });
 
 const messaging = firebase.messaging();
-messaging.setBackgroundMessageHandler(function (payload) {
-    console.log("Message received.", payload);
-    const title = "Hello world is awesome";
+
+self.addEventListener('push', event => {
+    const payload = event.data.json();
+    const title = payload.notification.title;
     const options = {
-        body: "Your notificaiton message .",
-        icon: "/firebase-logo.png",
+        body: payload.notification.body,
+        icon: 'https://i.pinimg.com/564x/c1/9a/1d/c19a1d3823b60a19194fe700f0524ae6.jpg',
+        badge: 'path-to-badge/badge.png',
+        data: payload.data,
     };
-    return self.registration.showNotification(
-        title,
-        options,
+
+    event.waitUntil(
+        self.registration.showNotification(title, options)
     );
+});
+
+self.addEventListener('notificationclick', event => {
+    // Lấy thông tin từ thông báo
+    const clickAction = event.notification.data.click_action;
+
+    if (clickAction) {
+        clients.openWindow(clickAction);
+    }
+    event.notification.close();
 });
