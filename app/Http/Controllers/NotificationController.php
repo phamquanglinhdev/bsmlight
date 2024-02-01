@@ -35,6 +35,16 @@ class NotificationController extends Controller
         return response()->json(['message' => 'ok']);
     }
 
+    public function removeDesktopFcmTokenAction(Request $request): JsonResponse
+    {
+        $token = $request->get('token');
+
+        if ($token) {
+            UserFcm::query()->where('token',$token)->delete();
+        }
+
+        return response()->json(['message' => 'ok']);
+    }
     public function createNotificationView(): View
     {
         $receiverOptions = [];

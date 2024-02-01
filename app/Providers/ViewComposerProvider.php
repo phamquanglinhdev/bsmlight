@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Composer\MenuComposer;
+use App\Composer\NotificationComposer;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,5 +27,6 @@ class ViewComposerProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('components.menu', MenuComposer::class);
+        View::composer('notification-list', NotificationComposer::class);
     }
 }

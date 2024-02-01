@@ -98,5 +98,7 @@
         toastr.success('{{session('success')}}', 'Thành công');
     </script>
 @endif
+
+@include('layouts.inc.notification')
 </body>
 </html>

@@ -27,4 +27,14 @@ class Notification extends Model
 
         return $dateInterval->diffForHumans(Carbon::now());
     }
+
+    public function User()
+    {
+        return $this->belongsTo(User::class,'user_id');
+    }
+
+    public function userAvatar()
+    {
+        return $this->User()->first()?->avatar;
+    }
 }

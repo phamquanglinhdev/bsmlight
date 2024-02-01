@@ -85,4 +85,22 @@ class User extends Authenticatable
     public function StudyLogAccept(): HasMany{
         return $this->hasMany(StudyLogAccept::class, 'studylog_id', 'id');
     }
+
+    public function getRoleLabel(): string
+    {
+        switch ($this->role) {
+            case User::STUDENT_ROLE:
+                return 'Hoc sinh';
+            case User::HOST_ROLE:
+                return 'HOST';
+            case User::STAFF_ROLE:
+                return 'Nhan vien';
+            case User::TEACHER_ROLE:
+                return 'Giao vien';
+            case User::SUPPORTER_ROLE:
+                return 'Tro giang';
+            default:
+                return '';
+        }
+    }
 }

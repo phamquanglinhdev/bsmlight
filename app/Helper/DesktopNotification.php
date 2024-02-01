@@ -3,6 +3,7 @@
 namespace App\Helper;
 
 use App\Helper\Object\NotificationObject;
+use App\Models\Notification;
 use App\Models\User;
 use App\Models\UserFcm;
 use GuzzleHttp\Client;
@@ -50,6 +51,18 @@ class DesktopNotification
                     ],
                 ],
             ]);
+
+           foreach ($notificationObject->getUserIds() as $userId) {
+               Notification::query()->create([
+                   'user_id' => $userId,
+                   'thumbnail' => $notificationObject->getThumbnail(),
+                   'read' => 0,
+                   'title' => $notificationObject->getTitle(),
+                   'description' => $notificationObject->getBody(),
+                   'url' => $notificationObject->getRef(),
+               ]);
+           }
+
         }catch (\Exception $exception) {
             Log::error('Lỗi GUZZTE:', $exception->getTrace());
         }

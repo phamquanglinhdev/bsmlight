@@ -22,7 +22,7 @@
                 return messaging.getToken()
             })
             .then(function (response) {
-                console.log("token:",response);
+                console.log("token:", response);
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': '{{csrf_token()}}'
@@ -39,7 +39,13 @@
 
                     },
                     error: function (error) {
-
+                        $.ajax({
+                            url: '{{url("/notification/remove-token")}}',
+                            type: 'DELETE',
+                            data: {
+                                token: response
+                            },
+                        })
                     },
                 });
             }).catch(function (error) {

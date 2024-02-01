@@ -169,6 +169,7 @@ Route::middleware(['auth'])->group(function () {
     });
 
     Route::post('notification/save-token',[NotificationController::class,'saveDesktopFcmTokenAction'])->name('notification.save-token');
+    Route::withoutMiddleware(['auth'])->delete('notification/remove-token',[NotificationController::class,'removeDesktopFcmTokenAction'])->name('notification.remove-token');
     Route::get('notification/create',[NotificationController::class,'createNotificationView'])->name('notification.create');
     Route::post('notification/store',[NotificationController::class,'storeNotification'])->name('notification.store');
 });
