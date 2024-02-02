@@ -293,7 +293,7 @@ class Classroom extends Model
                 'week_day' => $schedule->week_day,
                 'start_time' => $schedule->start_time,
                 'end_time' => $schedule->end_time,
-                'shifts' => $schedule->Shifts()->get()->map(function ($shift) {
+                'shifts' => $schedule->Shifts()->orderBy('start_time')->get()->map(function ($shift) {
                     return [
                         'start_time' => $shift->start_time,
                         'end_time' => $shift->end_time,
