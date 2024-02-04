@@ -6,6 +6,7 @@ use App\Helper\CrudBag;
 use App\Helper\DesktopNotification;
 use App\Helper\ListViewModel;
 use App\Helper\Object\NotificationObject;
+use App\Helper\Object\StudyLogAcceptedObject;
 use App\Helper\StudyLogShowViewModel;
 use App\Models\Branch;
 use App\Models\Card;
@@ -16,6 +17,7 @@ use App\Models\ClassroomShift;
 use App\Models\Comment;
 use App\Models\Host;
 use App\Models\Staff;
+use App\Models\Student;
 use App\Models\StudyLog;
 use App\Models\StudyLogAccept;
 use App\Models\Supporter;
@@ -646,22 +648,32 @@ class StudyLogController extends Controller
         return redirect()->back()->with('success', "Đã xác nhận");
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function confirmAllUser(int $id)
     {
+        /**
+         * @var StudyLog $studylog
+         */
         $studylog = StudyLog::query()->where('id', $id)->firstOrFail();
 
-        Collection::make($studylog->getAcceptedUsers())->each(function ($user) use ($studylog) {
-            StudyLogAccept::query()->updateOrCreate([
-                'studylog_id' => $studylog->id,
-                'user_id' => $user->getUserId()
-            ], [
-                'studylog_id' => $studylog->id,
-                'user_id' => $user->getUserId(),
-                'accepted_time' => Carbon::now(),
-                'accepted_by_system' => 0,
-                'accepted_by' => Auth::user()->{'uuid'} . "-" . Auth::user()->{'name'}
-            ]);
+        Collection::make($studylog->getAcceptedUsers())->each(function (StudyLogAcceptedObject $user) use ($studylog) {
+            if(! $user->isStudent()) {
+                StudyLogAccept::query()->updateOrCreate([
+                    'studylog_id' => $studylog->id,
+                    'user_id' => $user->getUserId()
+                ], [
+                    'studylog_id' => $studylog->id,
+                    'user_id' => $user->getUserId(),
+                    'accepted_time' => Carbon::now(),
+                    'accepted_by_system' => 0,
+                    'accepted_by' => Auth::user()->{'uuid'} . "-" . Auth::user()->{'name'}
+                ]);
+            }
         });
+
+        $this->handleSwitchToWaitingAccept($studylog);
 
         return redirect()->back()->with('success', "Đã xác nhận");
     }
@@ -678,7 +690,7 @@ class StudyLogController extends Controller
         $relationUsers = $studyLog->getAcceptedUsers();
 
         foreach ($relationUsers as $relationUser) {
-            if (! $relationUser->isAccepted()) {
+            if (! $relationUser->isAccepted() && ! $relationUser->isStudent()) {
                 return;
             }
         }

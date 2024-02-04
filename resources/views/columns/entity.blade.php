@@ -16,7 +16,7 @@
 @endphp
 
 
-<td class="border {{$column->getFixed() == 'first' ? 'fixed-left':''}}">
+<td class="border {{$column->getFixed() == 'first' ? 'fixed-left':''}} {{$column->getFixed() == 'second' ? 'fixed-left-second':''}}">
     <div class="d-flex align-items-center">
         @if($data)
             <img style="width: 2rem;height: 2rem" class="rounded-circle d-block me-2"

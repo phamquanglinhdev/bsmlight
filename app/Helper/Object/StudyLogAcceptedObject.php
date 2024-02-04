@@ -2,6 +2,9 @@
 
 namespace App\Helper\Object;
 
+use App\Models\Student;
+use App\Models\User;
+
 class StudyLogAcceptedObject
 {
     public function __construct(
@@ -12,7 +15,7 @@ class StudyLogAcceptedObject
         private readonly bool   $accepted,
         private readonly string $accepted_time,
         private readonly int    $accepted_by_system,
-        private readonly string    $accepted_by,
+        private readonly string $accepted_by,
     )
     {
     }
@@ -56,5 +59,10 @@ class StudyLogAcceptedObject
     public function getAcceptedBySystem(): int
     {
         return $this->accepted_by_system;
+    }
+
+    public function isStudent(): bool
+    {
+        return Student::query()->where('id',$this->user_id)->exists();
     }
 }

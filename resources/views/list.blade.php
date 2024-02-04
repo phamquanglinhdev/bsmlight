@@ -53,6 +53,9 @@
                         @if($column->getFixed() == 'first')
                             <th class="border fw-bold bg-primary fixed-left"
                                 style="position: sticky;top: 0!important; z-index: 1">{{$column->getLabel()}}</th>
+                        @elseif($column->getFixed() == 'second')
+                                <th class="border fw-bold bg-primary fixed-left-second"
+                                    style="position: sticky;top: 0!important; z-index: 1">{{$column->getLabel()}}</th>
                         @else
                             <th class="border fw-bold bg-primary">{{$column->getLabel()}}</th>
                         @endif
@@ -89,6 +92,10 @@
         .fixed-left {
             position: sticky;
             left: 0;
+        }
+        .fixed-left-second {
+            position: sticky;
+            left: 21rem;
         }
     </style>
     <script>

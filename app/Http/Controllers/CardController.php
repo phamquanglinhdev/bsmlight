@@ -240,6 +240,7 @@ class CardController extends Controller
 
         $crudBag->addColumn([
             'name' => 'student_id',
+            'fixed' => 'second',
             'label' => 'Học sinh',
             'type' => 'entity',
             'attributes' => [
