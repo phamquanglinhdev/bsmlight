@@ -531,7 +531,7 @@ class CardController extends Controller
                 'js' => asset('/demo/js/handle-promotion-percent.js'),
                 'identity' => 'promotion-percent'
             ],
-            'value' => isset($card) ? $card->promotion_fee / $card->original_fee * 100 : null
+            'value' => isset($card) ? $card->calPromotionPercent(): null
         ]);
 
         $crudBag->addFields([

@@ -95,7 +95,6 @@ class Card extends Model
         'renew_type'
     ];
 
-
     /**
      * switch $this->can_use_day
      * <0 buổi = SOS: màu đỏ
@@ -139,7 +138,7 @@ class Card extends Model
     public function getStudentEntityAttribute(): ?array
     {
         $student = $this->Student()?->first() ?? null;
-        if (!$student) {
+        if (! $student) {
             return null;
         }
 
@@ -153,11 +152,11 @@ class Card extends Model
 
     public function getClassroomEntityAttribute(): ?array
     {
-
         $classroom = $this->Classroom()?->first() ?? null;
-        if (!$classroom) {
+        if (! $classroom) {
             return null;
         }
+
         return [
             'id' => $classroom->id,
             'name' => $classroom->name,
@@ -183,7 +182,7 @@ class Card extends Model
 
     public function getDailyFeeAttribute(): float|int
     {
-        return $this->total_fee / ($this->total_days!=0 ? $this->total_days : 1);
+        return $this->total_fee / ($this->total_days != 0 ? $this->total_days : 1);
     }
 
     public function getCanUseDayByPaidAttribute(): float|int
@@ -235,7 +234,6 @@ class Card extends Model
         return $this->belongsTo(Classroom::class, 'classroom_id', 'id');
     }
 
-
     /**
      * Mã thẻ học + Trạng thái thẻ học $uuid + $card_status
      * Học sinh được thụ hưởng (mã, ảnh , tên, tên tiếng anh) $student_id
@@ -258,8 +256,17 @@ class Card extends Model
     public static function boot()
     {
         parent::boot();
-        static::addGlobalScope('branch',function (Builder $builder) {
-            $builder->where('branch',Auth::user()->{'branch'});
+        static::addGlobalScope('branch', function (Builder $builder) {
+            $builder->where('branch', Auth::user()->{'branch'});
         });
+    }
+
+    public function calPromotionPercent(): float|int
+    {
+        if ($this->original_fee == 0) {
+            return 0;
+        }
+
+        return $this->promotion_fee / $this->original_fee * 100;
     }
 }

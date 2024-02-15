@@ -245,7 +245,7 @@ class ClassroomController extends Controller
             'schedules.*.week_day' => 'required',
             'schedules.*.start_time' => 'required',
             'schedules.*.end_time' => 'required',
-            'schedules.*.shifts' => 'array',
+            'schedules.*.shifts' => 'array|nullable',
             'schedules.*.shifts.*.teacher_id' => 'required',
             'schedules.*.shifts.*.supporter_id' => 'integer|nullable',
             'schedules.*.shifts.*.room' => 'string|nullable',
