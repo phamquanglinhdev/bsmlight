@@ -170,7 +170,7 @@ class StudentController extends Controller
             'name' => 'required|string',
             'english_name' => 'string|nullable',
             'avatar' => 'string|required',
-            'gender' => 'integer|in:0,1|required',
+            'gender' => 'integer|in:1,2|required',
             'facebook' => 'string|nullable',
             'email' => 'email|nullable',
             'address' => 'string|nullable',
