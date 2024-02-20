@@ -60,7 +60,9 @@
                             <th class="border fw-bold bg-primary">{{$column->getLabel()}}</th>
                         @endif
                     @endforeach
-                    <th class="border fw-bold bg-primary">Hành động</th>
+                    @if(! $crudBag->getParam('disable_action'))
+                            <th class="border fw-bold bg-primary">Hành động</th>
+                    @endif
                 </tr>
                 </thead>
                 <tbody class="table-border-bottom-0">
@@ -69,13 +71,17 @@
                         @foreach($crudBag->getColumns() as $column)
                             @include("columns.".$column->getType(),['item' => $item,'column' => $column])
                         @endforeach
-                        <th class="border text-center">
-                            @if(check_permission("delete ".$crudBag->getEntity()))
-                                <a class="delete-action" href="{{url($crudBag->getEntity()."/delete/".$item['id'])}}">
-                                    <span class="mdi mdi-delete"></span>
-                                </a>
-                            @endif
-                        </th>
+                        @if(! $crudBag->getParam('disable_action'))
+                                <th class="border text-center">
+                                    @if(! $crudBag->getParam('disable_delete'))
+                                        @if(check_permission("delete ".$crudBag->getEntity()))
+                                            <a class="delete-action" href="{{url($crudBag->getEntity()."/delete/".$item['id'])}}">
+                                                <span class="mdi mdi-delete"></span>
+                                            </a>
+                                        @endif
+                                    @endif
+                                </th>
+                        @endif
                     </tr>
                 @endforeach
                 </tbody>

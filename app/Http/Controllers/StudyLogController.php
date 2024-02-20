@@ -54,7 +54,7 @@ class StudyLogController extends Controller
         $query = $crudBag->handleQuery($request, $query);
 
         $listViewModel = new ListViewModel($query->paginate($request->get('perPage') ?? 10));
-
+        $crudBag->setParam('disable_action', true);
         return view('list', [
             'crudBag' => $crudBag,
             'listViewModel' => $listViewModel
@@ -659,7 +659,7 @@ class StudyLogController extends Controller
         $studylog = StudyLog::query()->where('id', $id)->firstOrFail();
 
         Collection::make($studylog->getAcceptedUsers())->each(function (StudyLogAcceptedObject $user) use ($studylog) {
-            if(! $user->isStudent()) {
+            if (!$user->isStudent()) {
                 StudyLogAccept::query()->updateOrCreate([
                     'studylog_id' => $studylog->id,
                     'user_id' => $user->getUserId()
@@ -690,7 +690,7 @@ class StudyLogController extends Controller
         $relationUsers = $studyLog->getAcceptedUsers();
 
         foreach ($relationUsers as $relationUser) {
-            if (! $relationUser->isAccepted() && ! $relationUser->isStudent()) {
+            if (!$relationUser->isAccepted() && !$relationUser->isStudent()) {
                 return;
             }
         }
@@ -743,7 +743,7 @@ class StudyLogController extends Controller
         DesktopNotification::sendNotificationForSingleUser(
             new NotificationObject(
                 title: 'Buổi học #' . $studyLog->getSupportIdAttribute(),
-                body: 'Buổi học đã được duyệt bởi '.Auth::user()->{'name'}.', hãy vào kiểm tra nhé !',
+                body: 'Buổi học đã được duyệt bởi ' . Auth::user()->{'name'} . ', hãy vào kiểm tra nhé !',
                 user_ids: $collectStudents,
                 thumbnail: '',
                 ref: url('studylog/show/' . $studyLog->id),

@@ -133,6 +133,7 @@ class TransactionController extends Controller
             }
         });
 
+
         return redirect('/card/show/' . $request->get('card_id'));
     }
 
