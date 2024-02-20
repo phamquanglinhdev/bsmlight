@@ -30,7 +30,7 @@
         <div class="my-2">
             <div>Ngày tạo: {{$transaction->getCreatedAt()}}</div>
         </div>
-        <div>Ảnh giao dịch: <a href="{{$transaction->getImage()}}"><span class="mdi mdi-image-check"></span></a></div>
+        <div>Ảnh giao dịch: <a target="_blank" href="{{url('/').'/'.$transaction->getImage()}}"><span class="mdi mdi-image-check"></span></a></div>
         @if(check_permission('accept transaction') && $transaction->isNew())
             <div class="my-4 small">
                 <div class="row m-0 justify-content-between align-items-center">

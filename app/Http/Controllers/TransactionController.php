@@ -96,7 +96,7 @@ class TransactionController extends Controller
             'card_id' => 'required|exists:cards,id',
             'amount' => 'required',
             'transaction_type' => 'required',
-            'object_image' => 'image|nullable',
+            'object_image' => 'file|nullable',
             'affiliate_users' => 'array|nullable',
             'affiliate_users.*' => 'integer|exists:users,id',
         ]);
@@ -107,9 +107,9 @@ class TransactionController extends Controller
             'uuid' => Carbon::now()->timestamp,
             'amount' => str_replace(',', '', $request->get('amount')),
             'transaction_type' => $request->get('transaction_type'),
-            'notes' => $request->get('notes')??'Không có ghi chú',
+            'notes' => $request->get('notes') ?? 'Không có ghi chú',
             'status' => Transaction::PENDING_STATUS,
-            'object_image' => $request->file('object_image') ? uploads($request->file('object_image')[0]) : null,
+            'object_image' => $request->file('object_image') ? uploads($request->file('object_image')) : null,
             'created_by' => Auth::id()
         ];
 
@@ -175,18 +175,20 @@ class TransactionController extends Controller
              */
             $card = Card::query()->findOrFail($transaction['object_id']);
 
+            $daily = $card->getDailyFeeAttribute();
+
             $totalFee = $card->paid_fee + $transaction->amount;
 
             $addedDay = 0;
 
-            if ($totalFee > $card->paid_fee) {
-                $addedDay = ($totalFee - $card->paid_fee) / $card->getDailyFeeAttribute();
+            if ($totalFee > $card->original_fee) {
+                $addedDay = $transaction->amount / $daily;
             }
 
             $card->update([
                 'paid_fee' => $totalFee,
                 'original_days' => $card->original_days + $addedDay,
-                'original_fee' => $card->original_fee + (($totalFee - $card->paid_fee) > 0 ? $totalFee - $card->paid_fee : 0),
+                'original_fee' => $card->original_fee + ($addedDay * $daily),
             ]);
         }
     }

@@ -13,7 +13,11 @@
             <span class="text-muted fw-light">{{$crudBag->getLabel()}} /</span>
             <span>{{$crudBag->getId()?"Chỉnh sửa":"Thêm mới"}}</span>
         </h4>
-        <form action="{{route($crudBag->getAction(),$crudBag->getId())}}" method="POST">
+        <form action="{{route($crudBag->getAction(),$crudBag->getId())}}" method="POST"
+            @if($crudBag->isHasFile())
+                enctype="multipart/form-data"
+            @endif
+        >
             @csrf
             <div class="row">
                 @foreach($crudBag->getFields() as $field)
